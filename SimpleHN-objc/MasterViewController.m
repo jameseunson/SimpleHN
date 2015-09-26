@@ -23,6 +23,8 @@
 - (void)loadView {
     [super loadView];
     
+    self.objects = [[NSMutableArray alloc] init];
+    
     __block Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/topstories"];
     __block Firebase * baseRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/"];
     
@@ -122,6 +124,12 @@
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    StoryCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+    self.detailViewController.detailItem = cell.story;
 }
 
 @end

@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DetailViewController : UIViewController
+#import "Firebase.h"
+#import "FirebaseUI.h"
+
+@interface DetailViewController : UITableViewController
 
 @property (strong, nonatomic) id detailItem;
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
+@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;
 
 @end
 
