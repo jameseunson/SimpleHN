@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>FirebaseUI.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Mantle.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>NSDate+TimeAgo.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2647DBC5FDC775FFFD05EBE4578EE143</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>681C4AFA710BEE23D96732D677FD174D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AD13E66F766C2AE69E05F7C97168B077</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CE0C3377F8DEC55BE87B01CE59469500</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>

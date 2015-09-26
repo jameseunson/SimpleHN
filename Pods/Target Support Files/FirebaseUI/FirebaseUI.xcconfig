@@ -1,0 +1,2 @@
+FIREBASEUI_FRAMEWORK_SEARCH_PATHS = "$(PODS_ROOT)/Firebase"
+FIREBASEUI_OTHER_LDFLAGS = -l"c++" -l"icucore" -framework "CFNetwork" -framework "Firebase" -framework "Security" -framework "SystemConfiguration" -framework "UIKit"

@@ -1,0 +1,22 @@
+PODS:
+  - Firebase (2.4.0)
+  - FirebaseUI (0.2.5):
+    - Firebase (~> 2.2)
+  - Mantle (2.0.5):
+    - Mantle/extobjc (= 2.0.5)
+  - Mantle/extobjc (2.0.5)
+  - NSDate+TimeAgo (1.0.3)
+
+DEPENDENCIES:
+  - Firebase (~> 2.4.0)
+  - FirebaseUI (~> 0.2)
+  - Mantle
+  - NSDate+TimeAgo
+
+SPEC CHECKSUMS:
+  Firebase: 0a222ced05373b8261fe06c036790a0971991f47
+  FirebaseUI: 2d5bd711824687491a55515af370e8d58f978485
+  Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
+  NSDate+TimeAgo: 416f55d2696d3744c313091c5a9280d47f8238fe
+
+COCOAPODS: 0.38.2

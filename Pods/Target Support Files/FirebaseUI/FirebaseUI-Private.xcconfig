@@ -1,0 +1,7 @@
+#include "FirebaseUI.xcconfig"
+FRAMEWORK_SEARCH_PATHS = ${FIREBASEUI_FRAMEWORK_SEARCH_PATHS}
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/FirebaseUI" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Firebase" "${PODS_ROOT}/Headers/Public/Firebase/Firebase"
+OTHER_LDFLAGS = ${FIREBASEUI_OTHER_LDFLAGS}
+PODS_ROOT = ${SRCROOT}
+SKIP_INSTALL = YES
