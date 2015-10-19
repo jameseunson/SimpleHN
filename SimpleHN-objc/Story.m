@@ -7,6 +7,7 @@
 //
 
 #import "Story.h"
+#import "NSString+HTML.h"
 
 @implementation Story
 
@@ -36,6 +37,12 @@
 }
 + (NSValueTransformer *)urlJSONTransformer {
     return [NSValueTransformer valueTransformerForName:MTLURLValueTransformerName];
+}
+
++ (NSValueTransformer *)titleJSONTransformer {
+    return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
+        return [((NSString*)value) stringByDecodingHTMLEntities];
+    }];
 }
 
 @end

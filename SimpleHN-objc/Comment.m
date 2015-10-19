@@ -7,6 +7,7 @@
 //
 
 #import "Comment.h"
+#import "NSString+HTML.h"
 
 @implementation Comment
 
@@ -31,6 +32,12 @@
 + (NSValueTransformer *)timeJSONTransformer {
     return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
         return [NSDate dateWithTimeIntervalSince1970:[value integerValue]];
+    }];
+}
+
++ (NSValueTransformer *)textJSONTransformer {
+    return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
+        return [((NSString*)value) stringByDecodingHTMLEntities];
     }];
 }
 

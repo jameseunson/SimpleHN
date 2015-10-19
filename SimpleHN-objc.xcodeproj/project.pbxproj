@@ -20,6 +20,8 @@
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; settings = {ASSET_TAGS = (); }; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; settings = {ASSET_TAGS = (); }; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; settings = {ASSET_TAGS = (); }; };
+		98C6091A1BD4C4DE00B94917 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C609181BD4C4DE00B94917 /* NSString+HTML.m */; settings = {ASSET_TAGS = (); }; };
+		98C6091E1BD4C52200B94917 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C6091B1BD4C52200B94917 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,11 @@
 		984418B71BB69BCC00F66A02 /* StoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCell.m; sourceTree = "<group>"; };
 		984844D81BB6A83C00C1EB7A /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
 		984844D91BB6A83C00C1EB7A /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
+		98C609181BD4C4DE00B94917 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
+		98C609191BD4C4DE00B94917 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTML.h"; sourceTree = "<group>"; };
+		98C6091B1BD4C52200B94917 /* GTMNSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSString+HTML.m"; sourceTree = "<group>"; };
+		98C6091C1BD4C52200B94917 /* GTMNSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSString+HTML.h"; sourceTree = "<group>"; };
+		98C6091D1BD4C52200B94917 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,6 +135,7 @@
 		98052DA71BB68BB7004A0D3A /* SimpleHN-objc */ = {
 			isa = PBXGroup;
 			children = (
+				98C609171BD4C4D500B94917 /* Categories */,
 				98052DAB1BB68BB7004A0D3A /* AppDelegate.h */,
 				98052DAC1BB68BB7004A0D3A /* AppDelegate.m */,
 				98052DAE1BB68BB7004A0D3A /* MasterViewController.h */,
@@ -173,6 +181,18 @@
 				98052DD21BB68BB8004A0D3A /* Info.plist */,
 			);
 			path = "SimpleHN-objcUITests";
+			sourceTree = "<group>";
+		};
+		98C609171BD4C4D500B94917 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				98C6091B1BD4C52200B94917 /* GTMNSString+HTML.m */,
+				98C6091C1BD4C52200B94917 /* GTMNSString+HTML.h */,
+				98C6091D1BD4C52200B94917 /* GTMDefines.h */,
+				98C609181BD4C4DE00B94917 /* NSString+HTML.m */,
+				98C609191BD4C4DE00B94917 /* NSString+HTML.h */,
+			);
+			name = Categories;
 			sourceTree = "<group>";
 		};
 		A290FB5AAE9E3801C3082D23 /* Pods */ = {
@@ -367,6 +387,8 @@
 			files = (
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
+				98C6091E1BD4C52200B94917 /* GTMNSString+HTML.m in Sources */,
+				98C6091A1BD4C4DE00B94917 /* NSString+HTML.m in Sources */,
 				98052DB01BB68BB7004A0D3A /* MasterViewController.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,

@@ -20,46 +20,55 @@
 
 @implementation MasterViewController
 
+- (instancetype)init {
+    self = [super init];
+    if(self) {
+        self.objects = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 - (void)loadView {
     [super loadView];
     
-    self.objects = [[NSMutableArray alloc] init];
-    
-    __block Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/topstories"];
-    __block Firebase * baseRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/"];
-    
-    self.dataSource = [[FirebaseTableViewDataSource alloc] initWithRef:topStoriesRef cellClass:[StoryCell class]
-                                                   cellReuseIdentifier:kStoryCellReuseIdentifier view:self.tableView];
-    
-    [self.dataSource populateCellWithBlock:^(UITableViewCell *cell, FDataSnapshot *snap) {
-        // Populate cell as you see fit, like as below
-        cell.textLabel.text = [snap.value stringValue];
-        
-        NSString *itemId = [NSString stringWithFormat:@"item/%@", snap.value];
-        Firebase * itemRef = [baseRef childByAppendingPath:itemId];
-        
-        [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *itemSnap) {
-            
-            NSError * error = nil;
-            Story * obj = [MTLJSONAdapter modelOfClass:Story.class
-                                      fromJSONDictionary:itemSnap.value error:&error];
-            NSLog(@"obj: %@", obj);
-            
-            StoryCell * storyCell = (StoryCell*)cell;
-            storyCell.story = obj;
-        }];
-    }];
-    
-    [self.tableView setDataSource:self.dataSource];
-    
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+//    self.tableView.rowHeight = UITableViewAutomaticDimension;
+//    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers
+                                                          lastObject] topViewController];
+    
+    __block Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/topstories"];
+    __block Firebase * baseRef = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/"];
+
+    self.dataSource = [[FirebaseTableViewDataSource alloc] initWithRef:topStoriesRef
+                                                   prototypeReuseIdentifier:kStoryCellReuseIdentifier view:self.tableView];
+    
+//    self.dataSource = [[FirebaseTableViewDataSource alloc] initWithRef:topStoriesRef cellClass:[StoryCell class]
+//                                                   cellReuseIdentifier:kStoryCellReuseIdentifier view:self.tableView];
+
+    [self.dataSource populateCellWithBlock:^(UITableViewCell *cell, FDataSnapshot *snap) {
+        // Populate cell as you see fit, like as below
+//        cell.textLabel.text = [snap.value stringValue];
+
+        NSString *itemId = [NSString stringWithFormat:@"item/%@", snap.value];
+        Firebase * itemRef = [baseRef childByAppendingPath:itemId];
+
+        [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *itemSnap) {
+
+            NSError * error = nil;
+            Story * obj = [MTLJSONAdapter modelOfClass:Story.class
+                                      fromJSONDictionary:itemSnap.value error:&error];
+
+            StoryCell * storyCell = (StoryCell*)cell;
+            storyCell.story = obj;
+        }];
+    }];
+
+    [self.tableView setDataSource:self.dataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -105,26 +114,26 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kStoryCellReuseIdentifier forIndexPath:indexPath];
 
-    NSDate *object = self.objects[indexPath.row];
-    cell.textLabel.text = [object description];
+//    NSDate *object = self.objects[indexPath.row];
+//    cell.textLabel.text = [object description];
     return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     // Return NO if you do not want the specified item to be editable.
-    return YES;
+    return NO;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.objects removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }
-}
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    if (editingStyle == UITableViewCellEditingStyleDelete) {
+//        [self.objects removeObjectAtIndex:indexPath.row];
+//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+//    }
+//}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
