@@ -11,10 +11,12 @@
 #import "Firebase.h"
 #import "FirebaseUI.h"
 
-@interface DetailViewController : UITableViewController
+@interface DetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) id detailItem;
-@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;
+@property (nonatomic, strong) UITableView * tableView;
+
+//@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;
 
 @end
 

@@ -33,7 +33,7 @@
     
     [self.dataSource populateCellWithBlock:^(UITableViewCell *cell, FDataSnapshot *snap) {
         // Populate cell as you see fit, like as below
-        cell.textLabel.text = [snap.value stringValue];
+//        cell.textLabel.text = [snap.value stringValue];
         
         NSString *itemId = [NSString stringWithFormat:@"item/%@", snap.value];
         Firebase * itemRef = [baseRef childByAppendingPath:itemId];

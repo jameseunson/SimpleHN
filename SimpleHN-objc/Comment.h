@@ -9,6 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Mantle/Mantle.h>
 
+#define kCommentCreated @"commentCreated"
+
+@class Comment;
+typedef void (^CommentBlock)(Comment* comment);
+
 @interface Comment : MTLModel <MTLJSONSerializing>
 
 @property (nonatomic, copy, readonly) NSNumber * commentId;
@@ -20,4 +25,8 @@
 
 @property (nonatomic, copy, readonly) NSString * text;
 
+@property (nonatomic, strong) NSMutableArray * childComments;
+
++ (void)createCommentFromItemIdentifier:(NSNumber*)identifier
+                            completion:(CommentBlock)completion;
 @end

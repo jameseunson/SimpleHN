@@ -9,75 +9,108 @@
 #import "StoryCell.h"
 #import "NSDate+TimeAgo.h"
 
+#import "StoryCommentsButton.h"
+
+@interface StoryCell ()
+
+@property (nonatomic, strong) UILabel * storyTitleLabel;
+@property (nonatomic, strong) UILabel * storySubtitleLabel;
+@property (nonatomic, strong) UIStackView * storyTitleSubtitleStackView;
+
+@property (nonatomic, strong) StoryCommentsButton * storyCommentsButton;
+@property (nonatomic, strong) UILabel * storyScoreLabel;
+@property (nonatomic, strong) UIStackView * storyCommentsScoreStackView;
+
+@end
+
 @implementation StoryCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if(self) {
-        self.textLabel.numberOfLines = 0;
-        self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         
-        self.detailTextLabel.textColor = [UIColor grayColor];
-        self.detailTextLabel.numberOfLines = 0;
-        self.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        self.storyTitleSubtitleStackView = [[UIStackView alloc] init];
+        
+        _storyTitleSubtitleStackView.axis = UILayoutConstraintAxisVertical;
+        _storyTitleSubtitleStackView.alignment = UIStackViewAlignmentLeading;
+        _storyTitleSubtitleStackView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        self.storyTitleLabel = [[UILabel alloc] init];
+        
+        _storyTitleLabel.font = [UIFont systemFontOfSize:17.0f];
+        _storyTitleLabel.backgroundColor = [UIColor clearColor];
+        _storyTitleLabel.numberOfLines = 0;
+        _storyTitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        _storyTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        [self.storyTitleSubtitleStackView addArrangedSubview:_storyTitleLabel];
+        
+        self.storySubtitleLabel = [[UILabel alloc] init];
+        
+        _storySubtitleLabel.font = [UIFont systemFontOfSize:12.0f];
+        _storySubtitleLabel.textColor = [UIColor grayColor];
+        _storySubtitleLabel.backgroundColor = [UIColor clearColor];
+        _storySubtitleLabel.numberOfLines = 0;
+        _storySubtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        _storySubtitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        [self.storyTitleSubtitleStackView addArrangedSubview:_storySubtitleLabel];
+        [self addSubview:_storyTitleSubtitleStackView];
+        
+        self.storyCommentsScoreStackView = [[UIStackView alloc] init];
+
+        _storyCommentsScoreStackView.axis = UILayoutConstraintAxisVertical;
+        _storyCommentsScoreStackView.distribution = UIStackViewDistributionFill;
+        _storyCommentsScoreStackView.alignment = UIStackViewAlignmentCenter;
+        _storyCommentsScoreStackView.spacing = 30;
+        _storyCommentsScoreStackView.translatesAutoresizingMaskIntoConstraints = false;
+        
+        self.storyCommentsButton = [[StoryCommentsButton alloc] init];
+        _storyCommentsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [_storyCommentsScoreStackView addArrangedSubview:_storyCommentsButton];
+        
+        self.storyScoreLabel = [[UILabel alloc] init];
+        _storyScoreLabel.font = [UIFont systemFontOfSize:11.0f];
+        _storyScoreLabel.textColor = [UIColor orangeColor];
+        [_storyCommentsScoreStackView addArrangedSubview:_storyScoreLabel];
+        
+        [self addSubview:_storyCommentsScoreStackView];
+        
+        NSDictionary * bindings = NSDictionaryOfVariableBindings(_storyTitleSubtitleStackView,
+                                                                 _storyCommentsScoreStackView);
+        
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyTitleSubtitleStackView]-|"
+                                                                     options:0 metrics:nil views:bindings]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]-|"
+                                                                     options:0 metrics:nil views:bindings]];
+        
+//        NSArray * constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_storyTitleSubtitleStackView]-[_storyCommentsScoreStackView]-|"
+//                                                                                                      options:0 metrics:nil views:bindings];
+//        [self addConstraints:constraints];
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeadingMargin multiplier:1 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
+        
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0]];
     }
     return self;
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 #pragma mark - Property Override Methods
 - (void)setStory:(Story *)story {
     _story = story;
     
-    self.textLabel.text = story.title;
-    self.detailTextLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
+    self.storyTitleLabel.text = story.title;
+    self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
                                  story.url.host, story.author, story.time];
+    self.storyCommentsButton.story = story;
     
-    UIStackView *accessoryView = [[UIStackView alloc] init];
-    
-    accessoryView.axis = UILayoutConstraintAxisVertical;
-    accessoryView.distribution = UIStackViewDistributionEqualSpacing;
-    accessoryView.alignment = UIStackViewAlignmentCenter;
-    accessoryView.spacing = 30;
-    accessoryView.translatesAutoresizingMaskIntoConstraints = false;
-    
-    UIButton * accessoryButton = [[UIButton alloc] init];
-    [accessoryButton setTitle:[NSString stringWithFormat:@"%lu", [story.kids count]] forState:UIControlStateNormal];
-    accessoryButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    [accessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    
-    accessoryButton.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-    accessoryButton.layer.borderWidth = 1.0f;
-    accessoryButton.layer.cornerRadius = 4.0f;
-    
-    [accessoryButton sizeToFit];
-    
-    [accessoryView addArrangedSubview:accessoryButton];
-    
-    UILabel * scoreLabel = [[UILabel alloc] init];
-    scoreLabel.text = [story.score stringValue];
-    scoreLabel.font = [UIFont systemFontOfSize:11.0f];
-    scoreLabel.textColor = [UIColor orangeColor];
-    [scoreLabel sizeToFit];
-    
-    [accessoryView addArrangedSubview:scoreLabel];
-    
-//    self.accessoryView = accessoryView;
+    _storyScoreLabel.text = [story.score stringValue];
+    [_storyScoreLabel sizeToFit];
 
-    [self.contentView addSubview:accessoryView];
-    
-    [self.contentView invalidateIntrinsicContentSize];
+    [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(accessoryView, accessoryButton, scoreLabel);
-    
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-10-[accessoryView(44)]" options:0 metrics:nil views:bindings]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[accessoryView(44)]-10-|" options:0 metrics:nil views:bindings]];
 }
 
 @end
