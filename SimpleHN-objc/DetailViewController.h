@@ -10,10 +10,12 @@
 
 #import "Firebase.h"
 #import "FirebaseUI.h"
+#import "CommentCell.h"
+#import "Story.h"
 
-@interface DetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface DetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate>
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) Story * detailItem;
 @property (nonatomic, strong) UITableView * tableView;
 
 //@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;

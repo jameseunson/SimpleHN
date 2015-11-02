@@ -1,0 +1,6 @@
+framework module TimeAgoInWords {
+  umbrella header "TimeAgoInWords-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -7,7 +7,7 @@
 //
 
 #import "StoryCell.h"
-#import "NSDate+TimeAgo.h"
+#import "TimeAgoInWords-Swift.h"
 
 #import "StoryCommentsButton.h"
 
@@ -62,7 +62,7 @@
         _storyCommentsScoreStackView.axis = UILayoutConstraintAxisVertical;
         _storyCommentsScoreStackView.distribution = UIStackViewDistributionFill;
         _storyCommentsScoreStackView.alignment = UIStackViewAlignmentCenter;
-        _storyCommentsScoreStackView.spacing = 30;
+        _storyCommentsScoreStackView.spacing = 8;
         _storyCommentsScoreStackView.translatesAutoresizingMaskIntoConstraints = false;
         
         self.storyCommentsButton = [[StoryCommentsButton alloc] init];
@@ -81,7 +81,7 @@
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyTitleSubtitleStackView]-|"
                                                                      options:0 metrics:nil views:bindings]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]-|"
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]"
                                                                      options:0 metrics:nil views:bindings]];
         
 //        NSArray * constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_storyTitleSubtitleStackView]-[_storyCommentsScoreStackView]-|"
@@ -102,8 +102,20 @@
     _story = story;
     
     self.storyTitleLabel.text = story.title;
-    self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
-                                 story.url.host, story.author, story.time];
+    
+    NSString * dateString = nil;
+    if(story.time) {
+        dateString = [NSString stringWithFormat:@"%@ (%@)",
+                      story.time, [story.time timeAgoInWords]];
+    }
+    
+    if(story.url) {
+        self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
+                                        story.url.host, story.author, dateString];
+    } else {
+        self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@",
+                                        story.author, dateString];
+    }
     self.storyCommentsButton.story = story;
     
     _storyScoreLabel.text = [story.score stringValue];

@@ -8,8 +8,20 @@
 
 #import <Mantle/Mantle.h>
 
+typedef NS_ENUM(NSInteger, StoryLoadStatus) {
+    StoryLoadStatusNotLoaded,
+    StoryLoadStatusLoading,
+    StoryLoadStatusLoaded
+};
+
+@class Story;
+typedef void (^StoryBlock)(Story* story);
+
+#define kStoryCreated @"storyCreated"
+
 @interface Story : MTLModel <MTLJSONSerializing>
 
+// Mantle properties
 @property (nonatomic, copy, readonly) NSNumber * storyId;
 @property (nonatomic, copy, readonly) NSString * author;
 @property (nonatomic, copy, readonly) NSArray * kids;
@@ -19,5 +31,14 @@
 
 @property (nonatomic, copy, readonly) NSString * title;
 @property (nonatomic, copy, readonly) NSURL * url;
+
+// Custom properties
+@property (nonatomic, strong) NSMutableArray * comments;
+@property (nonatomic, strong) NSMutableArray * flatDisplayComments;
+
++ (void)createStoryFromItemIdentifier:(NSNumber*)identifier
+                           completion:(StoryBlock)completion;
+
+- (void)loadCommentsForStory;
 
 @end

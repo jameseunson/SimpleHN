@@ -9,12 +9,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Mantle.xcscheme</key>
+		<key>KILabel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>NSDate+TimeAgo.xcscheme</key>
+		<key>Mantle.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -24,25 +24,35 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TimeAgoInWords.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2647DBC5FDC775FFFD05EBE4578EE143</key>
+		<key>2E38FD51833136FFA7F95B24C8D3B06D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>681C4AFA710BEE23D96732D677FD174D</key>
+		<key>7D3ED8574874C2993FFED1FB1C7A0667</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AD13E66F766C2AE69E05F7C97168B077</key>
+		<key>B546F28994BC4872E5921D0154DAB489</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CE0C3377F8DEC55BE87B01CE59469500</key>
+		<key>DB0225C029D7F0BC26349B4A77D2D385</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F1C9893CE039C5BB9737F107CDFA07AF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

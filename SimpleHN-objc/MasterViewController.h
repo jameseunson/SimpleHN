@@ -8,14 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "Firebase.h"
-#import "FirebaseUI.h"
+//#import "FirebaseUI.h"
 
 @class DetailViewController;
 
 @interface MasterViewController : UITableViewController
 
+//@property (nonatomic, strong) UITableView * tableView;
 @property (strong, nonatomic) DetailViewController *detailViewController;
-@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;
+//@property (strong, nonatomic) FirebaseTableViewDataSource *dataSource;
 
 @end
 

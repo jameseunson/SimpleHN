@@ -17,12 +17,14 @@
 		98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB91BB68BB7004A0D3A /* LaunchScreen.storyboard */; };
 		98052DC61BB68BB8004A0D3A /* SimpleHN_objcTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DC51BB68BB8004A0D3A /* SimpleHN_objcTests.m */; };
 		98052DD11BB68BB8004A0D3A /* SimpleHN_objcUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */; };
+		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; settings = {ASSET_TAGS = (); }; };
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; settings = {ASSET_TAGS = (); }; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; settings = {ASSET_TAGS = (); }; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; settings = {ASSET_TAGS = (); }; };
 		98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; settings = {ASSET_TAGS = (); }; };
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */; settings = {ASSET_TAGS = (); }; };
+		98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E0C80E1BE73DE4003E3A0A /* CommentLink.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +65,8 @@
 		98052DCC1BB68BB8004A0D3A /* SimpleHN-objcUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SimpleHN-objcUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleHN_objcUITests.m; sourceTree = "<group>"; };
 		98052DD21BB68BB8004A0D3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		980C6DB81BE7252400D4318C /* CommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentCell.h; sourceTree = "<group>"; };
+		980C6DB91BE7252400D4318C /* CommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentCell.m; sourceTree = "<group>"; };
 		984418B31BB696FA00F66A02 /* Story.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Story.h; sourceTree = "<group>"; };
 		984418B41BB696FA00F66A02 /* Story.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Story.m; sourceTree = "<group>"; };
 		984418B61BB69BCC00F66A02 /* StoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCell.h; sourceTree = "<group>"; };
@@ -76,6 +80,9 @@
 		98B0FB831BE4BAEE0059E5F2 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentsButton.h; sourceTree = "<group>"; };
 		98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCommentsButton.m; sourceTree = "<group>"; };
+		98E0C80C1BE734AC003E3A0A /* SimpleHN-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleHN-objc.h"; sourceTree = "<group>"; };
+		98E0C80D1BE73DE4003E3A0A /* CommentLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentLink.h; sourceTree = "<group>"; };
+		98E0C80E1BE73DE4003E3A0A /* CommentLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentLink.m; sourceTree = "<group>"; };
 		ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -138,6 +145,9 @@
 		98052DA71BB68BB7004A0D3A /* SimpleHN-objc */ = {
 			isa = PBXGroup;
 			children = (
+				980C6DB71BE722A400D4318C /* Models */,
+				980C6DB61BE7229C00D4318C /* Views */,
+				980C6DB51BE7229000D4318C /* Cells */,
 				98B0FB7D1BE4B9FA0059E5F2 /* Categories */,
 				98052DAB1BB68BB7004A0D3A /* AppDelegate.h */,
 				98052DAC1BB68BB7004A0D3A /* AppDelegate.m */,
@@ -150,14 +160,7 @@
 				98052DB91BB68BB7004A0D3A /* LaunchScreen.storyboard */,
 				98052DBC1BB68BB7004A0D3A /* Info.plist */,
 				98052DA81BB68BB7004A0D3A /* Supporting Files */,
-				984418B31BB696FA00F66A02 /* Story.h */,
-				984418B41BB696FA00F66A02 /* Story.m */,
-				984418B61BB69BCC00F66A02 /* StoryCell.h */,
-				984418B71BB69BCC00F66A02 /* StoryCell.m */,
-				984844D81BB6A83C00C1EB7A /* Comment.h */,
-				984844D91BB6A83C00C1EB7A /* Comment.m */,
-				98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */,
-				98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */,
+				98E0C80C1BE734AC003E3A0A /* SimpleHN-objc.h */,
 			);
 			path = "SimpleHN-objc";
 			sourceTree = "<group>";
@@ -186,6 +189,39 @@
 				98052DD21BB68BB8004A0D3A /* Info.plist */,
 			);
 			path = "SimpleHN-objcUITests";
+			sourceTree = "<group>";
+		};
+		980C6DB51BE7229000D4318C /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				984418B61BB69BCC00F66A02 /* StoryCell.h */,
+				984418B71BB69BCC00F66A02 /* StoryCell.m */,
+				980C6DB81BE7252400D4318C /* CommentCell.h */,
+				980C6DB91BE7252400D4318C /* CommentCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		980C6DB61BE7229C00D4318C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */,
+				98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		980C6DB71BE722A400D4318C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				984418B31BB696FA00F66A02 /* Story.h */,
+				984418B41BB696FA00F66A02 /* Story.m */,
+				984844D81BB6A83C00C1EB7A /* Comment.h */,
+				984844D91BB6A83C00C1EB7A /* Comment.m */,
+				98E0C80D1BE73DE4003E3A0A /* CommentLink.h */,
+				98E0C80E1BE73DE4003E3A0A /* CommentLink.m */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		98B0FB7D1BE4B9FA0059E5F2 /* Categories */ = {
@@ -390,6 +426,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
+				98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
@@ -541,6 +579,7 @@
 			baseConfigurationReference = ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = "${PRODUCT_NAME}/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.JEON.SimpleHN-objc";
@@ -553,6 +592,7 @@
 			baseConfigurationReference = 4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = "${PRODUCT_NAME}/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.JEON.SimpleHN-objc";

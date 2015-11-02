@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Mantle/Mantle.h>
+#import "CommentLink.h"
 
 #define kCommentCreated @"commentCreated"
 
@@ -16,6 +17,7 @@ typedef void (^CommentBlock)(Comment* comment);
 
 @interface Comment : MTLModel <MTLJSONSerializing>
 
+// Mantle properties
 @property (nonatomic, copy, readonly) NSNumber * commentId;
 @property (nonatomic, copy, readonly) NSString * author;
 @property (nonatomic, copy, readonly) NSArray * kids;
@@ -25,7 +27,14 @@ typedef void (^CommentBlock)(Comment* comment);
 
 @property (nonatomic, copy, readonly) NSString * text;
 
+// Custom properties
+@property (nonatomic, assign) NSInteger indentation;
 @property (nonatomic, strong) NSMutableArray * childComments;
+
+@property (nonatomic, assign) BOOL collapsed;
+
+// Generated properties
+@property (nonatomic, strong) NSArray <CommentLink *> * links;
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;
