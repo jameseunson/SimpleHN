@@ -11,6 +11,7 @@
 #import "CommentLink.h"
 
 #define kCommentCreated @"commentCreated"
+#define kCommentCollapsedChanged @"commentCollapsedChanged"
 
 @class Comment;
 typedef void (^CommentBlock)(Comment* comment);

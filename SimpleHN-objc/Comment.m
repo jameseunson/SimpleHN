@@ -9,7 +9,6 @@
 #import "Comment.h"
 #import "NSString+HTML.h"
 #import "Firebase.h"
-#import "FirebaseUI.h"
 
 @implementation Comment
 @synthesize links = _links;
@@ -49,6 +48,11 @@
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                              completion:(CommentBlock)completion {
+    
+    // 5K iMac Gets 10-Bit Color, first child comment off top comment == 10497957
+    if([identifier isEqualToNumber:@(10497957)]) {
+        NSLog(@"first child comment");
+    }
     
     // Get comment for identification number
     NSString * commentURL = [NSString stringWithFormat:
@@ -154,6 +158,18 @@
     _links = [mutableLinks copy];
     
     return _links;
+}
+
+- (void)setCollapsed:(BOOL)collapsed {
+    _collapsed = collapsed;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:
+     kCommentCollapsedChanged object:self];
+    
+    // Recursively set collapsed value
+    for(Comment * comment in _childComments) {
+        comment.collapsed = collapsed;
+    }
 }
 
 @end

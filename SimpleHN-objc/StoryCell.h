@@ -12,11 +12,11 @@
 @interface StoryCell : UITableViewCell
 
 @property (nonatomic, strong) Story * story;
-
-@property (nonatomic, strong) IBOutlet UILabel * storyTitleLabel;
-@property (nonatomic, strong) IBOutlet UILabel * storySubtitleLabel;
-
-@property (nonatomic, strong) IBOutlet UIButton * storyCommentsButton;
-@property (nonatomic, strong) IBOutlet UILabel * storyRatingLabel;
+//
+//@property (nonatomic, strong) IBOutlet UILabel * storyTitleLabel;
+//@property (nonatomic, strong) IBOutlet UILabel * storySubtitleLabel;
+//
+//@property (nonatomic, strong) IBOutlet UIButton * storyCommentsButton;
+//@property (nonatomic, strong) IBOutlet UILabel * storyRatingLabel;
 
 @end

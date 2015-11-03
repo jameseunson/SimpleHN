@@ -52,13 +52,13 @@ code_sign_if_enabled() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework 'Pods/FirebaseUI.framework'
+  install_framework 'Pods/Firebase.framework'
   install_framework 'Pods/KILabel.framework'
   install_framework 'Pods/Mantle.framework'
   install_framework 'Pods/TimeAgoInWords.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework 'Pods/FirebaseUI.framework'
+  install_framework 'Pods/Firebase.framework'
   install_framework 'Pods/KILabel.framework'
   install_framework 'Pods/Mantle.framework'
   install_framework 'Pods/TimeAgoInWords.framework'

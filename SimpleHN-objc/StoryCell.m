@@ -13,6 +13,9 @@
 
 @interface StoryCell ()
 
+@property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreRegularWidthConstraint;
+@property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreCompactWidthConstraint;
+
 @property (nonatomic, strong) UILabel * storyTitleLabel;
 @property (nonatomic, strong) UILabel * storySubtitleLabel;
 @property (nonatomic, strong) UIStackView * storyTitleSubtitleStackView;
@@ -83,18 +86,55 @@
                                                                      options:0 metrics:nil views:bindings]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]"
                                                                      options:0 metrics:nil views:bindings]];
-        
-//        NSArray * constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_storyTitleSubtitleStackView]-[_storyCommentsScoreStackView]-|"
-//                                                                                                      options:0 metrics:nil views:bindings];
-//        [self addConstraints:constraints];
 
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeadingMargin multiplier:1 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0]];
+        
+        self.storyCommentsScoreRegularWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0];
+        
+        self.storyCommentsScoreCompactWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.10 constant:0];
+        
+        if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+            _storyCommentsScoreRegularWidthConstraint.active = NO;
+            _storyCommentsScoreCompactWidthConstraint.active = YES;
+            
+        } else { // Regular and Unspecified
+            _storyCommentsScoreRegularWidthConstraint.active = YES;
+            _storyCommentsScoreCompactWidthConstraint.active = NO;
+        }
+        
+        [self addConstraint:_storyCommentsScoreRegularWidthConstraint];
+        [self addConstraint:_storyCommentsScoreCompactWidthConstraint];
     }
     return self;
+}
+
+- (void)prepareForReuse {
+    _story = nil;
+    
+    _storyTitleLabel.text = nil;
+    _storySubtitleLabel.text = nil;
+    
+    _storyCommentsButton.story = nil;
+    _storyScoreLabel.text = nil;
+    
+    [self invalidateIntrinsicContentSize];
+    [self setNeedsLayout];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    
+    if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        _storyCommentsScoreRegularWidthConstraint.active = NO;
+        _storyCommentsScoreCompactWidthConstraint.active = YES;
+        
+    } else { // Regular and Unspecified
+        _storyCommentsScoreRegularWidthConstraint.active = YES;
+        _storyCommentsScoreCompactWidthConstraint.active = NO;
+    }
 }
 
 #pragma mark - Property Override Methods

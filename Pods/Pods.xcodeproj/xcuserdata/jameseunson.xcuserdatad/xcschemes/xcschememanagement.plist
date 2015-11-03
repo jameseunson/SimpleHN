@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>FirebaseUI.xcscheme</key>
+		<key>Firebase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -32,12 +32,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2E38FD51833136FFA7F95B24C8D3B06D</key>
+		<key>56B20D84A468216F7CE813D4B37AB48C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7D3ED8574874C2993FFED1FB1C7A0667</key>
+		<key>B342787CBA823A14DC45A5C560AFF7ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -47,12 +47,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DB0225C029D7F0BC26349B4A77D2D385</key>
+		<key>BDDF381B3869CBC21068E6F8514610A2</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F1C9893CE039C5BB9737F107CDFA07AF</key>
+		<key>D0592DF43E518D0F82A919C04D9BC0D6</key>
 		<dict>
 			<key>primary</key>
 			<true/>

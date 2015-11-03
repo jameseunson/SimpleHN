@@ -25,12 +25,14 @@
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
 
+- (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
 
 //- (void)commentCreated:(NSNotification*)notification;
 //- (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation;
 
 - (void)commentCreated:(NSNotification*)notification;
+- (void)commentCollapsedChanged:(NSNotification*)notification;
 
 @end
 
@@ -48,17 +50,17 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+                                                 name:kCommentCollapsedChanged object:nil];
 }
 
 - (void)loadView {
     [super loadView];
     
-    self.tableView = [[UITableView alloc] init];
+//    self.tableView = [[UITableView alloc] init];
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController
-                                                   .navigationBar.frame.size.height, 0, 0, 0);
     
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
@@ -68,13 +70,22 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    [self.view addSubview:_tableView];
+//    [self.view addSubview:_tableView];
     
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                               @"V:|[_tableView]|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                               @"H:|[_tableView]|" options:0 metrics:nil views:bindings]];
+//    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
+//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+//                               @"V:|[_tableView]|" options:0 metrics:nil views:bindings]];
+//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+//                               @"H:|[_tableView]|" options:0 metrics:nil views:bindings]];
+    
+    // Initialize the refresh control.
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
+    self.refreshControl.tintColor = [UIColor grayColor];
+    
+    [self.refreshControl addTarget:self
+                            action:@selector(reloadContent:)
+                  forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)setDetailItem:(id)newDetailItem {
@@ -159,23 +170,23 @@
     return 1;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-        [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
-    
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-        [cell setPreservesSuperviewLayoutMargins:NO];
-    }
-    
-    // Explictly set your cell's layout margins
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsZero];
-    }
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    // Remove seperator inset
+//    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+//        [cell setSeparatorInset:UIEdgeInsetsZero];
+//    }
+//    
+//    // Prevent the cell from inheriting the Table View's margin settings
+//    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+//        [cell setPreservesSuperviewLayoutMargins:NO];
+//    }
+//    
+//    // Explictly set your cell's layout margins
+//    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+//        [cell setLayoutMargins:UIEdgeInsetsZero];
+//    }
+//}
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -225,6 +236,10 @@
     [self.tableView reloadData];
 }
 
+- (void)commentCollapsedChanged:(NSNotification*)notification {
+    [self.tableView reloadData];
+}
+
 //- (void)commentCreated:(NSNotification*)notification {
 //    
 ////    NSLog(@"commentCreated:");
@@ -255,6 +270,10 @@
 //        [self commentCreatedAux:childComment indentation:(indentation + 1)];
 //    }
 //}
+
+- (void)reloadContent:(id)sender {
+    NSLog(@"reloadContent:");
+}
 
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link {

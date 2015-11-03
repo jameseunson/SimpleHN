@@ -11,7 +11,18 @@
 #import "Firebase.h"
 #import "Comment.h"
 
+@interface Story ()
+
+- (void)commentCreated:(Comment*)comment;
+- (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation;
+
+@end
+
 @implementation Story
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
@@ -19,6 +30,9 @@
     
     self.comments = [[NSMutableArray alloc] init];
     self.flatDisplayComments = [[NSMutableArray alloc] init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
+                                                 name:kCommentCreated object:nil];
     
     return self;
 }
@@ -62,17 +76,20 @@
             
             [Comment createCommentFromItemIdentifier:child.value completion:^(Comment *comment) {
                 [self.comments addObject:comment];
-                
-                // Create flat representation of comments
-                [_flatDisplayComments removeAllObjects];
-                
-                for(Comment * comment in _comments) {
-                    [_flatDisplayComments addObject:comment];
-                    [self commentCreatedAux:comment indentation:1];
-                }
             }];
         }
     }];
+}
+
+- (void)commentCreated:(Comment*)comment {
+    
+    // Create flat representation of comments
+    [_flatDisplayComments removeAllObjects];
+    
+    for(Comment * comment in _comments) {
+        [_flatDisplayComments addObject:comment];
+        [self commentCreatedAux:comment indentation:1];
+    }
 }
 
 - (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation {
