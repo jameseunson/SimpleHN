@@ -28,6 +28,9 @@
 
 @property (nonatomic, strong) UITapGestureRecognizer * headerBackgroundViewTapGestureRecognizer;
 
+@property (nonatomic, strong) StoryActionDrawerView * actionDrawerView;
+@property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
+
 - (void)didTapBackgroundView:(id)sender;
 
 - (void)commentCollapsedChanged:(NSNotification*)notification;

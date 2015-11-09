@@ -7,14 +7,14 @@
 //
 
 #import "StoryCell.h"
-#import "TimeAgoInWords-Swift.h"
-
 #import "StoryCommentsButton.h"
 
 @interface StoryCell ()
 
 @property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreRegularWidthConstraint;
 @property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreCompactWidthConstraint;
+
+@property (nonatomic, strong) NSLayoutConstraint * actionDrawerHeightConstraint;
 
 @property (nonatomic, strong) UILabel * storyTitleLabel;
 @property (nonatomic, strong) UILabel * storySubtitleLabel;
@@ -24,6 +24,13 @@
 @property (nonatomic, strong) UILabel * storyScoreLabel;
 @property (nonatomic, strong) UIStackView * storyCommentsScoreStackView;
 
+@property (nonatomic, strong) UILongPressGestureRecognizer * longPressGestureRecognizer;
+
+@property (nonatomic, strong) StoryActionDrawerView * actionDrawerView;
+@property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
+
+- (void)didLongPressSelf:(id)sender;
+
 @end
 
 @implementation StoryCell
@@ -32,33 +39,29 @@
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if(self) {
         
+        _expanded = NO;
+        
+        self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
+                                           initWithTarget:self action:@selector(didLongPressSelf:)];
+        _longPressGestureRecognizer.minimumPressDuration = 0.6;
+        [self addGestureRecognizer:_longPressGestureRecognizer];
+        
         self.storyTitleSubtitleStackView = [[UIStackView alloc] init];
         
         _storyTitleSubtitleStackView.axis = UILayoutConstraintAxisVertical;
         _storyTitleSubtitleStackView.alignment = UIStackViewAlignmentLeading;
         _storyTitleSubtitleStackView.translatesAutoresizingMaskIntoConstraints = NO;
         
-        self.storyTitleLabel = [[UILabel alloc] init];
-        
-        _storyTitleLabel.font = [UIFont systemFontOfSize:17.0f];
-        _storyTitleLabel.backgroundColor = [UIColor clearColor];
-        _storyTitleLabel.numberOfLines = 0;
-        _storyTitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        _storyTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        
+        self.storyTitleLabel = [LabelHelper labelWithFont:
+                                [UIFont systemFontOfSize:17.0f]];
         [self.storyTitleSubtitleStackView addArrangedSubview:_storyTitleLabel];
         
-        self.storySubtitleLabel = [[UILabel alloc] init];
-        
-        _storySubtitleLabel.font = [UIFont systemFontOfSize:12.0f];
+        self.storySubtitleLabel = [LabelHelper labelWithFont:
+                                   [UIFont systemFontOfSize:12.0f]];
         _storySubtitleLabel.textColor = [UIColor grayColor];
-        _storySubtitleLabel.backgroundColor = [UIColor clearColor];
-        _storySubtitleLabel.numberOfLines = 0;
-        _storySubtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        _storySubtitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         
         [self.storyTitleSubtitleStackView addArrangedSubview:_storySubtitleLabel];
-        [self addSubview:_storyTitleSubtitleStackView];
+        [self.contentView addSubview:_storyTitleSubtitleStackView];
         
         self.storyCommentsScoreStackView = [[UIStackView alloc] init];
 
@@ -77,36 +80,57 @@
         _storyScoreLabel.textColor = [UIColor orangeColor];
         [_storyCommentsScoreStackView addArrangedSubview:_storyScoreLabel];
         
-        [self addSubview:_storyCommentsScoreStackView];
+        [self.contentView addSubview:_storyCommentsScoreStackView];
+
+        self.actionDrawerView = [[StoryActionDrawerView alloc] init];
+        _actionDrawerView.translatesAutoresizingMaskIntoConstraints = NO;
+        _actionDrawerView.delegate = self;
+        [self.contentView addSubview:_actionDrawerView];
+        
+        self.actionDrawerBorderLayer = [CALayer layer];
+        _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
+        _actionDrawerBorderLayer.hidden = YES;
+        [self.contentView.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
         
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_storyTitleSubtitleStackView,
-                                                                 _storyCommentsScoreStackView);
+                                                                 _storyCommentsScoreStackView,
+                                                                 _actionDrawerView);
+       
+        NSArray * verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyTitleSubtitleStackView]-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
         
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyTitleSubtitleStackView]-|"
-                                                                     options:0 metrics:nil views:bindings]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]"
+        for(NSLayoutConstraint * constraint in verticalConstraints) {
+            if(constraint.constant == 44) {
+                self.actionDrawerHeightConstraint = constraint;
+            }
+        }
+        [self.contentView addConstraints:verticalConstraints];
+        
+        _actionDrawerHeightConstraint.constant = 0;
+        
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                              @"H:|-[_storyTitleSubtitleStackView]" options:0 metrics:nil views:bindings]];
+        
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]"
                                                                      options:0 metrics:nil views:bindings]];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeadingMargin multiplier:1 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeadingMargin multiplier:1 constant:0]];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
         
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_actionDrawerView]-|"
+                                                                     options:0 metrics:nil views:bindings]];
         
-        self.storyCommentsScoreRegularWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0]];
         
-        self.storyCommentsScoreCompactWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.10 constant:0];
+        self.storyCommentsScoreRegularWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0];
+        
+        self.storyCommentsScoreCompactWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.10 constant:0];
         
         if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-            _storyCommentsScoreRegularWidthConstraint.active = NO;
-            _storyCommentsScoreCompactWidthConstraint.active = YES;
+            [self.contentView addConstraint:_storyCommentsScoreCompactWidthConstraint];
             
-        } else { // Regular and Unspecified
-            _storyCommentsScoreRegularWidthConstraint.active = YES;
-            _storyCommentsScoreCompactWidthConstraint.active = NO;
+        } else {
+            [self.contentView addConstraint:_storyCommentsScoreRegularWidthConstraint];
         }
-        
-        [self addConstraint:_storyCommentsScoreRegularWidthConstraint];
-        [self addConstraint:_storyCommentsScoreCompactWidthConstraint];
     }
     return self;
 }
@@ -127,14 +151,23 @@
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     
-    if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-        _storyCommentsScoreRegularWidthConstraint.active = NO;
-        _storyCommentsScoreCompactWidthConstraint.active = YES;
-        
-    } else { // Regular and Unspecified
-        _storyCommentsScoreRegularWidthConstraint.active = YES;
-        _storyCommentsScoreCompactWidthConstraint.active = NO;
-    }
+//    if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+//        [self removeConstraint:_storyCommentsScoreRegularWidthConstraint];
+//        [self addConstraint:_storyCommentsScoreCompactWidthConstraint];
+//        
+//    } else { // Regular and Unspecified
+//        [self removeConstraint:_storyCommentsScoreCompactWidthConstraint];
+//        [self addConstraint:_storyCommentsScoreRegularWidthConstraint];
+//    }
+    
+    [self setNeedsUpdateConstraints];
+    [self setNeedsLayout];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _storyTitleSubtitleStackView.frame.origin.x + _storyTitleSubtitleStackView.frame.size.height, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 #pragma mark - Property Override Methods
@@ -142,27 +175,64 @@
     _story = story;
     
     self.storyTitleLabel.text = story.title;
-    
-    NSString * dateString = nil;
-    if(story.time) {
-        dateString = [NSString stringWithFormat:@"%@ (%@)",
-                      story.time, [story.time timeAgoInWords]];
-    }
+    [_storyTitleLabel sizeToFit];
     
     if(story.url) {
         self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
-                                        story.url.host, story.author, dateString];
+                                        story.url.host, story.author, story.timeString];
     } else {
         self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@",
-                                        story.author, dateString];
+                                        story.author, story.timeString];
     }
+    [_storySubtitleLabel sizeToFit];
+    
     self.storyCommentsButton.story = story;
     
     _storyScoreLabel.text = [story.score stringValue];
     [_storyScoreLabel sizeToFit];
 
+    [self setNeedsUpdateConstraints];
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
+}
+
+- (void)setExpanded:(BOOL)expanded {
+    _expanded = expanded;
+    
+    if(expanded) {
+        self.actionDrawerHeightConstraint.constant = 44;
+        _actionDrawerBorderLayer.hidden = NO;
+        
+    } else {
+        self.actionDrawerHeightConstraint.constant = 0;
+        _actionDrawerBorderLayer.hidden = YES;
+    }
+    
+    [self setNeedsUpdateConstraints];
+    [self setNeedsLayout];
+}
+
+#pragma mark - Private Methods
+- (void)didLongPressSelf:(id)sender {
+    NSLog(@"didLongPressSelf:");
+
+    self.expanded = YES;
+    
+    if (self.longPressGestureRecognizer.state == UIGestureRecognizerStateBegan){
+        if([self.delegate respondsToSelector:@selector(storyCellDidDisplayActionDrawer:)]) {
+            [self.delegate performSelector:@selector(storyCellDidDisplayActionDrawer:) withObject:self];
+        }
+    }
+}
+
+#pragma mark -StoryActionDrawerViewDelegate Methods
+- (void)storyActionDrawerView:(StoryActionDrawerView*)view
+         didTapActionWithType:(NSNumber*)type {
+    
+    if([self.delegate respondsToSelector:@selector(storyCell:didTapActionWithType:)]) {
+        [self.delegate performSelector:@selector(storyCell:didTapActionWithType:)
+                            withObject:self withObject:type];
+    }
 }
 
 @end

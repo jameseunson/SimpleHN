@@ -9,8 +9,8 @@
 #import "MasterViewController.h"
 #import "DetailViewController.h"
 #import "Story.h"
-#import "StoryCell.h"
 #import "StoryLoadMoreCell.h"
+#import "UserViewController.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
@@ -26,9 +26,12 @@
 
 @property (nonatomic, strong) UIRefreshControl * bottomRefreshControl;
 
-- (void)reloadContent:(id)sender;
+@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 
+- (void)reloadContent:(id)sender;
 - (void)loadMoreStories:(id)sender;
+
+- (Story*)storyForIndexPath:(NSIndexPath*)indexPath;
 
 @end
 
@@ -36,7 +39,6 @@
 
 - (void)awakeFromNib {
     
-//    _currentVisibleStoryMin = 0;
     _currentVisibleStoryMax = 20;
     
     self.storiesList = [[NSMutableArray alloc] init];
@@ -77,10 +79,8 @@
     
     __block Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/topstories"];
-    
     [self.refreshControl beginRefreshing];
 
-    
     [topStoriesRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         [self.storiesList addObjectsFromArray:snapshot.value];
         [self loadVisibleStories];
@@ -92,27 +92,35 @@
     }];
 }
 
-//- (void)insertNewObject:(id)sender {
-//    if (!self.objects) {
-//        self.objects = [[NSMutableArray alloc] init];
-//    }
-//    [self.objects insertObject:[NSDate date] atIndex:0];
-//    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-//    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-//}
-
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        id object = self.storiesList[indexPath.row];
+        Story * story = [self storyForIndexPath:[self.tableView indexPathForSelectedRow]];
         
-        DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
+        DetailViewController *controller = (DetailViewController *)
+            [[segue destinationViewController] topViewController];
+        [controller setDetailItem:story];
         
-        controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+        
+    } else if([[segue identifier] isEqualToString:@"showUser"]) {
+        NSLog(@"prepareForSegue, showUser");
+        
+        Story * story = [self storyForIndexPath:[self.tableView indexPathForSelectedRow]];
+        
+        __block UserViewController *controller = (UserViewController *)
+            [[segue destinationViewController] topViewController];
+        
+        [story loadUserForStory:^(User *user) {
+            [controller setUser:user];
+        }];
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
@@ -153,13 +161,16 @@
         
         StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
                            kStoryCellReuseIdentifier forIndexPath:indexPath];
+        cell.story = [self storyForIndexPath:indexPath];
         
-        NSNumber *storyIdentifier = self.storiesList[indexPath.row];
-        
-        if([[_storiesLookup allKeys] containsObject:storyIdentifier]) {
-            cell.story = _storiesLookup[storyIdentifier];
+        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+            cell.expanded = YES;
+            
+        } else {
+            cell.expanded = NO;
         }
         
+        cell.delegate = self;
         return cell;
     }
 }
@@ -170,9 +181,7 @@
         [self loadMoreStories:nil];
         
     } else {
-        
-        StoryCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-        self.detailViewController.detailItem = cell.story;
+        [self performSegueWithIdentifier:@"showDetail" sender:nil];
     }
 }
 
@@ -220,6 +229,44 @@
     
     self.currentVisibleStoryMax += 20;
     [self loadVisibleStories];
+}
+
+- (Story*)storyForIndexPath:(NSIndexPath *)indexPath {
+    
+    NSNumber *storyIdentifier = self.storiesList[indexPath.row];
+    if([[_storiesLookup allKeys] containsObject:storyIdentifier]) {
+        return _storiesLookup[storyIdentifier];
+    } else {
+        return nil;
+    }
+}
+
+#pragma mark - StoryCellDelegate Methods
+- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
+    NSLog(@"storyCellDidDisplayActionDrawer:");
+    
+    if(_expandedCellIndexPath) {
+        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                    _expandedCellIndexPath];
+        expandedCell.expanded = NO;
+    }
+    
+    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+
+- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
+    StoryActionDrawerViewButtonType actionType = [type intValue];
+    
+    if(actionType == StoryActionDrawerViewButtonTypeUser) {
+        NSLog(@"StoryActionDrawerViewButtonTypeUser");
+        
+        [cell.story loadUserForStory:^(User *user) {
+            [self performSegueWithIdentifier:@"showUser" sender:user];
+        }];
+    }
 }
 
 @end

@@ -9,6 +9,8 @@
 #ifndef SimpleHN_objc_h
 #define SimpleHN_objc_h
 
+#import "LabelHelper.h"
+
 // Three20 RGBColor macro
 #define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]
 

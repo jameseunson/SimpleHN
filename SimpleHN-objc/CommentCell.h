@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Comment.h"
 #import "KILabel.h"
+#import "StoryActionDrawerView.h"
 
 @protocol CommentCellDelegate;
 @interface CommentCell : UITableViewCell

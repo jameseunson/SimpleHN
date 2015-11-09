@@ -49,11 +49,6 @@
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                              completion:(CommentBlock)completion {
     
-    // 5K iMac Gets 10-Bit Color, first child comment off top comment == 10497957
-    if([identifier isEqualToNumber:@(10497957)]) {
-        NSLog(@"first child comment");
-    }
-    
     // Get comment for identification number
     NSString * commentURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];

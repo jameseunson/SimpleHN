@@ -10,8 +10,13 @@
 #import "NSString+HTML.h"
 #import "Firebase.h"
 #import "Comment.h"
+#import "TimeAgoInWords-Swift.h"
+
+static NSDateFormatter * _timeDateFormatter = nil;
 
 @interface Story ()
+
++ (NSDateFormatter*)timeDateFormatter;
 
 - (void)commentCreated:(Comment*)comment;
 - (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation;
@@ -19,6 +24,7 @@
 @end
 
 @implementation Story
+@synthesize timeString = _timeString;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -39,13 +45,14 @@
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
     return @{
-             @"storyId": @"id",
-             @"author":  @"by",
-             @"title":   @"title",
-             @"url":     @"url",
-             @"score":   @"score",
-             @"time":    @"time",
-             @"kids":    @"kids"
+             @"storyId":           @"id",
+             @"author":            @"by",
+             @"title":             @"title",
+             @"url":               @"url",
+             @"score":             @"score",
+             @"time":              @"time",
+             @"kids":              @"kids",
+             @"totalCommentCount": @"descendants"
              };
 }
 
@@ -79,6 +86,10 @@
             }];
         }
     }];
+}
+
+- (void)loadUserForStory:(UserBlock)completion {
+    [User createUserFromItemIdentifier:self.author completion:completion];
 }
 
 - (void)commentCreated:(Comment*)comment {
@@ -127,6 +138,31 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCreated
                                                             object:obj];
     }];
+}
+
+#pragma mark - Property Override Methods
+- (NSString*)timeString {
+    
+    if(_timeString) {
+        return _timeString;
+    }
+    
+    _timeString = @"";
+    if(self.time) {
+        NSString * timeDateString = [[[self class] timeDateFormatter] stringFromDate:self.time];
+        _timeString = [NSString stringWithFormat:@"%@ (%@)",
+                      timeDateString, [self.time timeAgoInWords]];
+    }
+    return _timeString;
+}
+
++ (NSDateFormatter*)timeDateFormatter {
+    if(!_timeDateFormatter) {
+        _timeDateFormatter = [[NSDateFormatter alloc] init];
+        _timeDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        _timeDateFormatter.dateFormat = @"hh:mm aaa, dd MMM";
+    }
+    return _timeDateFormatter;
 }
 
 @end

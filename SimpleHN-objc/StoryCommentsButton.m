@@ -19,6 +19,8 @@
         self.layer.borderColor = [[UIColor lightGrayColor] CGColor];
         self.layer.borderWidth = 1.0f;
         self.layer.cornerRadius = 4.0f;
+        
+        self.userInteractionEnabled = NO;
     }
     return self;
 }
@@ -27,7 +29,7 @@
     _story = story;
     
     [self setTitle:[NSString stringWithFormat:@"%lu",
-                    [story.kids count]] forState:UIControlStateNormal];
+                    [story.totalCommentCount integerValue]] forState:UIControlStateNormal];
     [self sizeToFit];
 }
 

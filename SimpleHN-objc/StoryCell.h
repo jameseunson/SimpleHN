@@ -8,15 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import "Story.h"
+#import "StoryActionDrawerView.h"
 
-@interface StoryCell : UITableViewCell
+@protocol StoryCellDelegate;
+@interface StoryCell : UITableViewCell <StoryActionDrawerViewDelegate>
 
 @property (nonatomic, strong) Story * story;
-//
-//@property (nonatomic, strong) IBOutlet UILabel * storyTitleLabel;
-//@property (nonatomic, strong) IBOutlet UILabel * storySubtitleLabel;
-//
-//@property (nonatomic, strong) IBOutlet UIButton * storyCommentsButton;
-//@property (nonatomic, strong) IBOutlet UILabel * storyRatingLabel;
+@property (nonatomic, assign) __unsafe_unretained id<StoryCellDelegate> delegate;
 
+@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
+
+@end
+
+@protocol StoryCellDelegate <NSObject>
+- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell;
+- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type;
 @end

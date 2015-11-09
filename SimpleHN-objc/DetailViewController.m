@@ -65,8 +65,6 @@
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
@@ -149,6 +147,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+    self.navigationItem.leftItemsSupplementBackButton = YES;
+    
     // Do any additional setup after loading the view, typically from a nib.
     [self configureView];
     

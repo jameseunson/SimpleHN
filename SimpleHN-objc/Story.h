@@ -7,6 +7,7 @@
 //
 
 #import <Mantle/Mantle.h>
+#import "User.h"
 
 typedef NS_ENUM(NSInteger, StoryLoadStatus) {
     StoryLoadStatusNotLoaded,
@@ -32,13 +33,19 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, copy, readonly) NSString * title;
 @property (nonatomic, copy, readonly) NSURL * url;
 
+@property (nonatomic, copy, readonly) NSNumber * totalCommentCount;
+
 // Custom properties
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
+
+// Generated properties
+@property (nonatomic, strong, readonly) NSString * timeString;
 
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                            completion:(StoryBlock)completion;
 
 - (void)loadCommentsForStory;
+- (void)loadUserForStory:(UserBlock)completion;
 
 @end
