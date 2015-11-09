@@ -12,7 +12,7 @@
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
+@interface StoriesViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 

@@ -6,7 +6,7 @@
 //  Copyright © 2015 JEON. All rights reserved.
 //
 
-#import "MasterViewController.h"
+#import "StoriesViewController.h"
 #import "DetailViewController.h"
 #import "Story.h"
 #import "StoryLoadMoreCell.h"
@@ -15,7 +15,7 @@
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
 
-@interface MasterViewController ()
+@interface StoriesViewController ()
 
 @property (nonatomic, strong) NSMutableArray * storiesList;
 @property (nonatomic, strong) NSMutableDictionary * storiesLoadStatus;
@@ -35,7 +35,7 @@
 
 @end
 
-@implementation MasterViewController
+@implementation StoriesViewController
 
 - (void)awakeFromNib {
     
