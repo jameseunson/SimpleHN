@@ -19,11 +19,12 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
-//@property (nonatomic, strong) WKWebView * webView;
 @property (nonatomic, strong) SFSafariViewController * webViewController;
 
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
+
+@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
@@ -125,23 +126,11 @@
             [detailStory loadCommentsForStory];
         }
         
-//        NSString * storyURL = [NSString stringWithFormat:
-//                               @"https://hacker-news.firebaseio.com/v0/item/%@/kids",
-//                               detailStory.storyId];
-//        __block Firebase * commentsRef = [[Firebase alloc] initWithUrl:storyURL];
-//        
-//        [commentsRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-//            for(FDataSnapshot * child in snapshot.children) {
-//                
-//                [Comment createCommentFromItemIdentifier:child.value completion:^(Comment *comment) {
-//                    
-////                    NSLog(@"DetailViewController, createCommentFromItemIdentifier, completion called: %@", comment);
-//                    
-//                    [self.comments addObject:comment];
-//                    [self.tableView reloadData];
-//                }];
-//            }
-//        }];
+        if(!detailStory.url) {
+            self.contentSelectSegmentedControl.enabled = NO;
+        } else {
+            self.contentSelectSegmentedControl.enabled = YES;
+        }
     }
 }
 
@@ -150,9 +139,6 @@
     
     self.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
     self.navigationItem.leftItemsSupplementBackButton = YES;
-    
-    // Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
     
     self.contentSelectSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"Comments", @"Story" ]];
     _contentSelectSegmentedControl.selectedSegmentIndex = 0;
@@ -171,24 +157,6 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
-
-//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    // Remove seperator inset
-//    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-//        [cell setSeparatorInset:UIEdgeInsetsZero];
-//    }
-//    
-//    // Prevent the cell from inheriting the Table View's margin settings
-//    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-//        [cell setPreservesSuperviewLayoutMargins:NO];
-//    }
-//    
-//    // Explictly set your cell's layout margins
-//    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-//        [cell setLayoutMargins:UIEdgeInsetsZero];
-//    }
-//}
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -209,7 +177,6 @@
 
 #pragma mark - Private Methods
 - (void)didSelectContentSegment:(id)sender {
-//    NSLog(@"didSelectContentSegment:");
     
     if(_contentSelectSegmentedControl.selectedSegmentIndex == 0) {
         
@@ -220,6 +187,10 @@
     } else {
         
         if(!_webViewController) {
+            if(!self.detailItem.url) {
+                return;
+            }
+            
             self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url];
             [self addChildViewController:_webViewController];
             
@@ -242,37 +213,6 @@
     [self.tableView reloadData];
 }
 
-//- (void)commentCreated:(NSNotification*)notification {
-//    
-////    NSLog(@"commentCreated:");
-//    
-//    // Create flat representation of comments
-//    [_flatDisplayComments removeAllObjects];
-//    
-//    for(Comment * comment in _comments) {
-//        [_flatDisplayComments addObject:comment];
-//        [self commentCreatedAux:comment indentation:1];
-//    }
-//}
-//
-//- (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation {
-//    
-////    NSLog(@"commentCreatedAux:%@ indentation:%@", [comment childComments], @(indentation));
-//
-//    // Base case
-//    if(!comment || ![comment childComments]
-//       || [[comment childComments] count] == 0) {
-//        return;
-//    }
-//    
-//    for(Comment * childComment in [comment childComments]) {
-//        childComment.indentation = indentation;
-//
-//        [_flatDisplayComments addObject:childComment];
-//        [self commentCreatedAux:childComment indentation:(indentation + 1)];
-//    }
-//}
-
 - (void)reloadContent:(id)sender {
     NSLog(@"reloadContent:");
 }
@@ -284,5 +224,59 @@
                                            initWithURL:link.url];
     [self.navigationController pushViewController:controller animated:YES];
 }
+
+- (void)commentCellDidDisplayActionDrawer:(CommentCell*)cell {
+    NSLog(@"commentCellDidDisplayActionDrawer:");
+
+    if(_expandedCellIndexPath) {
+        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                    _expandedCellIndexPath];
+        expandedCell.expanded = NO;
+    }
+
+    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
+
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+- (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
+    StoryActionDrawerViewButtonType actionType = [type intValue];
+
+    if(actionType == StoryActionDrawerViewButtonTypeUser) {
+        NSLog(@"StoryActionDrawerViewButtonTypeUser");
+
+//        [cell.story loadUserForStory:^(User *user) {
+//            [self performSegueWithIdentifier:@"showUser" sender:user];
+//        }];
+    }
+}
+
+//#pragma mark - StoryCellDelegate Methods
+//- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
+//    NSLog(@"storyCellDidDisplayActionDrawer:");
+//    
+//    if(_expandedCellIndexPath) {
+//        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+//                                    _expandedCellIndexPath];
+//        expandedCell.expanded = NO;
+//    }
+//    
+//    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
+//    
+//    [self.tableView beginUpdates];
+//    [self.tableView endUpdates];
+//}
+//
+//- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
+//    StoryActionDrawerViewButtonType actionType = [type intValue];
+//    
+//    if(actionType == StoryActionDrawerViewButtonTypeUser) {
+//        NSLog(@"StoryActionDrawerViewButtonTypeUser");
+//        
+//        [cell.story loadUserForStory:^(User *user) {
+//            [self performSegueWithIdentifier:@"showUser" sender:user];
+//        }];
+//    }
+//}
 
 @end

@@ -73,6 +73,8 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (void)loadCommentsForStory {
     
+    NSLog(@"Story, -loadCommentsForStory");
+    
     NSString * storyURL = [NSString stringWithFormat:
                            @"https://hacker-news.firebaseio.com/v0/item/%@/kids",
                            self.storyId];

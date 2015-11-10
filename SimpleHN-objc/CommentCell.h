@@ -12,7 +12,7 @@
 #import "StoryActionDrawerView.h"
 
 @protocol CommentCellDelegate;
-@interface CommentCell : UITableViewCell
+@interface CommentCell : UITableViewCell <StoryActionDrawerViewDelegate>
 
 @property (nonatomic, strong) Comment * comment;
 
@@ -27,10 +27,14 @@
 //@property (nonatomic, strong) UIImageView * headerIconImageView;
 @property (nonatomic, strong) UILabel * headerUpDownLabel;
 
+@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
+
 @property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> delegate;
 
 @end
 
 @protocol CommentCellDelegate <NSObject>
 - (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link;
+- (void)commentCellDidDisplayActionDrawer:(CommentCell*)cell;
+- (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type;
 @end

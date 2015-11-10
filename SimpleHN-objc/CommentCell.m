@@ -20,7 +20,9 @@
 // Joins the trailing edge of the stackview to a spacer, to the
 // leading edge of the label, used when collapsed = NO
 @property (nonatomic, strong) NSLayoutConstraint * stackViewLabelJoinConstraint;
-@property (nonatomic, strong) NSLayoutConstraint * labelBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint * labelDrawerJoinConstraint;
+@property (nonatomic, strong) NSLayoutConstraint * drawerBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint * actionDrawerHeightConstraint;
 
 // Used to stick the stackview to the bottom of the contentView,
 // when the cell is collapsed, used when collapsed = YES
@@ -45,6 +47,8 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self) {
+        
+        _expanded = NO;        
         
         self.commentLabel = [[KILabel alloc] init];
         self.commentLabel.backgroundColor = [UIColor clearColor];
@@ -106,23 +110,46 @@
         _headerBorderLayer.backgroundColor = [RGBCOLOR(215, 215, 215) CGColor];
         [self.layer insertSublayer:_headerBorderLayer atIndex:100];
         
-        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentLabel, _headerStackView);
+        self.actionDrawerView = [[StoryActionDrawerView alloc] init];
+        _actionDrawerView.translatesAutoresizingMaskIntoConstraints = NO;
+        _actionDrawerView.delegate = self;
+        _actionDrawerView.hidden = YES;
+        [self.contentView addSubview:_actionDrawerView];
         
+        self.actionDrawerBorderLayer = [CALayer layer];
+        _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
+        _actionDrawerBorderLayer.hidden = YES;
+        [self.contentView.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
+        
+        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentLabel, _headerStackView, _actionDrawerView);
+        
+//        NSArray * contentVerticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
+//                                              @"V:|-[_headerStackView]-10-[_commentLabel]-|" options:0 metrics:nil views:bindings];
         NSArray * contentVerticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                              @"V:|-[_headerStackView]-10-[_commentLabel]-|" options:0 metrics:nil views:bindings];
+                                                @"V:|-[_headerStackView]-10-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
         
         // Used when collapsed = NO
         int i = 0;
         for(NSLayoutConstraint * constraint in contentVerticalConstraints) {
-            if(i == 1) {
-                _stackViewLabelJoinConstraint = constraint;
-            } else if(i == 2) {
-                _labelBottomConstraint = constraint;
+            if(constraint.constant == 10 && constraint.firstItem == self.commentLabel) {
+                self.stackViewLabelJoinConstraint = constraint;
+                
+            } else if(constraint.constant == 10 && constraint.firstItem == self.actionDrawerView) {
+                self.labelDrawerJoinConstraint = constraint;
+                
+            } else if(constraint.firstItem == self.contentView
+                      && constraint.firstAttribute == NSLayoutAttributeBottomMargin) {
+                self.drawerBottomConstraint = constraint;
+                
+            } else if(constraint.constant == 44) {
+                self.actionDrawerHeightConstraint = constraint;
             }
             i++;
         }
         
         [self.contentView addConstraints:contentVerticalConstraints];
+        
+        _actionDrawerHeightConstraint.constant = 0;
         
         // Used when collapsed = YES
         self.stackViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_headerStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0];
@@ -240,7 +267,8 @@
     self.commentLabel.hidden = YES;
     
     [self.contentView removeConstraint:_stackViewLabelJoinConstraint];
-    [self.contentView removeConstraint:_labelBottomConstraint];
+    [self.contentView removeConstraint:_drawerBottomConstraint];
+    [self.contentView removeConstraint:_labelDrawerJoinConstraint];
     
     [self.contentView addConstraint:_stackViewBottomConstraint];
     
@@ -253,7 +281,8 @@
     [self.contentView removeConstraint:_stackViewBottomConstraint];
     
     [self.contentView addConstraint:_stackViewLabelJoinConstraint];
-    [self.contentView addConstraint:_labelBottomConstraint];
+    [self.contentView addConstraint:_drawerBottomConstraint];
+    [self.contentView addConstraint:_labelDrawerJoinConstraint];
     
     [self setNeedsUpdateConstraints];
 }

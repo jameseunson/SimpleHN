@@ -10,4 +10,23 @@
 
 @implementation SimpleHNSplitViewController
 
+- (void)showDetailViewController:(UIViewController *)vc sender:(nullable id)sender {
+
+    if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        
+        UITabBarController * tabBarController = [self.viewControllers firstObject];
+        UINavigationController * navigationController = tabBarController.selectedViewController;
+        
+        if([vc isKindOfClass:[UINavigationController class]]) {
+            UINavigationController * enclosingNavigationController = (UINavigationController*)vc;
+            vc = [enclosingNavigationController topViewController];
+        }
+        
+        [navigationController showViewController:vc sender:sender];
+        return;
+    }
+    
+    [super showDetailViewController:vc sender:sender];
+}
+
 @end
