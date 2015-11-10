@@ -74,14 +74,14 @@
         _headerUpDownLabel.text = kHeaderUpIcon;
         _headerUpDownLabel.font = [UIFont systemFontOfSize:12.0f];
         _headerUpDownLabel.backgroundColor = [UIColor clearColor];
-        _headerUpDownLabel.textColor = [UIColor grayColor];
+        _headerUpDownLabel.textColor = [UIColor orangeColor];
         
         [_headerStackView addArrangedSubview:_headerUpDownLabel];
         
         self.authorLabel = [[UILabel alloc] init];
         
         _authorLabel.font = [UIFont systemFontOfSize:12.0f];
-        _authorLabel.textColor = [UIColor grayColor];
+        _authorLabel.textColor = [UIColor orangeColor];
         _authorLabel.backgroundColor = [UIColor clearColor];
         
         [_headerStackView addArrangedSubview:_authorLabel];

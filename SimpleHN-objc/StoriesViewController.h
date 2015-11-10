@@ -17,6 +17,8 @@
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
 @property (nonatomic, strong) NSMutableArray * storiesList;
 
+@property (nonatomic, strong) NSProgress * loadingProgress;
+
 - (void)loadStoryIdentifiersWithRef:(Firebase *)ref;
 - (void)loadVisibleStories;
 

@@ -21,6 +21,7 @@
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
+		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
 		98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; };
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -59,7 +60,7 @@
 /* Begin PBXFileReference section */
 		4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		5294386F028D553C3FAE5107 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		98052DA51BB68BB7004A0D3A /* SimpleHN-objc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SimpleHN-objc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		98052DA51BB68BB7004A0D3A /* SimpleHN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleHN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		98052DA91BB68BB7004A0D3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		98052DAB1BB68BB7004A0D3A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		98052DAC1BB68BB7004A0D3A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -85,6 +86,8 @@
 		984844D91BB6A83C00C1EB7A /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
+		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
+		988C10241BF1E53300FA36B9 /* SuProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuProgress.m; sourceTree = "<group>"; };
 		9899FAB21BF1BE490097530C /* SimpleHNSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNSplitViewController.h; sourceTree = "<group>"; };
 		9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNSplitViewController.m; sourceTree = "<group>"; };
 		98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
@@ -94,7 +97,7 @@
 		98B0FB831BE4BAEE0059E5F2 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentsButton.h; sourceTree = "<group>"; };
 		98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCommentsButton.m; sourceTree = "<group>"; };
-		98E0C80C1BE734AC003E3A0A /* SimpleHN-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleHN-objc.h"; sourceTree = "<group>"; };
+		98E0C80C1BE734AC003E3A0A /* SimpleHN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleHN.h; sourceTree = "<group>"; };
 		98E0C80D1BE73DE4003E3A0A /* CommentLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentLink.h; sourceTree = "<group>"; };
 		98E0C80E1BE73DE4003E3A0A /* CommentLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentLink.m; sourceTree = "<group>"; };
 		98E725AE1BF1804A00607CBC /* StoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesViewController.h; sourceTree = "<group>"; };
@@ -170,7 +173,7 @@
 		98052DA61BB68BB7004A0D3A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				98052DA51BB68BB7004A0D3A /* SimpleHN-objc.app */,
+				98052DA51BB68BB7004A0D3A /* SimpleHN.app */,
 				98052DC11BB68BB8004A0D3A /* SimpleHN-objcTests.xctest */,
 				98052DCC1BB68BB8004A0D3A /* SimpleHN-objcUITests.xctest */,
 			);
@@ -181,6 +184,7 @@
 		98052DA71BB68BB7004A0D3A /* SimpleHN-objc */ = {
 			isa = PBXGroup;
 			children = (
+				988C10221BF1E4F700FA36B9 /* 3rd Party */,
 				98F5EBDF1BF09EE400B1BA08 /* Helpers */,
 				98F5EBD51BF085BE00B1BA08 /* Controllers */,
 				980C6DB71BE722A400D4318C /* Models */,
@@ -195,7 +199,7 @@
 				98052DBC1BB68BB7004A0D3A /* Info.plist */,
 				98052DA61BB68BB7004A0D3A /* Products */,
 				98052DA81BB68BB7004A0D3A /* Supporting Files */,
-				98E0C80C1BE734AC003E3A0A /* SimpleHN-objc.h */,
+				98E0C80C1BE734AC003E3A0A /* SimpleHN.h */,
 			);
 			path = "SimpleHN-objc";
 			sourceTree = "<group>";
@@ -269,6 +273,15 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
+		988C10221BF1E4F700FA36B9 /* 3rd Party */ = {
+			isa = PBXGroup;
+			children = (
+				988C10231BF1E53300FA36B9 /* SuProgress.h */,
+				988C10241BF1E53300FA36B9 /* SuProgress.m */,
+			);
+			name = "3rd Party";
+			sourceTree = "<group>";
+		};
 		98B0FB7D1BE4B9FA0059E5F2 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -325,9 +338,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		98052DA41BB68BB7004A0D3A /* SimpleHN-objc */ = {
+		98052DA41BB68BB7004A0D3A /* SimpleHN */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 98052DD51BB68BB8004A0D3A /* Build configuration list for PBXNativeTarget "SimpleHN-objc" */;
+			buildConfigurationList = 98052DD51BB68BB8004A0D3A /* Build configuration list for PBXNativeTarget "SimpleHN" */;
 			buildPhases = (
 				EDD4792B0F0C5CF4BFCBEA5B /* Check Pods Manifest.lock */,
 				98052DA11BB68BB7004A0D3A /* Sources */,
@@ -340,9 +353,9 @@
 			);
 			dependencies = (
 			);
-			name = "SimpleHN-objc";
+			name = SimpleHN;
 			productName = "SimpleHN-objc";
-			productReference = 98052DA51BB68BB7004A0D3A /* SimpleHN-objc.app */;
+			productReference = 98052DA51BB68BB7004A0D3A /* SimpleHN.app */;
 			productType = "com.apple.product-type.application";
 		};
 		98052DC01BB68BB8004A0D3A /* SimpleHN-objcTests */ = {
@@ -392,6 +405,7 @@
 				TargetAttributes = {
 					98052DA41BB68BB7004A0D3A = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = P68VLQ6LPN;
 					};
 					98052DC01BB68BB8004A0D3A = {
 						CreatedOnToolsVersion = 7.0;
@@ -416,7 +430,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				98052DA41BB68BB7004A0D3A /* SimpleHN-objc */,
+				98052DA41BB68BB7004A0D3A /* SimpleHN */,
 				98052DC01BB68BB8004A0D3A /* SimpleHN-objcTests */,
 				98052DCB1BB68BB8004A0D3A /* SimpleHN-objcUITests */,
 			);
@@ -503,6 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
 				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
@@ -551,12 +566,12 @@
 /* Begin PBXTargetDependency section */
 		98052DC31BB68BB8004A0D3A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 98052DA41BB68BB7004A0D3A /* SimpleHN-objc */;
+			target = 98052DA41BB68BB7004A0D3A /* SimpleHN */;
 			targetProxy = 98052DC21BB68BB8004A0D3A /* PBXContainerItemProxy */;
 		};
 		98052DCE1BB68BB8004A0D3A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 98052DA41BB68BB7004A0D3A /* SimpleHN-objc */;
+			target = 98052DA41BB68BB7004A0D3A /* SimpleHN */;
 			targetProxy = 98052DCD1BB68BB8004A0D3A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -668,11 +683,13 @@
 			baseConfigurationReference = ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREFIX_HEADER = "${PRODUCT_NAME}/${PRODUCT_NAME}.h";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.JEON.SimpleHN-objc";
+				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
 			};
 			name = Debug;
 		};
@@ -681,11 +698,13 @@
 			baseConfigurationReference = 4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREFIX_HEADER = "${PRODUCT_NAME}/${PRODUCT_NAME}.h";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.JEON.SimpleHN-objc";
+				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
 			};
 			name = Release;
 		};
@@ -749,7 +768,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		98052DD51BB68BB8004A0D3A /* Build configuration list for PBXNativeTarget "SimpleHN-objc" */ = {
+		98052DD51BB68BB8004A0D3A /* Build configuration list for PBXNativeTarget "SimpleHN" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98052DD61BB68BB8004A0D3A /* Debug */,

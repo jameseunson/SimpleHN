@@ -52,6 +52,8 @@
     [self.tableView setTableHeaderView:_headerView];
     
     self.headerView.user = self.user;
+    
+    
 }
 
 #pragma mark - Property Override Methods

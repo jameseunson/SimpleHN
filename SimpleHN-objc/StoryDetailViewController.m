@@ -12,6 +12,7 @@
 #import "Story.h"
 #import "Comment.h"
 #import "UserViewController.h"
+#import "SuProgress.h"
 
 #define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
 
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
 
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
+@property (nonatomic, strong) NSProgress * loadingProgress;
 
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
@@ -78,14 +80,14 @@
 //    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
 //                               @"H:|[_tableView]|" options:0 metrics:nil views:bindings]];
     
-    // Initialize the refresh control.
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
-    self.refreshControl.tintColor = [UIColor grayColor];
-    
-    [self.refreshControl addTarget:self
-                            action:@selector(reloadContent:)
-                  forControlEvents:UIControlEventValueChanged];
+//    // Initialize the refresh control.
+//    self.refreshControl = [[UIRefreshControl alloc] init];
+//    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
+//    self.refreshControl.tintColor = [UIColor grayColor];
+//    
+//    [self.refreshControl addTarget:self
+//                            action:@selector(reloadContent:)
+//                  forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)setDetailItem:(id)newDetailItem {
@@ -125,6 +127,10 @@
         
         if([detailStory.flatDisplayComments count] == 0) {
             [detailStory loadCommentsForStory];
+            
+            self.loadingProgress = [NSProgress progressWithTotalUnitCount:
+                                    [detailStory.totalCommentCount intValue]];
+            [self SuProgressForProgress:self.loadingProgress];
         }
         
         if(!detailStory.url) {
@@ -251,6 +257,8 @@
 
 - (void)commentCreated:(NSNotification*)notification {
     [self.tableView reloadData];
+    
+    self.loadingProgress.completedUnitCount++;
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
@@ -278,6 +286,20 @@
         [cell.comment loadUserForComment:^(User *user) {
             [self performSegueWithIdentifier:@"showUser" sender:user];
         }];
+        
+    } else if(actionType == ActionDrawerViewButtonTypeMore) {
+        
+        NSString * title = [NSString stringWithFormat:@"Comment from %@", cell.comment.author];
+        
+        UIAlertController * controller = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:controller animated:YES completion:nil];
     }
 }
 

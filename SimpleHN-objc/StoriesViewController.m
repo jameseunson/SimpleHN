@@ -11,6 +11,7 @@
 #import "Story.h"
 #import "StoryLoadMoreCell.h"
 #import "UserViewController.h"
+#import "SuProgress.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
@@ -42,6 +43,8 @@
     self.storiesList = [[NSMutableArray alloc] init];
     self.storiesLoadStatus = [[NSMutableDictionary alloc] init];
     self.storiesLookup = [[NSMutableDictionary alloc] init];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
 }
 
 - (void)loadView {
@@ -58,14 +61,16 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    // Initialize the refresh control.
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
-    self.refreshControl.tintColor = [UIColor grayColor];
+//    // Initialize the refresh control.
+//    self.refreshControl = [[UIRefreshControl alloc] init];
+//    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
+//    self.refreshControl.tintColor = [UIColor grayColor];
+//    
+//    [self.refreshControl addTarget:self
+//                            action:@selector(reloadContent:)
+//                  forControlEvents:UIControlEventValueChanged];
     
-    [self.refreshControl addTarget:self
-                            action:@selector(reloadContent:)
-                  forControlEvents:UIControlEventValueChanged];
+    [self SuProgressForProgress:self.loadingProgress];
 }
 
 - (void)viewDidLoad {
@@ -73,7 +78,7 @@
     
     self.detailViewController = ((SimpleHNSplitViewController*)
                                  self.splitViewController).storyDetailViewController;
-    [self.refreshControl beginRefreshing];
+//    [self.refreshControl beginRefreshing];
 }
 
 #pragma mark - Segues
@@ -182,6 +187,8 @@
     
     [ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         [self.storiesList addObjectsFromArray:snapshot.value];
+        self.loadingProgress.completedUnitCount++;
+        
         [self loadVisibleStories];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -212,6 +219,8 @@
                     _storiesLoadStatus[identifier] = @(StoryLoadStatusLoaded);
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        self.loadingProgress.completedUnitCount++;
                         [self.tableView reloadData];
                     });
                 }];
@@ -263,6 +272,18 @@
         [cell.story loadUserForStory:^(User *user) {
             [self performSegueWithIdentifier:@"showUser" sender:user];
         }];
+        
+    } else if(actionType == ActionDrawerViewButtonTypeMore) {
+        
+        UIAlertController * controller = [UIAlertController alertControllerWithTitle:cell.story.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:controller animated:YES completion:nil];
     }
 }
 
