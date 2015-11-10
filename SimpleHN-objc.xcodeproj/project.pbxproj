@@ -10,7 +10,6 @@
 		311107E5FF8D104CED301173 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5294386F028D553C3FAE5107 /* Pods.framework */; };
 		98052DAA1BB68BB7004A0D3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DA91BB68BB7004A0D3A /* main.m */; };
 		98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DAC1BB68BB7004A0D3A /* AppDelegate.m */; };
-		98052DB01BB68BB7004A0D3A /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DAF1BB68BB7004A0D3A /* MasterViewController.m */; };
 		98052DB31BB68BB7004A0D3A /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DB21BB68BB7004A0D3A /* DetailViewController.m */; };
 		98052DB61BB68BB7004A0D3A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB41BB68BB7004A0D3A /* Main.storyboard */; };
 		98052DB81BB68BB7004A0D3A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB71BB68BB7004A0D3A /* Assets.xcassets */; };
@@ -26,6 +25,11 @@
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */; };
 		98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E0C80E1BE73DE4003E3A0A /* CommentLink.m */; };
+		98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725AF1BF1804A00607CBC /* StoriesViewController.m */; };
+		98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B21BF19A5800607CBC /* TopStoriesViewController.m */; };
+		98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B51BF19A6200607CBC /* NewStoriesViewController.m */; };
+		98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B81BF19A6A00607CBC /* AskHNViewController.m */; };
+		98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725BB1BF19A7200607CBC /* ShowHNViewController.m */; };
 		98F5EBD11BF0757600B1BA08 /* StoryActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* StoryActionButton.m */; };
 		98F5EBD41BF079D700B1BA08 /* StoryActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* StoryActionDrawerView.m */; };
 		98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD71BF085D600B1BA08 /* UserViewController.m */; };
@@ -58,8 +62,6 @@
 		98052DA91BB68BB7004A0D3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		98052DAB1BB68BB7004A0D3A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		98052DAC1BB68BB7004A0D3A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		98052DAE1BB68BB7004A0D3A /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		98052DAF1BB68BB7004A0D3A /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
 		98052DB11BB68BB7004A0D3A /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		98052DB21BB68BB7004A0D3A /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		98052DB51BB68BB7004A0D3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -92,6 +94,16 @@
 		98E0C80C1BE734AC003E3A0A /* SimpleHN-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SimpleHN-objc.h"; sourceTree = "<group>"; };
 		98E0C80D1BE73DE4003E3A0A /* CommentLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentLink.h; sourceTree = "<group>"; };
 		98E0C80E1BE73DE4003E3A0A /* CommentLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentLink.m; sourceTree = "<group>"; };
+		98E725AE1BF1804A00607CBC /* StoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesViewController.h; sourceTree = "<group>"; };
+		98E725AF1BF1804A00607CBC /* StoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesViewController.m; sourceTree = "<group>"; };
+		98E725B11BF19A5800607CBC /* TopStoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopStoriesViewController.h; sourceTree = "<group>"; };
+		98E725B21BF19A5800607CBC /* TopStoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopStoriesViewController.m; sourceTree = "<group>"; };
+		98E725B41BF19A6200607CBC /* NewStoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewStoriesViewController.h; sourceTree = "<group>"; };
+		98E725B51BF19A6200607CBC /* NewStoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewStoriesViewController.m; sourceTree = "<group>"; };
+		98E725B71BF19A6A00607CBC /* AskHNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AskHNViewController.h; sourceTree = "<group>"; };
+		98E725B81BF19A6A00607CBC /* AskHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AskHNViewController.m; sourceTree = "<group>"; };
+		98E725BA1BF19A7200607CBC /* ShowHNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowHNViewController.h; sourceTree = "<group>"; };
+		98E725BB1BF19A7200607CBC /* ShowHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowHNViewController.m; sourceTree = "<group>"; };
 		98F5EBCF1BF0757500B1BA08 /* StoryActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryActionButton.h; sourceTree = "<group>"; };
 		98F5EBD01BF0757500B1BA08 /* StoryActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryActionButton.m; sourceTree = "<group>"; };
 		98F5EBD21BF079D700B1BA08 /* StoryActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryActionDrawerView.h; sourceTree = "<group>"; };
@@ -269,12 +281,20 @@
 		98F5EBD51BF085BE00B1BA08 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				98052DAE1BB68BB7004A0D3A /* MasterViewController.h */,
-				98052DAF1BB68BB7004A0D3A /* MasterViewController.m */,
+				98E725AE1BF1804A00607CBC /* StoriesViewController.h */,
+				98E725AF1BF1804A00607CBC /* StoriesViewController.m */,
 				98052DB11BB68BB7004A0D3A /* DetailViewController.h */,
 				98052DB21BB68BB7004A0D3A /* DetailViewController.m */,
 				98F5EBD61BF085D600B1BA08 /* UserViewController.h */,
 				98F5EBD71BF085D600B1BA08 /* UserViewController.m */,
+				98E725B11BF19A5800607CBC /* TopStoriesViewController.h */,
+				98E725B21BF19A5800607CBC /* TopStoriesViewController.m */,
+				98E725B41BF19A6200607CBC /* NewStoriesViewController.h */,
+				98E725B51BF19A6200607CBC /* NewStoriesViewController.m */,
+				98E725B71BF19A6A00607CBC /* AskHNViewController.h */,
+				98E725B81BF19A6A00607CBC /* AskHNViewController.m */,
+				98E725BA1BF19A7200607CBC /* ShowHNViewController.h */,
+				98E725BB1BF19A7200607CBC /* ShowHNViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -478,20 +498,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
+				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
 				98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
+				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
 				98F5EBD11BF0757600B1BA08 /* StoryActionButton.m in Sources */,
 				98F5EBDB1BF086A400B1BA08 /* User.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
+				98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */,
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
+				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* StoryActionDrawerView.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
-				98052DB01BB68BB7004A0D3A /* MasterViewController.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,
 				98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */,

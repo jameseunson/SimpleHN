@@ -15,6 +15,10 @@
 @interface StoriesViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
+@property (nonatomic, strong) NSMutableArray * storiesList;
+
+- (void)loadStoryIdentifiersWithRef:(Firebase *)ref;
+- (void)loadVisibleStories;
 
 @end
 

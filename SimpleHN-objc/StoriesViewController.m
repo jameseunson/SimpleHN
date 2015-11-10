@@ -17,7 +17,6 @@
 
 @interface StoriesViewController ()
 
-@property (nonatomic, strong) NSMutableArray * storiesList;
 @property (nonatomic, strong) NSMutableDictionary * storiesLoadStatus;
 @property (nonatomic, strong) NSMutableDictionary * storiesLookup;
 
@@ -30,7 +29,6 @@
 
 - (void)reloadContent:(id)sender;
 - (void)loadMoreStories:(id)sender;
-
 - (Story*)storyForIndexPath:(NSIndexPath*)indexPath;
 
 @end
@@ -73,23 +71,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.detailViewController = (DetailViewController *)[[self.splitViewController
-                                                          .viewControllers lastObject] topViewController];
-    self.title = @"Top Stories";
+//    [[UIApplication sharedApplication] delegate].rootViewController;
     
-    __block Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:
-                                        @"https://hacker-news.firebaseio.com/v0/topstories"];
+    id splitViewController = self.splitViewController;
+    NSLog(@"splitViewController: %@", NSStringFromClass([splitViewController class]));
+    
+    NSArray * controllers = self.splitViewController.viewControllers;
+    NSLog(@"controller: %@", controllers);
+    
+//    self.detailViewController = (DetailViewController *)[[self.splitViewController
+//                                                          .viewControllers lastObject] topViewController];
     [self.refreshControl beginRefreshing];
-
-    [topStoriesRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        [self.storiesList addObjectsFromArray:snapshot.value];
-        [self loadVisibleStories];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.refreshControl endRefreshing];
-            [self.tableView reloadData];
-        });
-    }];
 }
 
 #pragma mark - Segues
@@ -194,6 +186,19 @@
 }
 
 #pragma mark - Private Methods
+- (void)loadStoryIdentifiersWithRef:(Firebase *)ref {
+    
+    [ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        [self.storiesList addObjectsFromArray:snapshot.value];
+        [self loadVisibleStories];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.refreshControl endRefreshing];
+            [self.tableView reloadData];
+        });
+    }];
+}
+
 - (void)loadVisibleStories {
     
     int i = 0;

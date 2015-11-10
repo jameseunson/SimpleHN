@@ -21,44 +21,15 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    
+    NSArray * controllers = splitViewController.viewControllers;
+    NSLog(@"controller: %@", controllers);
+    
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     
     [[UIView appearance] setTintColor:[UIColor orangeColor]];
-    
-//    Firebase *ref = [[Firebase alloc] initWithUrl:@"https://hacker-news.firebaseio.com/v0/"];
-//    __block Firebase *itemRef = nil;
-//    FQuery *topStories = [[ref childByAppendingPath:@"topstories"] queryLimitedToFirst:25];
-////    Firebase *firstStory = [topStories childByAppendingPath:@"0"];
-//    
-//    [topStories observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-//        
-//        if(snapshot.hasChildren) {
-//            NSEnumerator * children = snapshot.children;
-//            for(FDataSnapshot * child in children) {
-//                
-//                NSString *itemId = [NSString stringWithFormat:@"item/%@", child.value];
-//                itemRef = [ref childByAppendingPath:itemId];
-//                [itemRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *itemSnap) {
-//                    NSLog(@"%@", itemSnap.value);
-//                }];
-//                
-//                break;
-//            }
-//        }
-//    }];
-    
-//    FirebaseHandle handle = [firstStory observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-//        if(itemRef != nil) {
-//            [itemRef removeObserverWithHandle: handle];
-//        }
-//        NSString *itemId = [NSString stringWithFormat:@"item/%@",snapshot.value];
-//        itemRef = [ref childByAppendingPath:itemId];
-//        [itemRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *itemSnap) {
-//            NSLog(@"%@", itemSnap.value);
-//        }];
-//    }];
     
     return YES;
 }
