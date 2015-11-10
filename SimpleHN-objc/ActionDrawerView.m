@@ -6,25 +6,25 @@
 //  Copyright © 2015 JEON. All rights reserved.
 //
 
-#import "StoryActionDrawerView.h"
-#import "StoryActionButton.h"
+#import "ActionDrawerView.h"
+#import "ActionDrawerButton.h"
 
-@interface StoryActionDrawerView ()
+@interface ActionDrawerView ()
 
 @property (nonatomic, strong) UIStackView * actionDrawerContainerView;
 
-@property (nonatomic, strong) StoryActionButton * actionDrawerUserButton;
-@property (nonatomic, strong) StoryActionButton * actionDrawerFlagButton;
-@property (nonatomic, strong) StoryActionButton * actionDrawerLinkButton;
-@property (nonatomic, strong) StoryActionButton * actionDrawerMoreButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerUserButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerFlagButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerLinkButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerMoreButton;
 
-@property (nonatomic, strong) NSArray < StoryActionButton * > * buttons;
+@property (nonatomic, strong) NSArray < ActionDrawerButton * > * buttons;
 
 - (void)didTapActionButton:(id)sender;
 
 @end
 
-@implementation StoryActionDrawerView
+@implementation ActionDrawerView
 
 - (instancetype)init {
     self = [super init];
@@ -36,7 +36,7 @@
         _actionDrawerContainerView.distribution = UIStackViewDistributionFillEqually;
         _actionDrawerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
         
-        self.actionDrawerUserButton = [[StoryActionButton alloc] init];
+        self.actionDrawerUserButton = [[ActionDrawerButton alloc] init];
         [_actionDrawerUserButton setImage:[UIImage imageNamed:@"story-action-user-icon"]
                                  forState:UIControlStateNormal];
         [_actionDrawerUserButton addTarget:self action:@selector(didTapActionButton:)
@@ -44,7 +44,7 @@
         
         [_actionDrawerContainerView addArrangedSubview:_actionDrawerUserButton];
         
-        self.actionDrawerFlagButton = [[StoryActionButton alloc] init];
+        self.actionDrawerFlagButton = [[ActionDrawerButton alloc] init];
         [_actionDrawerFlagButton setImage:[UIImage imageNamed:@"story-action-flag-icon"]
                                  forState:UIControlStateNormal];
         [_actionDrawerFlagButton addTarget:self action:@selector(didTapActionButton:)
@@ -52,14 +52,14 @@
         
         [_actionDrawerContainerView addArrangedSubview:_actionDrawerFlagButton];
         
-        self.actionDrawerLinkButton = [[StoryActionButton alloc] init];
+        self.actionDrawerLinkButton = [[ActionDrawerButton alloc] init];
         [_actionDrawerLinkButton setImage:[UIImage imageNamed:@"story-action-link-icon"]
                                  forState:UIControlStateNormal];
         [_actionDrawerLinkButton addTarget:self action:@selector(didTapActionButton:)
                           forControlEvents:UIControlEventTouchUpInside];
         [_actionDrawerContainerView addArrangedSubview:_actionDrawerLinkButton];
         
-        self.actionDrawerMoreButton = [[StoryActionButton alloc] init];
+        self.actionDrawerMoreButton = [[ActionDrawerButton alloc] init];
         [_actionDrawerMoreButton setImage:[UIImage imageNamed:@"story-action-more-icon"]
                                  forState:UIControlStateNormal];
         [_actionDrawerMoreButton addTarget:self action:@selector(didTapActionButton:)
@@ -71,10 +71,10 @@
         self.buttons = @[ _actionDrawerUserButton, _actionDrawerFlagButton,
                          _actionDrawerLinkButton, _actionDrawerMoreButton ];
         
-        self.buttonTypes = @[@(StoryActionDrawerViewButtonTypeUser),
-                             @(StoryActionDrawerViewButtonTypeFlag),
-                             @(StoryActionDrawerViewButtonTypeLink),
-                             @(StoryActionDrawerViewButtonTypeMore)];
+        self.buttonTypes = @[@(ActionDrawerViewButtonTypeUser),
+                             @(ActionDrawerViewButtonTypeFlag),
+                             @(ActionDrawerViewButtonTypeLink),
+                             @(ActionDrawerViewButtonTypeMore)];
         
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_actionDrawerContainerView);
         
@@ -90,10 +90,10 @@
 - (void)didTapActionButton:(id)sender {
     
     NSInteger indexOfButton = [self.buttons indexOfObject:sender];
-    StoryActionDrawerViewButtonType typeForButton = [_buttonTypes[indexOfButton] intValue];
+    ActionDrawerViewButtonType typeForButton = [_buttonTypes[indexOfButton] intValue];
     
-    if([self.delegate respondsToSelector:@selector(storyActionDrawerView:didTapActionWithType:)]) {
-        [self.delegate performSelector:@selector(storyActionDrawerView:didTapActionWithType:)
+    if([self.delegate respondsToSelector:@selector(actionDrawerView:didTapActionWithType:)]) {
+        [self.delegate performSelector:@selector(actionDrawerView:didTapActionWithType:)
                             withObject:self withObject:@(typeForButton)];
     }
 }

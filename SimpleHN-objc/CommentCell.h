@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "Comment.h"
 #import "KILabel.h"
-#import "StoryActionDrawerView.h"
+#import "ActionDrawerView.h"
 
 @protocol CommentCellDelegate;
-@interface CommentCell : UITableViewCell <StoryActionDrawerViewDelegate>
+@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate>
 
 @property (nonatomic, strong) Comment * comment;
 
@@ -35,6 +35,5 @@
 
 @protocol CommentCellDelegate <NSObject>
 - (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link;
-- (void)commentCellDidDisplayActionDrawer:(CommentCell*)cell;
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type;
 @end

@@ -31,8 +31,8 @@
 		98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B51BF19A6200607CBC /* NewStoriesViewController.m */; };
 		98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B81BF19A6A00607CBC /* AskHNViewController.m */; };
 		98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725BB1BF19A7200607CBC /* ShowHNViewController.m */; };
-		98F5EBD11BF0757600B1BA08 /* StoryActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* StoryActionButton.m */; };
-		98F5EBD41BF079D700B1BA08 /* StoryActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* StoryActionDrawerView.m */; };
+		98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */; };
+		98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */; };
 		98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD71BF085D600B1BA08 /* UserViewController.m */; };
 		98F5EBDB1BF086A400B1BA08 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDA1BF086A400B1BA08 /* User.m */; };
 		98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */; };
@@ -107,10 +107,10 @@
 		98E725B81BF19A6A00607CBC /* AskHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AskHNViewController.m; sourceTree = "<group>"; };
 		98E725BA1BF19A7200607CBC /* ShowHNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowHNViewController.h; sourceTree = "<group>"; };
 		98E725BB1BF19A7200607CBC /* ShowHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowHNViewController.m; sourceTree = "<group>"; };
-		98F5EBCF1BF0757500B1BA08 /* StoryActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryActionButton.h; sourceTree = "<group>"; };
-		98F5EBD01BF0757500B1BA08 /* StoryActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryActionButton.m; sourceTree = "<group>"; };
-		98F5EBD21BF079D700B1BA08 /* StoryActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryActionDrawerView.h; sourceTree = "<group>"; };
-		98F5EBD31BF079D700B1BA08 /* StoryActionDrawerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryActionDrawerView.m; sourceTree = "<group>"; };
+		98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerButton.h; sourceTree = "<group>"; };
+		98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionDrawerButton.m; sourceTree = "<group>"; };
+		98F5EBD21BF079D700B1BA08 /* ActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerView.h; sourceTree = "<group>"; };
+		98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionDrawerView.m; sourceTree = "<group>"; };
 		98F5EBD61BF085D600B1BA08 /* UserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
 		98F5EBD71BF085D600B1BA08 /* UserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
 		98F5EBD91BF086A400B1BA08 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
@@ -244,10 +244,10 @@
 			children = (
 				98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */,
 				98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */,
-				98F5EBCF1BF0757500B1BA08 /* StoryActionButton.h */,
-				98F5EBD01BF0757500B1BA08 /* StoryActionButton.m */,
-				98F5EBD21BF079D700B1BA08 /* StoryActionDrawerView.h */,
-				98F5EBD31BF079D700B1BA08 /* StoryActionDrawerView.m */,
+				98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */,
+				98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */,
+				98F5EBD21BF079D700B1BA08 /* ActionDrawerView.h */,
+				98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */,
 				98F5EBDC1BF0957800B1BA08 /* UserHeaderView.h */,
 				98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */,
 			);
@@ -510,7 +510,7 @@
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
-				98F5EBD11BF0757600B1BA08 /* StoryActionButton.m in Sources */,
+				98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */,
 				98F5EBDB1BF086A400B1BA08 /* User.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
@@ -519,7 +519,7 @@
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
-				98F5EBD41BF079D700B1BA08 /* StoryActionDrawerView.m in Sources */,
+				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,

@@ -26,7 +26,7 @@
 
 @property (nonatomic, strong) UILongPressGestureRecognizer * longPressGestureRecognizer;
 
-@property (nonatomic, strong) StoryActionDrawerView * actionDrawerView;
+@property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 @property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
 
 - (void)didLongPressSelf:(id)sender;
@@ -82,7 +82,7 @@
         
         [self.contentView addSubview:_storyCommentsScoreStackView];
 
-        self.actionDrawerView = [[StoryActionDrawerView alloc] init];
+        self.actionDrawerView = [[ActionDrawerView alloc] init];
         _actionDrawerView.translatesAutoresizingMaskIntoConstraints = NO;
         _actionDrawerView.delegate = self;
         [self.contentView addSubview:_actionDrawerView];
@@ -167,7 +167,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _storyTitleSubtitleStackView.frame.origin.x + _storyTitleSubtitleStackView.frame.size.height, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
+    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _storyTitleSubtitleStackView.frame.origin.y + _storyTitleSubtitleStackView.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 #pragma mark - Property Override Methods
@@ -226,7 +226,7 @@
 }
 
 #pragma mark -StoryActionDrawerViewDelegate Methods
-- (void)storyActionDrawerView:(StoryActionDrawerView*)view
+- (void)actionDrawerView:(ActionDrawerView*)view
          didTapActionWithType:(NSNumber*)type {
     
     if([self.delegate respondsToSelector:@selector(storyCell:didTapActionWithType:)]) {

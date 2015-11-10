@@ -30,7 +30,7 @@
 
 @property (nonatomic, strong) UITapGestureRecognizer * headerBackgroundViewTapGestureRecognizer;
 
-@property (nonatomic, strong) StoryActionDrawerView * actionDrawerView;
+@property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 @property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
 
 - (void)didTapBackgroundView:(id)sender;
@@ -57,6 +57,7 @@
         self.commentLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.commentLabel.numberOfLines = 0;
         self.commentLabel.userInteractionEnabled = YES;
+        self.commentLabel.textColor = [UIColor blackColor];
         
         self.commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.commentLabel.automaticLinkDetectionEnabled = YES;
@@ -110,10 +111,9 @@
         _headerBorderLayer.backgroundColor = [RGBCOLOR(215, 215, 215) CGColor];
         [self.layer insertSublayer:_headerBorderLayer atIndex:100];
         
-        self.actionDrawerView = [[StoryActionDrawerView alloc] init];
+        self.actionDrawerView = [[ActionDrawerView alloc] init];
         _actionDrawerView.translatesAutoresizingMaskIntoConstraints = NO;
         _actionDrawerView.delegate = self;
-        _actionDrawerView.hidden = YES;
         [self.contentView addSubview:_actionDrawerView];
         
         self.actionDrawerBorderLayer = [CALayer layer];
@@ -173,6 +173,9 @@
         }
         [self.contentView addConstraints:labelHorizontalConstraints];
         
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_actionDrawerView]-|"
+                                                                                 options:0 metrics:nil views:bindings]];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
                                                      name:kCommentCollapsedChanged object:nil];
         
@@ -191,6 +194,8 @@
     
     _headerBackgroundView.frame = CGRectMake(0, 0, self.frame.size.width,
                                              _headerStackView.frame.size.height + 5.0f);
+    
+    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 - (void)prepareForReuse {
@@ -208,7 +213,13 @@
     NSArray * links = comment.links;
     
     if(comment.text) {
-        self.commentLabel.text = comment.text;
+        
+        @try {
+            self.commentLabel.text = comment.text;
+        }
+        @catch (NSException *exception) {
+            NSLog(@"ERROR: %@", exception);
+        }
         
         // Handle URL presses by sending delegate call to enclosing controller
         __block CommentCell * blockSelf = self;
@@ -240,6 +251,26 @@
     self.authorLabel.text = comment.author;
     self.dateLabel.text = [comment.time timeAgoInWords];
     
+    [self setNeedsLayout];
+}
+
+- (void)setExpanded:(BOOL)expanded {
+    _expanded = expanded;
+    
+    if(self.comment.collapsed) {
+        [self uncollapseCell];
+    }
+    
+    if(expanded) {
+        self.actionDrawerHeightConstraint.constant = 44;
+        _actionDrawerBorderLayer.hidden = NO;
+        
+    } else {
+        self.actionDrawerHeightConstraint.constant = 0;
+        _actionDrawerBorderLayer.hidden = YES;
+    }
+    
+    [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
 }
 
@@ -286,5 +317,16 @@
     
     [self setNeedsUpdateConstraints];
 }
+
+#pragma mark -StoryActionDrawerViewDelegate Methods
+- (void)actionDrawerView:(ActionDrawerView*)view
+    didTapActionWithType:(NSNumber*)type {
+    
+    if([self.delegate respondsToSelector:@selector(commentCell:didTapActionWithType:)]) {
+        [self.delegate performSelector:@selector(commentCell:didTapActionWithType:)
+                            withObject:self withObject:type];
+    }
+}
+
 
 @end

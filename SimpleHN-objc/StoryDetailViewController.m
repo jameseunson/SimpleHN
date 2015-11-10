@@ -11,6 +11,7 @@
 #import "StoryDetailViewController.h"
 #import "Story.h"
 #import "Comment.h"
+#import "UserViewController.h"
 
 #define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
 
@@ -165,6 +166,13 @@
     CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                          forIndexPath:indexPath];
     cell.comment = comment;
+    if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+        cell.expanded = YES;
+        
+    } else {
+        cell.expanded = NO;
+    }
+    
     cell.delegate = self;
     
     return cell;
@@ -173,9 +181,45 @@
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if(_expandedCellIndexPath) {
+        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                      _expandedCellIndexPath];
+        expandedCell.expanded = NO;
+    }
+    
+    // User has tapped an expanded cell, toggle only
+    if([indexPath isEqual:_expandedCellIndexPath]) {
+        _expandedCellIndexPath = nil;
+        
+    } else { // Otherwise, set new expanded cell
+        self.expandedCellIndexPath = indexPath;
+        
+        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                      _expandedCellIndexPath];
+        expandedCell.expanded = YES;
+    }
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 #pragma mark - Private Methods
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if([[segue identifier] isEqualToString:@"showUser"]) {
+        NSLog(@"prepareForSegue, showUser");
+        
+        __block UserViewController *controller = (UserViewController *)
+            [[segue destinationViewController] topViewController];
+        controller.user = sender;
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}
+
 - (void)didSelectContentSegment:(id)sender {
     
     if(_contentSelectSegmentedControl.selectedSegmentIndex == 0) {
@@ -225,58 +269,16 @@
     [self.navigationController pushViewController:controller animated:YES];
 }
 
-- (void)commentCellDidDisplayActionDrawer:(CommentCell*)cell {
-    NSLog(@"commentCellDidDisplayActionDrawer:");
-
-    if(_expandedCellIndexPath) {
-        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                    _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-
-    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
-
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-}
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
-    StoryActionDrawerViewButtonType actionType = [type intValue];
+    ActionDrawerViewButtonType actionType = [type intValue];
 
-    if(actionType == StoryActionDrawerViewButtonTypeUser) {
-        NSLog(@"StoryActionDrawerViewButtonTypeUser");
-
-//        [cell.story loadUserForStory:^(User *user) {
-//            [self performSegueWithIdentifier:@"showUser" sender:user];
-//        }];
+    if(actionType == ActionDrawerViewButtonTypeUser) {
+        NSLog(@"ActionDrawerViewButtonTypeUser");
+        
+        [cell.comment loadUserForComment:^(User *user) {
+            [self performSegueWithIdentifier:@"showUser" sender:user];
+        }];
     }
 }
-
-//#pragma mark - StoryCellDelegate Methods
-//- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
-//    NSLog(@"storyCellDidDisplayActionDrawer:");
-//    
-//    if(_expandedCellIndexPath) {
-//        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-//                                    _expandedCellIndexPath];
-//        expandedCell.expanded = NO;
-//    }
-//    
-//    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
-//    
-//    [self.tableView beginUpdates];
-//    [self.tableView endUpdates];
-//}
-//
-//- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
-//    StoryActionDrawerViewButtonType actionType = [type intValue];
-//    
-//    if(actionType == StoryActionDrawerViewButtonTypeUser) {
-//        NSLog(@"StoryActionDrawerViewButtonTypeUser");
-//        
-//        [cell.story loadUserForStory:^(User *user) {
-//            [self performSegueWithIdentifier:@"showUser" sender:user];
-//        }];
-//    }
-//}
 
 @end

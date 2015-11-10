@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StoryActionButton : UIButton
+@interface ActionDrawerButton : UIButton
 
 @end

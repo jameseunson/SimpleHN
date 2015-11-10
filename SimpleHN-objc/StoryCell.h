@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "Story.h"
-#import "StoryActionDrawerView.h"
+#import "ActionDrawerView.h"
 
 @protocol StoryCellDelegate;
-@interface StoryCell : UITableViewCell <StoryActionDrawerViewDelegate>
+@interface StoryCell : UITableViewCell <ActionDrawerViewDelegate>
 
 @property (nonatomic, strong) Story * story;
 @property (nonatomic, assign) __unsafe_unretained id<StoryCellDelegate> delegate;

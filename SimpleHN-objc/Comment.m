@@ -74,6 +74,10 @@
     }];
 }
 
+- (void)loadUserForComment:(UserBlock)completion {
+    [User createUserFromItemIdentifier:self.author completion:completion];
+}
+
 #pragma mark - Property Override Methods
 - (NSArray<CommentLink*> *)links {
     if(_links) {

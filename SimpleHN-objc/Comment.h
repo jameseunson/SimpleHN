@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Mantle/Mantle.h>
 #import "CommentLink.h"
+#import "User.h"
 
 #define kCommentCreated @"commentCreated"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"
@@ -39,4 +40,5 @@ typedef void (^CommentBlock)(Comment* comment);
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;
+- (void)loadUserForComment:(UserBlock)completion;
 @end

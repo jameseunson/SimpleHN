@@ -6,16 +6,16 @@
 //  Copyright © 2015 JEON. All rights reserved.
 //
 
-#import "StoryActionButton.h"
+#import "ActionDrawerButton.h"
 
-@interface StoryActionButton ()
+@interface ActionDrawerButton ()
 
 - (void)didTouchDown:(id)sender;
 - (void)didTouchUp:(id)sender;
 
 @end
 
-@implementation StoryActionButton
+@implementation ActionDrawerButton
 
 - (instancetype)init {
     self = [super init];

@@ -255,9 +255,9 @@
 }
 
 - (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
-    StoryActionDrawerViewButtonType actionType = [type intValue];
+    ActionDrawerViewButtonType actionType = [type intValue];
     
-    if(actionType == StoryActionDrawerViewButtonTypeUser) {
+    if(actionType == ActionDrawerViewButtonTypeUser) {
         NSLog(@"StoryActionDrawerViewButtonTypeUser");
         
         [cell.story loadUserForStory:^(User *user) {

@@ -357,6 +357,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Cas-1i-7iH"/>
+                    <connections>
+                        <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="R7l-qZ-MC3"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JVo-Oc-qWk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -375,6 +378,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QWY-vZ-dUl"/>
-        <segue reference="vxZ-V5-Tyc"/>
+        <segue reference="R7l-qZ-MC3"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -50,6 +50,8 @@
     
     _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width, 132.0f);
     [self.tableView setTableHeaderView:_headerView];
+    
+    self.headerView.user = self.user;
 }
 
 #pragma mark - Property Override Methods
