@@ -10,11 +10,11 @@
 #import "Firebase.h"
 #import "StoryCell.h"
 
-@class DetailViewController;
+@class StoryDetailViewController;
 
 @interface StoriesViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
 
-@property (strong, nonatomic) DetailViewController *detailViewController;
+@property (strong, nonatomic) StoryDetailViewController *detailViewController;
 @property (nonatomic, strong) NSMutableArray * storiesList;
 
 - (void)loadStoryIdentifiersWithRef:(Firebase *)ref;

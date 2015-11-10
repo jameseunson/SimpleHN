@@ -9,6 +9,7 @@
 #ifndef SimpleHN_objc_h
 #define SimpleHN_objc_h
 
+#import "SimpleHNSplitViewController.h"
 #import "LabelHelper.h"
 
 // Three20 RGBColor macro

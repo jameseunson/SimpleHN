@@ -7,7 +7,7 @@
 //
 
 #import "StoriesViewController.h"
-#import "DetailViewController.h"
+#import "StoryDetailViewController.h"
 #import "Story.h"
 #import "StoryLoadMoreCell.h"
 #import "UserViewController.h"
@@ -71,16 +71,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [[UIApplication sharedApplication] delegate].rootViewController;
-    
-    id splitViewController = self.splitViewController;
-    NSLog(@"splitViewController: %@", NSStringFromClass([splitViewController class]));
-    
-    NSArray * controllers = self.splitViewController.viewControllers;
-    NSLog(@"controller: %@", controllers);
-    
-//    self.detailViewController = (DetailViewController *)[[self.splitViewController
-//                                                          .viewControllers lastObject] topViewController];
+    self.detailViewController = ((SimpleHNSplitViewController*)
+                                 self.splitViewController).storyDetailViewController;
     [self.refreshControl beginRefreshing];
 }
 
@@ -91,7 +83,7 @@
         
         Story * story = [self storyForIndexPath:[self.tableView indexPathForSelectedRow]];
         
-        DetailViewController *controller = (DetailViewController *)
+        StoryDetailViewController *controller = (StoryDetailViewController *)
             [[segue destinationViewController] topViewController];
         [controller setDetailItem:story];
         

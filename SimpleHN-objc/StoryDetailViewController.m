@@ -8,7 +8,7 @@
 
 @import SafariServices;
 
-#import "DetailViewController.h"
+#import "StoryDetailViewController.h"
 #import "Story.h"
 #import "Comment.h"
 
@@ -16,7 +16,7 @@
 
 @import WebKit;
 
-@interface DetailViewController ()
+@interface StoryDetailViewController ()
 
 @property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
 //@property (nonatomic, strong) WKWebView * webView;
@@ -36,7 +36,7 @@
 
 @end
 
-@implementation DetailViewController
+@implementation StoryDetailViewController
 
 #pragma mark - Managing the detail item
 
