@@ -8,6 +8,7 @@
 
 #import "CommentCell.h"
 #import "TimeAgoInWords-Swift.h"
+#import "UIFont+SSTextSize.h"
 
 #define kHeaderDownIcon @"▼"
 #define kHeaderUpIcon @"▲"
@@ -53,7 +54,11 @@
         self.commentLabel = [[KILabel alloc] init];
         self.commentLabel.backgroundColor = [UIColor clearColor];
         
-        self.commentLabel.font = [UIFont systemFontOfSize:14.0f];
+//        self.commentLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        
+        NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
+        self.commentLabel.font = [UIFont dynamicFontWithName:systemFontName baseSize:16.0f];
+        
         self.commentLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.commentLabel.numberOfLines = 0;
         self.commentLabel.userInteractionEnabled = YES;
@@ -72,7 +77,7 @@
         self.headerUpDownLabel = [[UILabel alloc] init];
         
         _headerUpDownLabel.text = kHeaderUpIcon;
-        _headerUpDownLabel.font = [UIFont systemFontOfSize:12.0f];
+        _headerUpDownLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
         _headerUpDownLabel.backgroundColor = [UIColor clearColor];
         _headerUpDownLabel.textColor = [UIColor orangeColor];
         
@@ -80,7 +85,7 @@
         
         self.authorLabel = [[UILabel alloc] init];
         
-        _authorLabel.font = [UIFont systemFontOfSize:12.0f];
+        _authorLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
         _authorLabel.textColor = [UIColor orangeColor];
         _authorLabel.backgroundColor = [UIColor clearColor];
         
@@ -88,7 +93,7 @@
         
         self.dateLabel = [[UILabel alloc] init];
         
-        _dateLabel.font = [UIFont systemFontOfSize:12.0f];
+        _dateLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
         _dateLabel.textColor = [UIColor grayColor];
         _dateLabel.backgroundColor = [UIColor clearColor];
         _dateLabel.textAlignment = NSTextAlignmentRight;

@@ -15,9 +15,9 @@
     
     self.title = @"Top";
     
-    Firebase * topStoriesRef = [[Firebase alloc] initWithUrl:
+    self.ref = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/topstories"];
-    [self loadStoryIdentifiersWithRef:topStoriesRef];
+    [self loadStoryIdentifiersWithRef:self.ref];
 }
 
 @end

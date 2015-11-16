@@ -15,9 +15,9 @@
     
     self.title = @"Ask";
     
-    Firebase * askStoriesRef = [[Firebase alloc] initWithUrl:
+    self.ref = [[Firebase alloc] initWithUrl:
                                 @"https://hacker-news.firebaseio.com/v0/askstories"];
-    [self loadStoryIdentifiersWithRef:askStoriesRef];
+    [self loadStoryIdentifiersWithRef:self.ref];
 }
 
 @end

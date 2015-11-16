@@ -15,9 +15,9 @@
     
     self.title = @"Show";
     
-    Firebase * showStoriesRef = [[Firebase alloc] initWithUrl:
+    self.ref = [[Firebase alloc] initWithUrl:
                                 @"https://hacker-news.firebaseio.com/v0/showstories"];
-    [self loadStoryIdentifiersWithRef:showStoriesRef];
+    [self loadStoryIdentifiersWithRef:self.ref];
 }
 
 @end

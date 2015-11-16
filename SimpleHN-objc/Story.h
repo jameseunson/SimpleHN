@@ -48,4 +48,6 @@ typedef void (^StoryBlock)(Story* story);
 - (void)loadCommentsForStory;
 - (void)loadUserForStory:(UserBlock)completion;
 
+- (NSDictionary*)diffOtherStory:(Story*)otherStory;
+
 @end

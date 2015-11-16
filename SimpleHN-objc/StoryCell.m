@@ -53,11 +53,11 @@
         _storyTitleSubtitleStackView.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.storyTitleLabel = [LabelHelper labelWithFont:
-                                [UIFont systemFontOfSize:17.0f]];
+                                [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3]];
         [self.storyTitleSubtitleStackView addArrangedSubview:_storyTitleLabel];
         
         self.storySubtitleLabel = [LabelHelper labelWithFont:
-                                   [UIFont systemFontOfSize:12.0f]];
+                                   [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _storySubtitleLabel.textColor = [UIColor grayColor];
         
         [self.storyTitleSubtitleStackView addArrangedSubview:_storySubtitleLabel];
@@ -76,7 +76,7 @@
         [_storyCommentsScoreStackView addArrangedSubview:_storyCommentsButton];
         
         self.storyScoreLabel = [[UILabel alloc] init];
-        _storyScoreLabel.font = [UIFont systemFontOfSize:11.0f];
+        _storyScoreLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
         _storyScoreLabel.textColor = [UIColor orangeColor];
         [_storyCommentsScoreStackView addArrangedSubview:_storyScoreLabel];
         

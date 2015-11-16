@@ -21,7 +21,7 @@
     self = [super init];
     if(self) {
         
-        self.alpha = 0.2f;
+        self.alpha = 0.4f;
         
         [self addTarget:self action:@selector(didTouchUp:) forControlEvents:
             (UIControlEventTouchUpOutside|UIControlEventTouchUpInside|UIControlEventTouchCancel)];
@@ -33,11 +33,11 @@
 }
 
 - (void)didTouchDown:(id)sender {
-    self.alpha = 0.6f;
+    self.alpha = 1.0f;
 }
 
 - (void)didTouchUp:(id)sender {
-    self.alpha = 0.2f;
+    self.alpha = 0.4f;
 }
 
 @end

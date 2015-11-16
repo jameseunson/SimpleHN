@@ -21,6 +21,8 @@
 @property (nonatomic, strong) NSMutableDictionary * storiesLoadStatus;
 @property (nonatomic, strong) NSMutableDictionary * storiesLookup;
 
+@property (nonatomic, strong) NSMutableDictionary * storyDiffLookup;
+
 //@property (nonatomic, assign) NSInteger currentVisibleStoryMin;
 @property (nonatomic, assign) NSInteger currentVisibleStoryMax;
 
@@ -30,11 +32,19 @@
 
 - (void)reloadContent:(id)sender;
 - (void)loadMoreStories:(id)sender;
+
 - (Story*)storyForIndexPath:(NSIndexPath*)indexPath;
+- (NSIndexPath*)indexPathForStory:(Story*)story;
 
 @end
 
 @implementation StoriesViewController
+
+- (void)dealloc {
+    if(self.ref) {
+        [self.ref removeAllObservers];
+    }
+}
 
 - (void)awakeFromNib {
     
@@ -43,6 +53,10 @@
     self.storiesList = [[NSMutableArray alloc] init];
     self.storiesLoadStatus = [[NSMutableDictionary alloc] init];
     self.storiesLookup = [[NSMutableDictionary alloc] init];
+    
+    // Transient storage so the cellForRow method can pickup a pending
+    // diff to associate with a story that has been updated by Firebase
+    self.storyDiffLookup = [[NSMutableDictionary alloc] init];
     
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
 }
@@ -185,6 +199,59 @@
 #pragma mark - Private Methods
 - (void)loadStoryIdentifiersWithRef:(Firebase *)ref {
     
+//    [ref observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
+//        NSLog(@"FEventTypeChildAdded: %@", snapshot);
+//    }];
+//    [ref observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
+//        NSLog(@"FEventTypeChildChanged: %@", snapshot);
+//        
+//        // We use the 'loaded' status of the story as a proxy
+//        // for whether it is visible or not. If it isn't visible,
+//        // there's no need to waste resources on reloading it
+//        NSNumber * identifier = snapshot.value;
+//        if(![_storiesLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)]) {
+//            NSLog(@"skipping story with identifier: %@, it's not visible/loaded", identifier);
+//            return;
+//        }
+//        
+//        NSLog(@"reloading changed story with identifier: %@", identifier);
+//        
+//        __block Story * previousStory = _storiesLookup[identifier];
+//        
+//        [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
+//            
+//            NSDictionary * diff = [previousStory diffOtherStory:story];
+//            if([[diff allKeys] count] == 0) {
+//                NSLog(@"No difference, no reason to update table, returning early");
+//                return;
+//            }
+//            
+//            _storiesLookup[identifier] = story;
+//            _storiesLoadStatus[identifier] = @(StoryLoadStatusLoaded);
+//            
+//            NSLog(@"diff: %@", diff);
+//            
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                NSLog(@"updating tableview for story with identifier: %@", identifier);
+//                
+//                NSIndexPath * reloadIndexPath = [self indexPathForStory:story];
+//                if(reloadIndexPath) {
+//                    [self.tableView beginUpdates];
+//                    [self.tableView reloadRowsAtIndexPaths:@[ reloadIndexPath ]
+//                                          withRowAnimation:UITableViewRowAnimationAutomatic];
+//                    [self.tableView endUpdates];
+//                    NSLog(@"done updating tableview for story with identifier: %@", identifier);
+//                }
+//            });
+//        }];
+//    }];
+    [ref observeEventType:FEventTypeChildMoved withBlock:^(FDataSnapshot *snapshot) {
+        NSLog(@"FEventTypeChildMoved: %@", snapshot);
+    }];
+//    [ref observeEventType:FEventTypeChildRemoved withBlock:^(FDataSnapshot *snapshot) {
+//        NSLog(@"FEventTypeChildRemoved: %@", snapshot);
+//    }];
+    
     [ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         [self.storiesList addObjectsFromArray:snapshot.value];
         self.loadingProgress.completedUnitCount++;
@@ -245,6 +312,16 @@
     } else {
         return nil;
     }
+}
+
+- (NSIndexPath*)indexPathForStory:(Story*)story {
+    if([[_storiesLookup allKeys] containsObject:story.storyId]) {
+        NSInteger loc = [_storiesList indexOfObject:story.storyId];
+        if(loc != NSNotFound) {
+            return [NSIndexPath indexPathForRow:loc inSection:0];
+        }
+    }
+    return nil;
 }
 
 #pragma mark - StoryCellDelegate Methods

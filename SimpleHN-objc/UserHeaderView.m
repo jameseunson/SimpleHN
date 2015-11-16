@@ -46,16 +46,16 @@
         _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.nameLabel = [LabelHelper labelWithFont:
-                          [UIFont systemFontOfSize:18.0f]];
+                          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3]];
         [_mainStackView addArrangedSubview:_nameLabel];
         
         self.submissionsLabel = [LabelHelper labelWithFont:
-                          [UIFont systemFontOfSize:13.0f]];
+                          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _submissionsLabel.textColor = [UIColor grayColor];
         [_mainStackView addArrangedSubview:_submissionsLabel];
         
         self.accountCreatedLabel = [LabelHelper labelWithFont:
-                          [UIFont systemFontOfSize:13.0f]];
+                          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _accountCreatedLabel.textColor = [UIColor grayColor];
         [_mainStackView addArrangedSubview:_accountCreatedLabel];
         
@@ -68,13 +68,13 @@
         _karmaStackView.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.karmaLabel = [LabelHelper labelWithFont:
-                          [UIFont systemFontOfSize:18.0f]];
+                          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3]];
         _karmaLabel.textColor = [UIColor orangeColor];
         _karmaLabel.textAlignment = NSTextAlignmentCenter;
         [_karmaStackView addArrangedSubview:_karmaLabel];
         
         self.karmaSubtitleLabel = [LabelHelper labelWithFont:
-                           [UIFont systemFontOfSize:12.0f]];
+                           [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _karmaSubtitleLabel.textColor = [UIColor grayColor];
         _karmaSubtitleLabel.text = @"karma";
         _karmaSubtitleLabel.textAlignment = NSTextAlignmentCenter;

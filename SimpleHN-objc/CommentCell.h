@@ -31,6 +31,10 @@
 
 @property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> delegate;
 
+// Assigned to cell when story is updated, value is only retained
+// for 1 second or so, while an update animation plays
+@property (nonatomic, strong) NSDictionary * storyDiffDict;
+
 @end
 
 @protocol CommentCellDelegate <NSObject>

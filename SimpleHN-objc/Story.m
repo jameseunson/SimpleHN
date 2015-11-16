@@ -139,7 +139,22 @@ static NSDateFormatter * _timeDateFormatter = nil;
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCreated
                                                             object:obj];
+        [storyDetailRef removeAllObservers];
     }];
+}
+
+- (NSDictionary*)diffOtherStory:(Story*)otherStory {
+    
+    NSArray * mantleKeys = [[Story JSONKeyPathsByPropertyKey] allKeys];
+    
+    NSMutableDictionary * diff = [[NSMutableDictionary alloc] init];
+    for(NSString * key in mantleKeys) {
+        if(![[self valueForKey:key] isEqual:[otherStory valueForKey:key]]) {
+            diff[key] = @[ [self valueForKey:key], [otherStory valueForKey:key] ];
+        }
+    }
+    
+    return diff;
 }
 
 #pragma mark - Property Override Methods

@@ -13,7 +13,7 @@
 - (instancetype)init {
     self = [super init];
     if(self) {
-        self.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+        self.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
         [self setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         
         self.layer.borderColor = [[UIColor lightGrayColor] CGColor];

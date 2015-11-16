@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'C21DBE5BF1493B251B1EFAD0'
+               BlueprintIdentifier = 'FCC03BB2E0DF48133B71C5EC'
                BlueprintName = 'TimeAgoInWords'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'TimeAgoInWords.framework'>

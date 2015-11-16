@@ -1,0 +1,6 @@
+framework module SSDynamicText {
+  umbrella header "SSDynamicText-umbrella.h"
+
+  export *
+  module * { export * }
+}

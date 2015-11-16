@@ -14,6 +14,8 @@
 
 @interface StoriesViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
 
+@property (nonatomic, strong) Firebase * ref;
+
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
 @property (nonatomic, strong) NSMutableArray * storiesList;
 
