@@ -29,6 +29,7 @@
 @property (nonatomic, strong) UIRefreshControl * bottomRefreshControl;
 
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
+@property (nonatomic, assign) CGFloat loadMoreYPosition;
 
 - (void)reloadContent:(id)sender;
 - (void)loadMoreStories:(id)sender;
@@ -48,6 +49,7 @@
 
 - (void)awakeFromNib {
     
+    _loadMoreYPosition = -1;
     _currentVisibleStoryMax = 20;
     
     self.storiesList = [[NSMutableArray alloc] init];
@@ -131,9 +133,46 @@
 #pragma mark - UIScrollViewDelegate Methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if(scrollView == self.tableView) {
-        if(scrollView.contentOffset.y > (scrollView.contentSize.height - 44.0f)) {
-            [_bottomRefreshControl beginRefreshing];
+        
+        if(_loadMoreYPosition == -1) {
+            return;
         }
+        
+//        NSLog(@"%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
+//        
+//        NSLog(@"scrollViewDidScroll: %f, %f, %f", scrollView.contentOffset.y, (scrollView.contentOffset.y + scrollView.frame.size.height) - 44.0f - self.tableView.contentInset.top, scrollView.contentSize.height - 44.0f);
+        
+        CGFloat adjustedYPosition = (scrollView.contentOffset.y + scrollView.frame.size.height) -
+            44.0f - self.tableView.contentInset.top;
+        
+        StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
+                                            [NSIndexPath indexPathForRow:_currentVisibleStoryMax inSection:0]];
+        
+        if(adjustedYPosition > _loadMoreYPosition) {
+            NSLog(@"%f > %f", adjustedYPosition, _loadMoreYPosition);
+            
+            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
+                loadMoreCell.state = StoryLoadMoreCellStateTransition;
+            }
+        } else {
+            
+            if(loadMoreCell.state != StoryLoadMoreCellStateNormal) {
+                loadMoreCell.state = StoryLoadMoreCellStateNormal;
+            }
+        }
+        
+//        if(scrollView.contentOffset.y > (scrollView.contentSize.height - 44.0f)) {
+//
+//            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
+//                loadMoreCell.state = StoryLoadMoreCellStateTransition;
+//            }
+//            
+////            [_bottomRefreshControl beginRefreshing];
+//        } else {
+////            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
+////                loadMoreCell.state = StoryLoadMoreCellStateTransition;
+////            }
+//        }
     }
 }
 
@@ -150,6 +189,20 @@
         itemsCount = itemsCount + 1;
     }
     return itemsCount;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if(indexPath.row == _currentVisibleStoryMax) {
+        _loadMoreYPosition = cell.frame.origin.y;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+    
+    if(indexPath.row == _currentVisibleStoryMax) {
+        _loadMoreYPosition = -1;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -341,27 +394,7 @@
 }
 
 - (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
-    ActionDrawerViewButtonType actionType = [type intValue];
-    
-    if(actionType == ActionDrawerViewButtonTypeUser) {
-        NSLog(@"StoryActionDrawerViewButtonTypeUser");
-        
-        [cell.story loadUserForStory:^(User *user) {
-            [self performSegueWithIdentifier:@"showUser" sender:user];
-        }];
-        
-    } else if(actionType == ActionDrawerViewButtonTypeMore) {
-        
-        UIAlertController * controller = [UIAlertController alertControllerWithTitle:cell.story.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-        [self presentViewController:controller animated:YES completion:nil];
-    }
+    [StoryCell handleActionForStory:cell.story withType:type inController:self];
 }
 
 @end

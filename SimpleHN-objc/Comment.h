@@ -40,5 +40,7 @@ typedef void (^CommentBlock)(Comment* comment);
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;
++ (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
+                             completion:(CommentBlock)completion;
 - (void)loadUserForComment:(UserBlock)completion;
 @end

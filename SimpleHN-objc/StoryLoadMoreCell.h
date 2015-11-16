@@ -8,7 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, StoryLoadMoreCellState) {
+    StoryLoadMoreCellStateNormal, // Pull to load more
+    StoryLoadMoreCellStateTransition, // Keep pulling
+    StoryLoadMoreCellStateLoading // Loading
+};
+
 @interface StoryLoadMoreCell : UITableViewCell
+
+@property (nonatomic, assign) StoryLoadMoreCellState state;
 
 @property (nonatomic, strong) UILabel * loadMoreLabel;
 @property (nonatomic, strong) UILabel * loadMoreSubtitleLabel;

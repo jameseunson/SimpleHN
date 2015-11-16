@@ -10,6 +10,8 @@
 #import "TimeAgoInWords-Swift.h"
 #import "UIFont+SSTextSize.h"
 
+@import SafariServices;
+
 #define kHeaderDownIcon @"▼"
 #define kHeaderUpIcon @"▲"
 
@@ -211,6 +213,34 @@
     }
 }
 
++ (void)handleActionForComment:(Comment *)comment withType:(NSNumber *)type inController:(UIViewController *)controller {
+    ActionDrawerViewButtonType actionType = [type intValue];
+    
+    if(actionType == ActionDrawerViewButtonTypeUser) {
+        NSLog(@"ActionDrawerViewButtonTypeUser");
+        
+        [comment loadUserForComment:^(User *user) {
+            [controller performSegueWithIdentifier:@"showUser" sender:user];
+        }];
+        
+    } else if(actionType == ActionDrawerViewButtonTypeMore) {
+        NSLog(@"ActionDrawerViewButtonTypeMore");
+        
+        NSString * title = [NSString stringWithFormat:@"Comment from %@", comment.author];
+        
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        
+        [controller presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 #pragma mark - Property Override Methods
 - (void)setComment:(Comment *)comment {
     _comment = comment;
@@ -270,9 +300,15 @@
         self.actionDrawerHeightConstraint.constant = 44;
         _actionDrawerBorderLayer.hidden = NO;
         
+        self.labelHorizontalInsetConstraint.constant = 20;
+        self.headerStackHorizontalInsetConstraint.constant = 20;
+        
     } else {
         self.actionDrawerHeightConstraint.constant = 0;
         _actionDrawerBorderLayer.hidden = YES;
+        
+        self.labelHorizontalInsetConstraint.constant = (20 * (self.comment.indentation + 1));
+        self.headerStackHorizontalInsetConstraint.constant = (20 * (self.comment.indentation + 1));
     }
     
     [self setNeedsUpdateConstraints];

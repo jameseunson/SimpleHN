@@ -53,25 +53,32 @@
     NSString * commentURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];
     __block Firebase * commentDetailRef = [[Firebase alloc] initWithUrl:commentURL];
+    
     [commentDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
-        NSError * error = nil;
-        Comment * obj = [MTLJSONAdapter modelOfClass:Comment.class
-                                  fromJSONDictionary:snapshot.value error:&error];
-        completion(obj);
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCreated
-                                                            object:obj];
-        
-        // load child comments into comment
-        for(NSNumber * child in obj.kids) {
-            
-            __block Comment * blockObj = obj;
-            [Comment createCommentFromItemIdentifier:child completion:^(Comment *comment) {
-                [blockObj.childComments addObject:comment];
-            }];
-        }
+        [[self class] createCommentFromSnapshot:snapshot completion:completion];
+        [commentDetailRef removeAllObservers];
     }];
+}
+
++ (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
+                       completion:(CommentBlock)completion {
+    
+    NSError * error = nil;
+    Comment * obj = [MTLJSONAdapter modelOfClass:Comment.class
+                              fromJSONDictionary:snapshot.value error:&error];
+    completion(obj);
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCreated
+                                                        object:obj];
+    // load child comments into comment
+    for(NSNumber * child in obj.kids) {
+        
+        __block Comment * blockObj = obj;
+        [Comment createCommentFromItemIdentifier:child completion:^(Comment *comment) {
+            [blockObj.childComments addObject:comment];
+        }];
+    }
 }
 
 - (void)loadUserForComment:(UserBlock)completion {

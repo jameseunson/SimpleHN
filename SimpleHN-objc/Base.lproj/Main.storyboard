@@ -4,10 +4,9 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <scenes>
-        <!--Root View Controller-->
+        <!--User-->
         <scene sceneID="rR2-dz-wCM">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HEt-XO-5er" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController id="P2k-ap-28p" customClass="UserViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="YFY-nd-Ttc">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
@@ -31,15 +30,18 @@
                             <outlet property="delegate" destination="P2k-ap-28p" id="3oG-Zf-bsB"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="5jB-iA-JlL"/>
+                    <navigationItem key="navigationItem" title="User" id="5jB-iA-JlL"/>
+                    <connections>
+                        <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="913-sV-XN5"/>
+                    </connections>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HEt-XO-5er" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2573" y="-307"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="yfP-sx-ZKF">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ekx-LD-Ctq" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController id="OKz-Av-1sf" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="IKK-HB-IZi">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -50,6 +52,7 @@
                         <segue destination="P2k-ap-28p" kind="relationship" relationship="rootViewController" id="hgP-Od-FJU"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ekx-LD-Ctq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1794" y="-307"/>
         </scene>
@@ -377,7 +380,7 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QWY-vZ-dUl"/>
         <segue reference="R7l-qZ-MC3"/>
+        <segue reference="913-sV-XN5"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
+#import "StoryCell.h"
+#import "CommentCell.h"
+#import "UserHeaderView.h"
 
-@interface UserViewController : UITableViewController
+@interface UserViewController : UITableViewController <StoryCellDelegate,
+    CommentCellDelegate, UserHeaderViewDelegate>
 
 @property (nonatomic, strong) User * user;
 

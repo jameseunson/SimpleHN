@@ -35,6 +35,10 @@
 // for 1 second or so, while an update animation plays
 @property (nonatomic, strong) NSDictionary * storyDiffDict;
 
+// Centralised point where action handling code can be invoked
++ (void)handleActionForComment:(Comment*)comment withType:
+    (NSNumber*)type inController:(UIViewController*)controller;
+
 @end
 
 @protocol CommentCellDelegate <NSObject>

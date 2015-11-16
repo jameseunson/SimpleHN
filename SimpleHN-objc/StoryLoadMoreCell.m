@@ -14,6 +14,8 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self) {
         
+        _state = StoryLoadMoreCellStateNormal;
+        
         self.loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
                             UIActivityIndicatorViewStyleGray];
         [self.contentView addSubview:_loadingView];
@@ -56,6 +58,21 @@
     [super layoutSubviews];
     
 //    _loadingView.frame = CGRectMake(<#CGFloat x#>, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
+}
+
+#pragma mark - Property Override Methods
+- (void)setState:(StoryLoadMoreCellState)state {
+    _state = state;
+    
+    if(self.state == StoryLoadMoreCellStateNormal) {
+        self.loadMoreSubtitleLabel.text = @"Load More";
+        
+    } else if(self.state == StoryLoadMoreCellStateTransition) {
+        self.loadMoreSubtitleLabel.text = @"Keep going...";
+        
+    } else {
+        self.loadMoreSubtitleLabel.text = @"Loading...";
+    }
 }
 
 @end

@@ -170,6 +170,32 @@
     _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _storyTitleSubtitleStackView.frame.origin.y + _storyTitleSubtitleStackView.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
++ (void)handleActionForStory:(Story*)story withType:
+    (NSNumber*)type inController:(UIViewController*)controller {
+    
+    ActionDrawerViewButtonType actionType = [type intValue];
+    
+    if(actionType == ActionDrawerViewButtonTypeUser) {
+        NSLog(@"StoryActionDrawerViewButtonTypeUser");
+        
+        [story loadUserForStory:^(User *user) {
+            [controller performSegueWithIdentifier:@"showUser" sender:user];
+        }];
+        
+    } else if(actionType == ActionDrawerViewButtonTypeMore) {
+        
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:story.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [controller presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 #pragma mark - Property Override Methods
 - (void)setStory:(Story *)story {
     _story = story;

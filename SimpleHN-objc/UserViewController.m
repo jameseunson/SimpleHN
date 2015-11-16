@@ -7,11 +7,10 @@
 //
 
 #import "UserViewController.h"
-#import "StoryCell.h"
 #import "StoryLoadMoreCell.h"
+#import "SuProgress.h"
 
-#import "CommentCell.h"
-#import "UserHeaderView.h"
+@import SafariServices;
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
@@ -21,14 +20,36 @@
 
 @property (nonatomic, strong) UserHeaderView * headerView;
 
+@property (nonatomic, strong) NSMutableDictionary * itemsLoadStatus;
+@property (nonatomic, strong) NSMutableDictionary * itemsLookup;
+
+@property (nonatomic, assign) NSInteger currentVisibleStoryMax;
+@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
+
+@property (nonatomic, strong) NSProgress * loadingProgress;
+
+- (void)loadMoreItems:(id)sender;
+
 @end
 
 @implementation UserViewController
+
+- (void)awakeFromNib {
+    
+    _currentVisibleStoryMax = 20;
+    
+    self.itemsLoadStatus = [[NSMutableDictionary alloc] init];
+    self.itemsLookup = [[NSMutableDictionary alloc] init];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:
+                            _currentVisibleStoryMax];
+}
 
 - (void)loadView {
     [super loadView];
     
     self.headerView = [[UserHeaderView alloc] init];
+    _headerView.delegate = self;
     _headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     self.tableView.dataSource = self;
@@ -43,6 +64,8 @@
     
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+    
+    [self SuProgressForProgress:self.loadingProgress];
 }
 
 - (void)viewDidLoad {
@@ -52,7 +75,141 @@
     [self.tableView setTableHeaderView:_headerView];
     
     self.headerView.user = self.user;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+
+    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+        
+        Story * story = [self itemForIndexPath:
+                         [self.tableView indexPathForSelectedRow]];
+        
+        StoryDetailViewController *controller = (StoryDetailViewController *)
+            [[segue destinationViewController] topViewController];
+        [controller setDetailItem:story];
+        
+        controller.navigationItem.leftBarButtonItem =
+        self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}
+
+#pragma mark - UITableViewDataSource Methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    if(!self.user) {
+        return 0;
+    }
+    
+    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.user.submitted count]);
+    if(itemsCount > 0) {
+        itemsCount = itemsCount + 1;
+    }
+    return itemsCount;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if(indexPath.row == _currentVisibleStoryMax && self.user
+       && [self.user.submitted count] > 0) {
+        
+        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                   kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
+        return cell;
+        
+    } else {
+        
+        id item = [self itemForIndexPath:indexPath];
+        if([item isKindOfClass:[Story class]]) {
+         
+            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                               kStoryCellReuseIdentifier forIndexPath:indexPath];
+            cell.story = item;
+            
+            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+                cell.expanded = YES;
+                
+            } else {
+                cell.expanded = NO;
+            }
+            
+            cell.delegate = self;
+            return cell;
+            
+        } else {
+            
+            CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                                 forIndexPath:indexPath];
+            cell.comment = item;
+            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+                cell.expanded = YES;
+                
+            } else {
+                cell.expanded = NO;
+            }
+            
+            cell.delegate = self;
+            
+            return cell;
+        }
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    if(indexPath.row == _currentVisibleStoryMax && self.user
+       && [self.user.submitted count] > 0) {
+        
+        [self loadMoreItems:nil];
+        
+    } else {
+        
+        id item = [self itemForIndexPath:indexPath];
+        if([item isKindOfClass:[Story class]]) {
+            [self performSegueWithIdentifier:@"showDetail" sender:nil];
+            
+        } else {
+            
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            if(_expandedCellIndexPath) {
+                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                              _expandedCellIndexPath];
+                expandedCell.expanded = NO;
+            }
+            
+            // User has tapped an expanded cell, toggle only
+            if([indexPath isEqual:_expandedCellIndexPath]) {
+                _expandedCellIndexPath = nil;
+                
+            } else { // Otherwise, set new expanded cell
+                self.expandedCellIndexPath = indexPath;
+                
+                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                              _expandedCellIndexPath];
+                expandedCell.expanded = YES;
+            }
+            
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+        }
+    }
+}
+
+#pragma mark - Private Methods
+- (id)itemForIndexPath:(NSIndexPath *)indexPath {
+    
+    NSNumber *identifier = self.user.submitted[indexPath.row];
+    if([[_itemsLookup allKeys] containsObject:identifier]) {
+        return _itemsLookup[identifier];
+    } else {
+        return nil;
+    }
+}
+
+- (void)loadMoreItems:(id)sender {
     
 }
 
@@ -62,6 +219,95 @@
     
     self.title = self.user.name;
     self.headerView.user = user;
+    
+    int i = 0;
+    for(NSNumber * item in self.user.submitted) {
+        
+        if([_itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoading)] ||
+           [_itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoaded)]) {
+            i++; continue;
+            
+        } else {
+            _itemsLoadStatus[item] = @(StoryLoadStatusNotLoaded);
+            if(i < _currentVisibleStoryMax) {
+                NSString * itemUrl = [NSString stringWithFormat:
+                                      @"https://hacker-news.firebaseio.com/v0/item/%@", item];
+                
+                __block Firebase * itemRef = [[Firebase alloc] initWithUrl:itemUrl];
+                [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+                    NSDictionary * value = snapshot.value;
+                    
+                    if(![snapshot.value isKindOfClass:[NSDictionary class]] ||
+                       ![[value allKeys] containsObject:@"type"]) {
+                        return;
+                    }
+                    
+                    NSString * typeString = value[@"type"];
+                    if([typeString isEqualToString:@"story"]) {
+                        [Story createStoryFromSnapshot:snapshot completion:^(Story *story) {
+                            _itemsLookup[item] = story;
+                            _itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                self.loadingProgress.completedUnitCount++;
+                                [self.tableView reloadData];
+                            });
+                        }];
+                        
+                    } else if([typeString isEqualToString:@"comment"]) {
+                        [Comment createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
+                            _itemsLookup[item] = comment;
+                            _itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                self.loadingProgress.completedUnitCount++;
+                                [self.tableView reloadData];
+                            });
+                        }];
+                    }
+                    
+                    [itemRef removeAllObservers];
+                }];
+                
+                NSLog(@"%@", itemUrl);
+                i++;
+            }
+        }
+    }
+}
+
+#pragma mark - StoryCellDelegate Methods
+- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
+    NSLog(@"storyCellDidDisplayActionDrawer:");
+    
+    if(_expandedCellIndexPath) {
+        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                    _expandedCellIndexPath];
+        expandedCell.expanded = NO;
+    }
+    
+    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
+    [StoryCell handleActionForStory:cell.story withType:type inController:self];
+}
+
+#pragma mark - CommentCellDelegate Methods
+- (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link {
+    SFSafariViewController * controller = [[SFSafariViewController alloc]
+                                           initWithURL:link.url];
+    [self.navigationController pushViewController:controller animated:YES];
+}
+- (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
+    [CommentCell handleActionForComment:cell.comment withType:type inController:self];
+}
+
+#pragma mark - UserHeaderViewDelegate Methods
+- (void)userHeaderView:(UserHeaderView*)view didChangeVisibleData:(NSNumber*)data {
+    
 }
 
 @end

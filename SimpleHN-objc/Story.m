@@ -127,20 +127,28 @@ static NSDateFormatter * _timeDateFormatter = nil;
     NSString * storyURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];
     __block Firebase * storyDetailRef = [[Firebase alloc] initWithUrl:storyURL];
+    
     [storyDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
-        NSError * error = nil;
-        Story * obj = [MTLJSONAdapter modelOfClass:Story.class
-                                  fromJSONDictionary:snapshot.value error:&error];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(obj);
-        });
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCreated
-                                                            object:obj];
+        [[self class] createStoryFromSnapshot:snapshot completion:completion];
         [storyDetailRef removeAllObservers];
     }];
+}
+
+// Used internally and from UserViewController
++ (void)createStoryFromSnapshot:(FDataSnapshot*)snapshot
+                     completion:(StoryBlock)completion {
+    
+    NSError * error = nil;
+    Story * obj = [MTLJSONAdapter modelOfClass:Story.class
+                            fromJSONDictionary:snapshot.value error:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        completion(obj);
+    });
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCreated
+                                                        object:obj];
 }
 
 - (NSDictionary*)diffOtherStory:(Story*)otherStory {

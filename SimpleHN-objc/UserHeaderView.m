@@ -88,7 +88,7 @@
         _toolbar.barTintColor = [UIColor whiteColor];
         _toolbar.tintColor = [UIColor orangeColor];
         
-        self.sectionSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"Submissions", @"Comments" ]];
+        self.sectionSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"All", @"Submissions", @"Comments" ]];
         _sectionSegmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
         _sectionSegmentedControl.selectedSegmentIndex = 0;
         [_sectionSegmentedControl addTarget:self action:
@@ -118,9 +118,9 @@
         
         [self.toolbar addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
                               @"V:|-[_sectionSegmentedControl]-|" options:0 metrics:nil views:bindings]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                              @"H:|-12-[_sectionSegmentedControl]-12-|" options:0 metrics:nil views:bindings]];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_sectionSegmentedControl attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_sectionSegmentedControl attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_mainStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
     }
@@ -142,6 +142,13 @@
 
 - (void)didChangeSegment:(id)sender {
     NSLog(@"didChangeSegment:");
+    
+    self.visibleData = (int)self.sectionSegmentedControl.selectedSegmentIndex;
+    
+    if([self.delegate respondsToSelector:@selector(userHeaderView:didChangeVisibleData:)]) {
+        [self.delegate performSelector:@selector(userHeaderView:didChangeVisibleData:)
+                            withObject:self withObject:@(_visibleData)];
+    }
 }
 
 @end

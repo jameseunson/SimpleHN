@@ -18,6 +18,10 @@
 
 @property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 
+// Centralised point where action handling code can be invoked
++ (void)handleActionForStory:(Story*)story withType:
+    (NSNumber*)type inController:(UIViewController*)controller;
+
 @end
 
 @protocol StoryCellDelegate <NSObject>
