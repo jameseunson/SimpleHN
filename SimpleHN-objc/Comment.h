@@ -31,7 +31,9 @@ typedef void (^CommentBlock)(Comment* comment);
 
 // Custom properties
 @property (nonatomic, assign) NSInteger indentation;
+
 @property (nonatomic, strong) NSMutableArray * childComments;
+@property (nonatomic, strong) Comment * parentComment;
 
 @property (nonatomic, assign) BOOL collapsed;
 

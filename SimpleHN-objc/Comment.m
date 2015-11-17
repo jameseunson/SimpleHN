@@ -76,6 +76,7 @@
         
         __block Comment * blockObj = obj;
         [Comment createCommentFromItemIdentifier:child completion:^(Comment *comment) {
+            comment.parentComment = blockObj;
             [blockObj.childComments addObject:comment];
         }];
     }
@@ -168,6 +169,8 @@
 
 - (void)setCollapsed:(BOOL)collapsed {
     _collapsed = collapsed;
+    
+    NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
     
     [[NSNotificationCenter defaultCenter] postNotificationName:
      kCommentCollapsedChanged object:self];

@@ -13,9 +13,10 @@
 #import "Story.h"
 
 //UITableViewDataSource, UITableViewDelegate, 
-@interface StoryDetailViewController : UITableViewController <CommentCellDelegate>
+@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate>
 
-@property (strong, nonatomic) Story * detailItem;
+@property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) Story * detailItem;
 
 @end
 

@@ -18,7 +18,9 @@
 
 @property (nonatomic, strong) KILabel * commentLabel;
 
-@property (nonatomic, strong) UIStackView * headerStackView;
+//@property (nonatomic, strong) UIStackView * headerStackView;
+
+@property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UILabel * authorLabel;
 @property (nonatomic, strong) UILabel * dateLabel;
 

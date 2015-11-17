@@ -19,33 +19,10 @@
 
 @interface StoriesViewController ()
 
-@property (nonatomic, strong) NSMutableDictionary * storiesLoadStatus;
-@property (nonatomic, strong) NSMutableDictionary * storiesLookup;
+- (void)loadVisibleItems;
 
+@property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
 @property (nonatomic, strong) NSMutableDictionary * storyDiffLookup;
-
-@property (nonatomic, assign) NSInteger currentVisibleStoryMax;
-
-@property (nonatomic, strong) UIRefreshControl * bottomRefreshControl;
-
-@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
-
-@property (nonatomic, assign) CGFloat loadMoreStartYPosition;
-@property (nonatomic, assign) CGFloat loadMoreCompleteYPosition;
-@property (nonatomic, assign) CGFloat lastContentOffset;
-
-// User has scrolled the tableview far enough to trigger a
-// load of 20 more articles, when the scrollview returns to
-// a neutral position
-@property (nonatomic, assign) BOOL loadMoreOnReleasePending;
-
-@property (nonatomic, strong) ContentLoadingView * loadingView;
-
-- (void)reloadContent:(id)sender;
-- (void)loadMoreStories:(id)sender;
-
-- (Story*)storyForIndexPath:(NSIndexPath*)indexPath;
-- (NSIndexPath*)indexPathForStory:(Story*)story;
 
 @end
 
@@ -55,64 +32,28 @@
     if(self.ref) {
         [self.ref removeAllObservers];
     }
-    [_loadingProgress removeObserver:self
+    [self.loadingProgress removeObserver:self
                           forKeyPath:@"fractionCompleted"];
 }
 
 - (void)awakeFromNib {
-    
-    _loadMoreStartYPosition = -1;
-    _loadMoreCompleteYPosition = -1;
-    _lastContentOffset = -1;
-    _loadMoreOnReleasePending = NO;
-    
-    _currentVisibleStoryMax = 20;
-    
-    self.storiesList = [[NSMutableArray alloc] init];
-    self.storiesLoadStatus = [[NSMutableDictionary alloc] init];
-    self.storiesLookup = [[NSMutableDictionary alloc] init];
+    [super awakeFromNib];
     
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
     self.storyDiffLookup = [[NSMutableDictionary alloc] init];
     
+    self.storiesList = [[NSMutableArray alloc] init];
+    
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
-    [_loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+    [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                           options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)loadView {
     [super loadView];
     
-    self.tableView = [[UITableView alloc] initWithFrame:
-                      CGRectZero style:UITableViewStylePlain];
-    
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
-    
-    [self.tableView registerClass:[StoryCell class]
-           forCellReuseIdentifier:kStoryCellReuseIdentifier];
-    [self.tableView registerClass:[StoryLoadMoreCell class]
-           forCellReuseIdentifier:kStoryLoadMoreCellReuseIdentifier];
-    
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
-
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    [self.view addSubview:_tableView];
-    
     [self SuProgressForProgress:self.loadingProgress];
-    
-    self.loadingView = [[ContentLoadingView alloc] init];
-    _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_loadingView];
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                          @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                          @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)viewDidLoad {
@@ -127,7 +68,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        Story * story = [self storyForIndexPath:[self.tableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath:[self.tableView indexPathForSelectedRow]];
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
             [[segue destinationViewController] topViewController];
@@ -140,7 +81,7 @@
     } else if([[segue identifier] isEqualToString:@"showUser"]) {
         NSLog(@"prepareForSegue, showUser");
         
-        Story * story = [self storyForIndexPath:[self.tableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath:[self.tableView indexPathForSelectedRow]];
         
         __block UserViewController *controller = (UserViewController *)
             [[segue destinationViewController] topViewController];
@@ -157,141 +98,11 @@
     }
 }
 
-#pragma mark - UIScrollViewDelegate Methods
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if(scrollView == self.tableView) {
-        
-        // If the loading cell has yet to appear on screen,
-        // no reason to continue and waste resources
-        if(_loadMoreStartYPosition == -1 || _loadMoreCompleteYPosition == -1) {
-            return;
-        }
-        // If a load is currently in progress, ignore
-        if(_loadingProgress.completedUnitCount != _loadingProgress.totalUnitCount) {
-            return;
-        }
-        
-        // contentOffset.y adjusted to match cell.frame.origin.y, taking into
-        // account screen height and inset from navigation bar b/c of translucency
-        CGFloat adjustedYPosition = (scrollView.contentOffset.y + scrollView.frame.size.height) -
-            44.0f - self.tableView.contentInset.top;
-        
-        BOOL scrollingDown = NO;
-        if(adjustedYPosition > _lastContentOffset) {
-            scrollingDown = YES;
-        }
-        
-        StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
-                                            [NSIndexPath indexPathForRow:_currentVisibleStoryMax inSection:0]];
-        
-        // Ensure that transition starts only when contentOffset is
-        // within the 44pt size of the loading cell, and when the user
-        // is scrolling down
-        
-        if( adjustedYPosition > _loadMoreStartYPosition &&
-            adjustedYPosition < _loadMoreCompleteYPosition &&
-            scrollingDown ) {
-            
-            if(loadMoreCell.state != StoryLoadMoreCellStateTransitionStart) {
-                loadMoreCell.state = StoryLoadMoreCellStateTransitionStart;
-            }
-            
-        } else if(adjustedYPosition > _loadMoreCompleteYPosition) {
-            
-            if(loadMoreCell.state != StoryLoadMoreCellStateTransitionComplete) {
-                loadMoreCell.state = StoryLoadMoreCellStateTransitionComplete;
-                
-                _loadMoreOnReleasePending = YES;
-            }
-            
-        } else {
-            
-            if(_loadMoreOnReleasePending) {
-                
-                [self loadMoreStories:nil];
-                loadMoreCell.state = StoryLoadMoreCellStateLoading;
-                
-                // Ensure the loading operation only occurs once
-                // as scrollViewDidScroll is called frequently
-                _loadMoreOnReleasePending = NO;
-                
-                // All these values are now no longer relevant
-                // If left in place, loads will happen in the content y offset
-                // the load cell was previously in, which is undesirable
-                _loadMoreStartYPosition = -1;
-                _loadMoreCompleteYPosition = -1;
-                _lastContentOffset = -1;
-                
-            } else if(loadMoreCell.state != StoryLoadMoreCellStateNormal) {
-                loadMoreCell.state = StoryLoadMoreCellStateNormal;
-            }
-        }
-        
-        _lastContentOffset = adjustedYPosition;
-    }
-}
-
 #pragma mark - Table View
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.storiesList count]);
-    if(itemsCount > 0) {
-        itemsCount = itemsCount + 1;
-    }
-    return itemsCount;
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if(indexPath.row == _currentVisibleStoryMax) {
-        _loadMoreStartYPosition = cell.frame.origin.y;
-        _loadMoreCompleteYPosition = cell.frame.origin.y + cell.frame.size.height;
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-    
-    if(indexPath.row == _currentVisibleStoryMax) {
-        _loadMoreStartYPosition = -1;
-        _loadMoreCompleteYPosition = -1;
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if(indexPath.row == _currentVisibleStoryMax && [self.storiesList count] > 0) {
-        
-        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                           kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
-        return cell;
-        
-    } else {
-        
-        StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                           kStoryCellReuseIdentifier forIndexPath:indexPath];
-        cell.story = [self storyForIndexPath:indexPath];
-        
-        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-            cell.expanded = YES;
-            
-        } else {
-            cell.expanded = NO;
-        }
-        
-        cell.delegate = self;
-        return cell;
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == _currentVisibleStoryMax && [self.storiesList count] > 0) {
-        [self loadMoreStories:nil];
+    if(indexPath.row == self.currentVisibleItemMax && [self.storiesList count] > 0) {
+        [self loadMoreItems];
         
     } else {
         [self performSegueWithIdentifier:@"showDetail" sender:nil];
@@ -366,7 +177,7 @@
         [self.storiesList addObjectsFromArray:snapshot.value];
         self.loadingProgress.completedUnitCount++;
         
-        [self loadVisibleStories];
+        [self loadVisibleItems];
         
         dispatch_async(dispatch_get_main_queue(), ^{
 //            [self.refreshControl endRefreshing];
@@ -375,25 +186,43 @@
     }];
 }
 
-- (void)loadVisibleStories {
+- (void)loadVisibleItems {
+    
+    if([self.storiesList count] > self.currentVisibleItemMax) {
+        self.shouldDisplayLoadMoreCell = YES;
+    } else {
+        self.shouldDisplayLoadMoreCell = NO;
+    }
+    
+    NSArray * loadedItems = [self.storiesList subarrayWithRange:
+                             NSMakeRange(0, MIN(self.currentVisibleItemMax, [self.storiesList count]))];
+    [self.visibleItems addObjectsFromArray:loadedItems];
+    
+    // Ensure that if the user has < 20 submissions,
+    // the page isn't endlessly stuck loading
+    self.loadingProgress.completedUnitCount = 0;
+    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
+                                              [self.storiesList count]);
     
     int i = 0;
-    for(NSNumber * identifier in _storiesList) {
+    for(NSNumber * identifier in self.storiesList) {
         
-        if([_storiesLoadStatus[identifier] isEqual:@(StoryLoadStatusLoading)] ||
-           [_storiesLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)]) {
+        if([self.itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoading)] ||
+           [self.itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)]) {
             i++; continue;
             
         } else {
          
-            _storiesLoadStatus[identifier] = @(StoryLoadStatusNotLoaded);
+            self.itemsLoadStatus[identifier] = @(StoryLoadStatusNotLoaded);
             
-            if(i < _currentVisibleStoryMax) {
-                _storiesLoadStatus[identifier] = @(StoryLoadStatusLoading);
+            if(i < self.currentVisibleItemMax) {
+                
+                self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoading);
+                
                 [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
                     
-                    _storiesLookup[identifier] = story;
-                    _storiesLoadStatus[identifier] = @(StoryLoadStatusLoaded);
+                    self.itemsLookup[identifier] = story;
+                    self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
@@ -407,54 +236,14 @@
     }
     
 }
-- (void)loadMoreStories:(id)sender {
-    NSLog(@"loadMoreStories:");
+- (void)loadMoreItems {
+    NSLog(@"StoriesViewController, loadMoreItems");
     
     self.loadingProgress.completedUnitCount = 0;
     self.loadingProgress.totalUnitCount = 20;
     
-    self.currentVisibleStoryMax += 20;
-    [self loadVisibleStories];
-}
-
-- (Story*)storyForIndexPath:(NSIndexPath *)indexPath {
-    
-    NSNumber *storyIdentifier = self.storiesList[indexPath.row];
-    if([[_storiesLookup allKeys] containsObject:storyIdentifier]) {
-        return _storiesLookup[storyIdentifier];
-    } else {
-        return nil;
-    }
-}
-
-- (NSIndexPath*)indexPathForStory:(Story*)story {
-    if([[_storiesLookup allKeys] containsObject:story.storyId]) {
-        NSInteger loc = [_storiesList indexOfObject:story.storyId];
-        if(loc != NSNotFound) {
-            return [NSIndexPath indexPathForRow:loc inSection:0];
-        }
-    }
-    return nil;
-}
-
-#pragma mark - StoryCellDelegate Methods
-- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
-    NSLog(@"storyCellDidDisplayActionDrawer:");
-    
-    if(_expandedCellIndexPath) {
-        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                    _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-    
-    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-}
-
-- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
-    [StoryCell handleActionForStory:cell.story withType:type inController:self];
+    self.currentVisibleItemMax += 20;
+    [self loadVisibleItems];
 }
 
 #pragma mark - KVO Callback Methods
@@ -463,8 +252,8 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {
-        if(!_loadingView.hidden) {
-            _loadingView.hidden = YES;
+        if(!self.loadingView.hidden) {
+            self.loadingView.hidden = YES;
         }
     }
 }

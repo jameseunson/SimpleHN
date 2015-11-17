@@ -52,6 +52,7 @@
 //    self.comments = [[NSMutableArray alloc] init];
 //    self.flatDisplayComments = [[NSMutableArray alloc] init];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self];    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
@@ -61,10 +62,12 @@
 - (void)loadView {
     [super loadView];
     
-//    self.tableView = [[UITableView alloc] init];
-    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero
+                                                  style:UITableViewStylePlain];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
+    
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
@@ -72,22 +75,11 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-//    [self.view addSubview:_tableView];
+    [self.view addSubview:_tableView];
     
-//    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
-//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-//                               @"V:|[_tableView]|" options:0 metrics:nil views:bindings]];
-//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-//                               @"H:|[_tableView]|" options:0 metrics:nil views:bindings]];
-    
-//    // Initialize the refresh control.
-//    self.refreshControl = [[UIRefreshControl alloc] init];
-//    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
-//    self.refreshControl.tintColor = [UIColor grayColor];
-//    
-//    [self.refreshControl addTarget:self
-//                            action:@selector(reloadContent:)
-//                  forControlEvents:UIControlEventValueChanged];
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"V:|[_tableView]|;H:|[_tableView]|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)setDetailItem:(id)newDetailItem {
@@ -184,9 +176,36 @@
     return cell;
 }
 
+//- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+//    
+//    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+//    if(comment.collapsed && comment.parentComment) {
+//        return 0;
+//        
+//    } else {
+//        return UITableViewAutomaticDimension;
+//    }
+//}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+    if(comment.collapsed && comment.parentComment) {
+        return 0;
+
+    } else {
+        return UITableViewAutomaticDimension;
+    }
+}
+
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+    if(comment.collapsed) {
+        comment.collapsed = NO;
+        return;
+    }
     
     if(_expandedCellIndexPath) {
         CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
@@ -245,8 +264,9 @@
             [self addChildViewController:_webViewController];
             
             UIView * webView = self.webViewController.view;
-            webView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+            webView.frame = CGRectMake(0, self.navigationController.navigationBar.frame.size.height + 10.0f, self.view.frame.size.width, self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + 10.0f));
             webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+            
             [self.view addSubview:webView];
             
         } else {
@@ -262,7 +282,13 @@
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
-    [self.tableView reloadData];
+    
+    NSLog(@"commentCollapsedChanged for comment with id: %@",
+          ((Comment*)notification.object).commentId);
+    
+//    [self.tableView reloadData];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 - (void)reloadContent:(id)sender {

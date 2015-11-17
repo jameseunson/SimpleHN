@@ -9,6 +9,7 @@
 #import "CommentCell.h"
 #import "TimeAgoInWords-Swift.h"
 #import "UIFont+SSTextSize.h"
+#import "JBNSLayoutConstraint+Install.h"
 
 @import SafariServices;
 
@@ -27,9 +28,13 @@
 @property (nonatomic, strong) NSLayoutConstraint * drawerBottomConstraint;
 @property (nonatomic, strong) NSLayoutConstraint * actionDrawerHeightConstraint;
 
+// Comments which aren't root-level are completely hidden when a parent is hidden
+// headerViewHeightConstraint.constant is configured to be 0
+@property (nonatomic, strong) NSLayoutConstraint * headerViewHeightConstraint;
+
 // Used to stick the stackview to the bottom of the contentView,
 // when the cell is collapsed, used when collapsed = YES
-@property (nonatomic, strong) NSLayoutConstraint * stackViewBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint * headerViewBottomConstraint;
 
 @property (nonatomic, strong) UITapGestureRecognizer * headerBackgroundViewTapGestureRecognizer;
 
@@ -47,6 +52,10 @@
 
 @implementation CommentCell
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self) {
@@ -55,8 +64,6 @@
         
         self.commentLabel = [[KILabel alloc] init];
         self.commentLabel.backgroundColor = [UIColor clearColor];
-        
-//        self.commentLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         
         NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
         self.commentLabel.font = [UIFont dynamicFontWithName:systemFontName baseSize:16.0f];
@@ -71,39 +78,31 @@
         
         [self.contentView addSubview:_commentLabel];
         
-        self.headerStackView = [[UIStackView alloc] init];
-        _headerStackView.axis = UILayoutConstraintAxisHorizontal;
-        _headerStackView.alignment = UIStackViewAlignmentCenter;
-        _headerStackView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.headerView = [[UIView alloc] init];
+        _headerView.translatesAutoresizingMaskIntoConstraints = NO;
         
-        self.headerUpDownLabel = [[UILabel alloc] init];
-        
+        self.headerUpDownLabel = [LabelHelper labelWithFont:
+                                  [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _headerUpDownLabel.text = kHeaderUpIcon;
-        _headerUpDownLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-        _headerUpDownLabel.backgroundColor = [UIColor clearColor];
         _headerUpDownLabel.textColor = [UIColor orangeColor];
-        
-        [_headerStackView addArrangedSubview:_headerUpDownLabel];
-        
-        self.authorLabel = [[UILabel alloc] init];
-        
-        _authorLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-        _authorLabel.textColor = [UIColor orangeColor];
-        _authorLabel.backgroundColor = [UIColor clearColor];
-        
-        [_headerStackView addArrangedSubview:_authorLabel];
-        
-        self.dateLabel = [[UILabel alloc] init];
-        
-        _dateLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-        _dateLabel.textColor = [UIColor grayColor];
-        _dateLabel.backgroundColor = [UIColor clearColor];
-        _dateLabel.textAlignment = NSTextAlignmentRight;
-        
-        [_headerStackView addArrangedSubview:_dateLabel];
-        _headerStackView.userInteractionEnabled = NO;
+        _headerUpDownLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
-        [self.contentView addSubview:_headerStackView];
+        [_headerView addSubview:_headerUpDownLabel];
+        
+        self.authorLabel = [LabelHelper labelWithFont:
+                            [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
+        _authorLabel.textColor = [UIColor orangeColor];
+        _authorLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [_headerView addSubview:_authorLabel];
+        
+        self.dateLabel = [LabelHelper labelWithFont:
+                          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
+        _dateLabel.textColor = [UIColor grayColor];
+        _dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [_headerView addSubview:_dateLabel];
+        
+        _headerView.userInteractionEnabled = NO;
+        [self.contentView addSubview:_headerView];
         
         self.headerBackgroundView = [[UIView alloc] init];
         _headerBackgroundView.backgroundColor = [UIColor clearColor];
@@ -128,16 +127,14 @@
         _actionDrawerBorderLayer.hidden = YES;
         [self.contentView.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
         
-        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentLabel, _headerStackView, _actionDrawerView);
+        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentLabel, _headerView, _actionDrawerView, _dateLabel, _authorLabel, _headerUpDownLabel);
         
-//        NSArray * contentVerticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-//                                              @"V:|-[_headerStackView]-10-[_commentLabel]-|" options:0 metrics:nil views:bindings];
-        NSArray * contentVerticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                                @"V:|-[_headerStackView]-10-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
+        self.headerViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_headerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0];
         
-        // Used when collapsed = NO
+        NSArray * verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
+                                         @"V:|-[_headerView(20)]-10-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
         int i = 0;
-        for(NSLayoutConstraint * constraint in contentVerticalConstraints) {
+        for(NSLayoutConstraint * constraint in verticalConstraints) {
             if(constraint.constant == 10 && constraint.firstItem == self.commentLabel) {
                 self.stackViewLabelJoinConstraint = constraint;
                 
@@ -147,31 +144,24 @@
             } else if(constraint.firstItem == self.contentView
                       && constraint.firstAttribute == NSLayoutAttributeBottomMargin) {
                 self.drawerBottomConstraint = constraint;
+            
+            } else if(constraint.constant == 20) {
+                self.headerViewHeightConstraint = constraint;
                 
             } else if(constraint.constant == 44) {
                 self.actionDrawerHeightConstraint = constraint;
             }
             i++;
         }
-        
-        [self.contentView addConstraints:contentVerticalConstraints];
-        
         _actionDrawerHeightConstraint.constant = 0;
+        [self.contentView addConstraints:verticalConstraints];
         
-        // Used when collapsed = YES
-        self.stackViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_headerStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0];
+        [self.contentView addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:@"H:|-[_actionDrawerView]-|;H:|-0-[_headerView]-|"
+                                                                                 options:0 metrics:nil views:bindings]];
         
-        NSArray * stackViewHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                                   @"H:|-20-[_headerStackView]-|" options:0 metrics:nil views:bindings];
-        for(NSLayoutConstraint * constraint in stackViewHorizontalConstraints) {
-            if(constraint.constant == 20) {
-                self.headerStackHorizontalInsetConstraint = constraint;
-            }
-        }
-        [self.contentView addConstraints:stackViewHorizontalConstraints];
-        
+        // commentLabel constraints
         NSArray * labelHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                      @"H:|-20-[_commentLabel]-|" options:0 metrics:nil views:bindings];
+                                                @"H:|-20-[_commentLabel]-|" options:0 metrics:nil views:bindings];
         
         for(NSLayoutConstraint * constraint in labelHorizontalConstraints) {
             if(constraint.constant == 20) {
@@ -180,13 +170,18 @@
         }
         [self.contentView addConstraints:labelHorizontalConstraints];
         
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_actionDrawerView]-|"
-                                                                                 options:0 metrics:nil views:bindings]];
+        // Explanation of syntax https://github.com/mikeswanson/JBNSLayoutConstraint used for brevity
+        NSArray * headerConstraints = [NSLayoutConstraint jb_constraintsWithVisualFormat:@"_dateLabel.centerY==|.centerY;_headerUpDownLabel.centerY==|.centerY;_authorLabel.centerY==|.centerY;H:|-20-[_headerUpDownLabel]-[_authorLabel];H:[_dateLabel]-|" options:0 metrics:nil views:bindings];
+        
+        for(NSLayoutConstraint * constraint in headerConstraints) {
+            if(constraint.constant == 20) {
+                self.headerStackHorizontalInsetConstraint = constraint;
+            }
+        }
+        [self.headerView addConstraints:headerConstraints];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
                                                      name:kCommentCollapsedChanged object:nil];
-        
-//        kCommentCollapsedChanged
     }
     return self;
 }
@@ -195,12 +190,12 @@
     [super layoutSubviews];
     
     CGFloat heightForBorder = (1.0 / [UIScreen mainScreen].scale);
-    _headerBorderLayer.frame = CGRectMake(0, _headerStackView.frame.origin.y +
-                                          _headerStackView.frame.size.height + 4.0f,
+    _headerBorderLayer.frame = CGRectMake(0, _headerView.frame.origin.y +
+                                          _headerView.frame.size.height + 4.0f,
                                           self.frame.size.width, heightForBorder);
     
     _headerBackgroundView.frame = CGRectMake(0, 0, self.frame.size.width,
-                                             _headerStackView.frame.size.height + 5.0f);
+                                             _headerView.frame.size.height + 5.0f);
     
     _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
@@ -208,7 +203,7 @@
 - (void)prepareForReuse {
     
     // Cell is in collapsed configuration
-    if([self.contentView.constraints containsObject:_stackViewBottomConstraint]) {
+    if([self.contentView.constraints containsObject:_headerViewBottomConstraint]) {
         [self uncollapseCell];
     }
 }
@@ -292,9 +287,9 @@
 - (void)setExpanded:(BOOL)expanded {
     _expanded = expanded;
     
-    if(self.comment.collapsed) {
-        [self uncollapseCell];
-    }
+//    if(self.comment.collapsed) {
+//        [self uncollapseCell];
+//    }
     
     if(expanded) {
         self.actionDrawerHeightConstraint.constant = 44;
@@ -336,25 +331,53 @@
 }
 
 - (void)collapseCell {
+    
+//    NSLog(@"collapseCell");
+    
     self.commentLabel.hidden = YES;
     
     [self.contentView removeConstraint:_stackViewLabelJoinConstraint];
     [self.contentView removeConstraint:_drawerBottomConstraint];
     [self.contentView removeConstraint:_labelDrawerJoinConstraint];
     
-    [self.contentView addConstraint:_stackViewBottomConstraint];
+    [self.contentView addConstraint:_headerViewBottomConstraint];
+    
+    self.headerUpDownLabel.text = kHeaderDownIcon;
+    self.headerUpDownLabel.textColor = [UIColor grayColor];
+    self.authorLabel.textColor = [UIColor grayColor];
+    
+    if(self.comment.parentComment) {
+        _headerViewHeightConstraint.constant = 0;
+        _headerView.hidden = YES;
+        _actionDrawerBorderLayer.hidden = YES;
+        _headerBorderLayer.hidden = YES;
+    }
     
     [self setNeedsUpdateConstraints];
 }
 
 - (void)uncollapseCell {
+
+//    NSLog(@"uncollapseCell");
+    
     self.commentLabel.hidden = NO;
     
-    [self.contentView removeConstraint:_stackViewBottomConstraint];
+    if(self.comment.parentComment) {
+        _headerViewHeightConstraint.constant = 20;
+        _headerView.hidden = NO;
+        _actionDrawerBorderLayer.hidden = NO;
+        _headerBorderLayer.hidden = NO;
+    }
+    
+    [self.contentView removeConstraint:_headerViewBottomConstraint];
     
     [self.contentView addConstraint:_stackViewLabelJoinConstraint];
     [self.contentView addConstraint:_drawerBottomConstraint];
     [self.contentView addConstraint:_labelDrawerJoinConstraint];
+    
+    self.headerUpDownLabel.text = kHeaderUpIcon;
+    self.headerUpDownLabel.textColor = [UIColor orangeColor];
+    self.authorLabel.textColor = [UIColor orangeColor];
     
     [self setNeedsUpdateConstraints];
 }

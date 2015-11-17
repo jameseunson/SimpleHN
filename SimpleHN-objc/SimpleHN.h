@@ -11,7 +11,9 @@
 
 #import "SimpleHNSplitViewController.h"
 #import "LabelHelper.h"
+
 #import "JBNSLayoutConstraint+LinearEquation.h"
+#import "JBNSLayoutConstraint+Install.h"
 
 // Three20 RGBColor macro
 #define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]

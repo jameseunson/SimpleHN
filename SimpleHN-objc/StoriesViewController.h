@@ -13,19 +13,12 @@
 
 @class StoryDetailViewController;
 
-@interface StoriesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, StoryCellDelegate>
-
-@property (nonatomic, strong) UITableView * tableView;
+@interface StoriesViewController : StoriesCommentsBaseViewController
 
 @property (nonatomic, strong) Firebase * ref;
-
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
-@property (nonatomic, strong) NSMutableArray * storiesList;
-
-@property (nonatomic, strong) NSProgress * loadingProgress;
 
 - (void)loadStoryIdentifiersWithRef:(Firebase *)ref;
-- (void)loadVisibleStories;
 
 @end
 
