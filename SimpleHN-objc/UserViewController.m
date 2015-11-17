@@ -13,50 +13,28 @@
 
 @import SafariServices;
 
-#define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
-#define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
-#define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
-
 @interface UserViewController ()
 
 @property (nonatomic, strong) UserHeaderView * headerView;
 
-@property (nonatomic, strong) NSMutableDictionary < NSNumber *, NSNumber * > * itemsLoadStatus;
-@property (nonatomic, strong) NSMutableDictionary < NSNumber *, id > * itemsLookup;
-
-@property (nonatomic, strong) NSMutableArray < NSNumber * > * visibleItems;
-
-@property (nonatomic, assign) NSInteger currentVisibleStoryMax;
-@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
-
-@property (nonatomic, strong) NSProgress * loadingProgress;
-
-@property (nonatomic, strong) ContentLoadingView * loadingView;
-
-- (void)loadMoreItems:(id)sender;
 - (void)applyFiltering;
+- (void)loadVisibleItems;
 
 @end
 
 @implementation UserViewController
 
 - (void)dealloc {
-    [_loadingProgress removeObserver:self
+    [self.loadingProgress removeObserver:self
                           forKeyPath:@"fractionCompleted"];
 }
 
 - (void)awakeFromNib {
-    
-    _currentVisibleStoryMax = 20;
-    
-    self.visibleItems = [[NSMutableArray alloc] init];
-    
-    self.itemsLoadStatus = [[NSMutableDictionary alloc] init];
-    self.itemsLookup = [[NSMutableDictionary alloc] init];
+    [super awakeFromNib];
     
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:
-                            _currentVisibleStoryMax];
-    [_loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                            self.currentVisibleItemMax];
+    [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                           options:NSKeyValueObservingOptionNew context:NULL];
 }
 
@@ -67,37 +45,7 @@
     _headerView.delegate = self;
     _headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    self.tableView = [[UITableView alloc] initWithFrame:
-                      CGRectZero style:UITableViewStylePlain];
-    
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
-
-    [self.tableView registerClass:[StoryCell class]
-           forCellReuseIdentifier:kStoryCellReuseIdentifier];
-    [self.tableView registerClass:[StoryLoadMoreCell class]
-           forCellReuseIdentifier:kStoryLoadMoreCellReuseIdentifier];
-    [self.tableView registerClass:[CommentCell class]
-           forCellReuseIdentifier:kCommentCellReuseIdentifier];
-    
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
-    
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    [self.view addSubview:_tableView];
-    
-    self.loadingView = [[ContentLoadingView alloc] init];
-    _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_loadingView];
-
     [self SuProgressForProgress:self.loadingProgress];
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)viewDidLoad {
@@ -106,104 +54,20 @@
     _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width, 132.0f);
     [self.tableView setTableHeaderView:_headerView];
     
-    self.headerView.user = self.user;
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        
-        Story * story = [self itemForIndexPath:
-                         [self.tableView indexPathForSelectedRow]];
-        
-        StoryDetailViewController *controller = (StoryDetailViewController *)
-            [[segue destinationViewController] topViewController];
-        [controller setDetailItem:story];
-        
-        controller.navigationItem.leftBarButtonItem =
-        self.splitViewController.displayModeButtonItem;
-        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    if(self.author) {
+        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
+            self.user = user;
+        }];
     }
 }
 
 #pragma mark - UITableViewDataSource Methods
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    if(!self.user) {
-        return 0;
-    }
-    
-//    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.user.submitted count]);
-//    if(itemsCount > 0) {
-//        itemsCount = itemsCount + 1;
-//    }
-//    return itemsCount;
-    
-    NSInteger itemsCount = [_visibleItems count];
-    if(itemsCount > 0) {
-        itemsCount = itemsCount + 1;
-    }
-    return itemsCount;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-//    if(indexPath.row == _currentVisibleStoryMax && self.user
-//       && [self.user.submitted count] > 0) {
-    if(indexPath.row == [_visibleItems count] && self.user
-       && [_visibleItems count] > 0) {
-    
-        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                                   kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
-        return cell;
-        
-    } else {
-        
-        id item = [self itemForIndexPath:indexPath];
-        if([item isKindOfClass:[Story class]]) {
-         
-            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                               kStoryCellReuseIdentifier forIndexPath:indexPath];
-            cell.story = item;
-            
-            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-                cell.expanded = YES;
-                
-            } else {
-                cell.expanded = NO;
-            }
-            
-            cell.delegate = self;
-            return cell;
-            
-        } else {
-            
-            CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
-                                                                 forIndexPath:indexPath];
-            cell.comment = item;
-            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-                cell.expanded = YES;
-                
-            } else {
-                cell.expanded = NO;
-            }
-            
-            cell.delegate = self;
-            
-            return cell;
-        }
-    }
-}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    if(indexPath.row == _currentVisibleStoryMax && self.user
+    if(indexPath.row == self.currentVisibleItemMax && self.user
        && [self.user.submitted count] > 0) {
         
-        [self loadMoreItems:nil];
+        [self loadMoreItems];
         
     } else {
         
@@ -214,21 +78,21 @@
         } else {
             
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            if(_expandedCellIndexPath) {
+            if(self.expandedCellIndexPath) {
                 CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                              _expandedCellIndexPath];
+                                              self.expandedCellIndexPath];
                 expandedCell.expanded = NO;
             }
             
             // User has tapped an expanded cell, toggle only
-            if([indexPath isEqual:_expandedCellIndexPath]) {
-                _expandedCellIndexPath = nil;
+            if([indexPath isEqual:self.expandedCellIndexPath]) {
+                self.expandedCellIndexPath = nil;
                 
             } else { // Otherwise, set new expanded cell
                 self.expandedCellIndexPath = indexPath;
                 
                 CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                              _expandedCellIndexPath];
+                                              self.expandedCellIndexPath];
                 expandedCell.expanded = YES;
             }
             
@@ -239,18 +103,14 @@
 }
 
 #pragma mark - Private Methods
-- (id)itemForIndexPath:(NSIndexPath *)indexPath {
+- (void)loadMoreItems {
+    NSLog(@"UserViewController, loadMoreItems");
     
-    NSNumber *identifier = _visibleItems[indexPath.row];
-    if([[_itemsLookup allKeys] containsObject:identifier]) {
-        return _itemsLookup[identifier];
-    } else {
-        return nil;
-    }
-}
-
-- (void)loadMoreItems:(id)sender {
+    self.loadingProgress.completedUnitCount = 0;
+    self.loadingProgress.totalUnitCount = 20;
     
+    self.currentVisibleItemMax += 20;
+    [self loadVisibleItems];
 }
 
 #pragma mark - Property Override Methods
@@ -260,26 +120,34 @@
     self.title = self.user.name;
     self.headerView.user = user;
     
-    // Initially unfiltered
-    [_visibleItems addObjectsFromArray:self.user.submitted];
+    if([self.user.submitted count] > self.currentVisibleItemMax) {
+        self.shouldDisplayLoadMoreCell = YES;
+    } else {
+        self.shouldDisplayLoadMoreCell = NO;
+    }
+    
+    [self loadVisibleItems];
+}
+
+- (void)loadVisibleItems {
     
     // Ensure that if the user has < 20 submissions,
     // the page isn't endlessly stuck loading
     self.loadingProgress.completedUnitCount = 0;
-    self.loadingProgress.totalUnitCount = MIN(_currentVisibleStoryMax,
+    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
                                               [_user.submitted count]);
     
     int i = 0;
     for(NSNumber * item in self.user.submitted) {
         
-        if([_itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoading)] ||
-           [_itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoaded)]) {
+        if([self.itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoading)] ||
+           [self.itemsLoadStatus[item] isEqual:@(StoryLoadStatusLoaded)]) {
             i++; continue;
             
         } else {
             
-            _itemsLoadStatus[item] = @(StoryLoadStatusNotLoaded);
-            if(i < _currentVisibleStoryMax) {
+            self.itemsLoadStatus[item] = @(StoryLoadStatusNotLoaded);
+            if(i < self.currentVisibleItemMax) {
                 NSString * itemUrl = [NSString stringWithFormat:
                                       @"https://hacker-news.firebaseio.com/v0/item/%@", item];
                 
@@ -295,8 +163,8 @@
                     NSString * typeString = value[@"type"];
                     if([typeString isEqualToString:@"story"]) {
                         [Story createStoryFromSnapshot:snapshot completion:^(Story *story) {
-                            _itemsLookup[item] = story;
-                            _itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
+                            self.itemsLookup[item] = story;
+                            self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 self.loadingProgress.completedUnitCount++;
@@ -306,8 +174,8 @@
                         
                     } else if([typeString isEqualToString:@"comment"]) {
                         [Comment createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
-                            _itemsLookup[item] = comment;
-                            _itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
+                            self.itemsLookup[item] = comment;
+                            self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 self.loadingProgress.completedUnitCount++;
@@ -319,7 +187,7 @@
                     [itemRef removeAllObservers];
                 }];
                 
-                NSLog(@"%@", itemUrl);
+                //                NSLog(@"%@", itemUrl);
                 i++;
             }
         }
@@ -328,11 +196,14 @@
 
 - (void)applyFiltering {
     
-    [_visibleItems removeAllObjects];
+    [self.visibleItems removeAllObjects];
     
     UserHeaderViewVisibleData visibleData = self.headerView.visibleData;
     if(visibleData == UserHeaderViewVisibleDataAll) {
-        [self.visibleItems addObjectsFromArray:self.user.submitted];
+        
+        NSArray * loadedItems = [self.user.submitted subarrayWithRange:
+                                 NSMakeRange(0, MIN(self.currentVisibleItemMax, [_user.submitted count]))];
+        [self.visibleItems addObjectsFromArray:loadedItems];
         
     } else if(visibleData == UserHeaderViewVisibleDataComments ||
               visibleData == UserHeaderViewVisibleDataSubmissions) {
@@ -348,9 +219,9 @@
         NSArray * filteredCommentItems = [self.user.submitted filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
             
             NSNumber * identifier = (NSNumber*)evaluatedObject;
-            if([_itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)] &&
-               [[_itemsLookup allKeys] containsObject:identifier] &&
-               [NSStringFromClass([_itemsLookup[identifier] class])
+            if([self.itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)] &&
+               [[self.itemsLookup allKeys] containsObject:identifier] &&
+               [NSStringFromClass([self.itemsLookup[identifier] class])
                 isEqualToString:filterClassName]) {
                    return YES;
                }
@@ -359,35 +230,6 @@
         [self.visibleItems addObjectsFromArray:filteredCommentItems];
     }
     [self.tableView reloadData];
-}
-
-#pragma mark - StoryCellDelegate Methods
-- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
-    NSLog(@"storyCellDidDisplayActionDrawer:");
-    
-    if(_expandedCellIndexPath) {
-        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                    _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-    
-    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-}
-- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
-    [StoryCell handleActionForStory:cell.story withType:type inController:self];
-}
-
-#pragma mark - CommentCellDelegate Methods
-- (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link {
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link.url];
-    [self.navigationController pushViewController:controller animated:YES];
-}
-- (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
-    [CommentCell handleActionForComment:cell.comment withType:type inController:self];
 }
 
 #pragma mark - UserHeaderViewDelegate Methods
@@ -404,8 +246,8 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {
-        if(!_loadingView.hidden) {
-            _loadingView.hidden = YES;
+        if(!self.loadingView.hidden) {
+            self.loadingView.hidden = YES;
         }
     }
 }

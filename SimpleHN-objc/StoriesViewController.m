@@ -145,9 +145,11 @@
         __block UserViewController *controller = (UserViewController *)
             [[segue destinationViewController] topViewController];
         
-        [story loadUserForStory:^(User *user) {
-            [controller setUser:user];
-        }];
+        if(sender && [sender isKindOfClass:[NSString class]]) {
+            controller.author = sender;
+        } else {
+            controller.author = story.author;
+        }
         
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;

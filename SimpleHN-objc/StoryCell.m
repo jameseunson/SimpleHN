@@ -173,14 +173,18 @@
 + (void)handleActionForStory:(Story*)story withType:
     (NSNumber*)type inController:(UIViewController*)controller {
     
+    NSLog(@"handleActionForStory: %@ with author: %@", story.title, story.author);
+    
     ActionDrawerViewButtonType actionType = [type intValue];
     
     if(actionType == ActionDrawerViewButtonTypeUser) {
         NSLog(@"StoryActionDrawerViewButtonTypeUser");
         
-        [story loadUserForStory:^(User *user) {
-            [controller performSegueWithIdentifier:@"showUser" sender:user];
-        }];
+//        [story loadUserForStory:^(User *user) {
+//
+//        }];
+        
+        [controller performSegueWithIdentifier:@"showUser" sender:story.author];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         

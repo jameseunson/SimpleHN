@@ -13,11 +13,11 @@
 #import "UserHeaderView.h"
 #import "StoriesCommentsBaseViewController.h"
 
-@interface UserViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
-    StoryCellDelegate, CommentCellDelegate, UserHeaderViewDelegate>
+@interface UserViewController : StoriesCommentsBaseViewController <UserHeaderViewDelegate>
 
-@property (nonatomic, strong) UITableView * tableView;
+//@property (nonatomic, strong) UITableView * tableView;
 
+@property (nonatomic, strong) NSString * author;
 @property (nonatomic, strong) User * user;
 
 @end

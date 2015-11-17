@@ -34,12 +34,17 @@
 
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 
+@property (nonatomic, assign) BOOL shouldDisplayLoadMoreCell;
+
 @property (nonatomic, assign) CGFloat loadMoreStartYPosition;
 @property (nonatomic, assign) CGFloat loadMoreCompleteYPosition;
 @property (nonatomic, assign) CGFloat lastContentOffset;
 
 @property (nonatomic, assign) BOOL loadMoreOnReleasePending;
 
+@property (nonatomic, strong) NSProgress * loadingProgress;
+
 - (id)itemForIndexPath:(NSIndexPath *)indexPath;
+- (void)loadMoreItems;
 
 @end

@@ -46,6 +46,8 @@
     // Get comment for identification number
     NSString * userURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/user/%@", identifier];
+    NSLog(@"%@", userURL);
+    
     __block Firebase * userDetailRef = [[Firebase alloc] initWithUrl:userURL];
     [userDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
