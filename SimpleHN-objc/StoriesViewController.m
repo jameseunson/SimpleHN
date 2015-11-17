@@ -24,7 +24,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary * storyDiffLookup;
 
-//@property (nonatomic, assign) NSInteger currentVisibleStoryMin;
 @property (nonatomic, assign) NSInteger currentVisibleStoryMax;
 
 @property (nonatomic, strong) UIRefreshControl * bottomRefreshControl;
@@ -110,15 +109,10 @@
     [self.view addSubview:_loadingView];
     
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                          @"H:|-0-[_loadingView]-0-|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                          @"V:|-0-[_loadingView]-0-|" options:0 metrics:nil views:bindings]];
-    
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                               @"H:|-0-[_tableView]-0-|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                               @"V:|-0-[_tableView]-0-|" options:0 metrics:nil views:bindings]];
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                          @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                          @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)viewDidLoad {
@@ -126,7 +120,6 @@
     
     self.detailViewController = ((SimpleHNSplitViewController*)
                                  self.splitViewController).storyDetailViewController;
-//    [self.refreshControl beginRefreshing];
 }
 
 #pragma mark - Segues
@@ -466,8 +459,12 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
     
-    NSLog(@"observeValueForKeyPath: %@ ofObject: %@ change: %@",
-          keyPath, object, change);
+    NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    if([fractionCompleted floatValue] == 1.0f) {
+        if(!_loadingView.hidden) {
+            _loadingView.hidden = YES;
+        }
+    }
 }
 
 

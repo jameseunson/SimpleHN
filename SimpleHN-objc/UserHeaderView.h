@@ -10,6 +10,7 @@
 #import "User.h"
 
 typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
+    UserHeaderViewVisibleDataAll,
     UserHeaderViewVisibleDataSubmissions,
     UserHeaderViewVisibleDataComments
 };

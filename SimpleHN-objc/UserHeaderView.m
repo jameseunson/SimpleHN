@@ -37,7 +37,7 @@
     self = [super init];
     if(self) {
         
-        _visibleData = UserHeaderViewVisibleDataSubmissions;
+        _visibleData = UserHeaderViewVisibleDataAll;
         
         self.mainStackView = [[UIStackView alloc] init];
         

@@ -23,6 +23,7 @@
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC481BFAEFEB00BA5B86 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
 		984DCC4A1BFAF07E00BA5B86 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
+		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
@@ -91,6 +92,8 @@
 		984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentLoadingView.m; sourceTree = "<group>"; };
 		984DCC471BFAEFEB00BA5B86 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
 		984DCC491BFAF07E00BA5B86 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		984DCC4B1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsBaseViewController.h; sourceTree = "<group>"; };
+		984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsBaseViewController.m; sourceTree = "<group>"; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
@@ -326,6 +329,8 @@
 				98E725BB1BF19A7200607CBC /* ShowHNViewController.m */,
 				9899FAB21BF1BE490097530C /* SimpleHNSplitViewController.h */,
 				9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */,
+				984DCC4B1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.h */,
+				984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -535,6 +540,7 @@
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
 				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
 				98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */,
+				984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,

@@ -9,6 +9,7 @@
 #import "UserViewController.h"
 #import "StoryLoadMoreCell.h"
 #import "SuProgress.h"
+#import "ContentLoadingView.h"
 
 @import SafariServices;
 
@@ -20,29 +21,43 @@
 
 @property (nonatomic, strong) UserHeaderView * headerView;
 
-@property (nonatomic, strong) NSMutableDictionary * itemsLoadStatus;
-@property (nonatomic, strong) NSMutableDictionary * itemsLookup;
+@property (nonatomic, strong) NSMutableDictionary < NSNumber *, NSNumber * > * itemsLoadStatus;
+@property (nonatomic, strong) NSMutableDictionary < NSNumber *, id > * itemsLookup;
+
+@property (nonatomic, strong) NSMutableArray < NSNumber * > * visibleItems;
 
 @property (nonatomic, assign) NSInteger currentVisibleStoryMax;
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
+@property (nonatomic, strong) ContentLoadingView * loadingView;
+
 - (void)loadMoreItems:(id)sender;
+- (void)applyFiltering;
 
 @end
 
 @implementation UserViewController
 
+- (void)dealloc {
+    [_loadingProgress removeObserver:self
+                          forKeyPath:@"fractionCompleted"];
+}
+
 - (void)awakeFromNib {
     
     _currentVisibleStoryMax = 20;
+    
+    self.visibleItems = [[NSMutableArray alloc] init];
     
     self.itemsLoadStatus = [[NSMutableDictionary alloc] init];
     self.itemsLookup = [[NSMutableDictionary alloc] init];
     
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:
                             _currentVisibleStoryMax];
+    [_loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                          options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)loadView {
@@ -52,9 +67,12 @@
     _headerView.delegate = self;
     _headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
+    self.tableView = [[UITableView alloc] initWithFrame:
+                      CGRectZero style:UITableViewStylePlain];
+    
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    
+
     [self.tableView registerClass:[StoryCell class]
            forCellReuseIdentifier:kStoryCellReuseIdentifier];
     [self.tableView registerClass:[StoryLoadMoreCell class]
@@ -65,7 +83,21 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.view addSubview:_tableView];
+    
+    self.loadingView = [[ContentLoadingView alloc] init];
+    _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_loadingView];
+
     [self SuProgressForProgress:self.loadingProgress];
+    
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)viewDidLoad {
@@ -105,7 +137,13 @@
         return 0;
     }
     
-    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.user.submitted count]);
+//    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.user.submitted count]);
+//    if(itemsCount > 0) {
+//        itemsCount = itemsCount + 1;
+//    }
+//    return itemsCount;
+    
+    NSInteger itemsCount = [_visibleItems count];
     if(itemsCount > 0) {
         itemsCount = itemsCount + 1;
     }
@@ -114,9 +152,11 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == _currentVisibleStoryMax && self.user
-       && [self.user.submitted count] > 0) {
-        
+//    if(indexPath.row == _currentVisibleStoryMax && self.user
+//       && [self.user.submitted count] > 0) {
+    if(indexPath.row == [_visibleItems count] && self.user
+       && [_visibleItems count] > 0) {
+    
         StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
                                    kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
         return cell;
@@ -201,7 +241,7 @@
 #pragma mark - Private Methods
 - (id)itemForIndexPath:(NSIndexPath *)indexPath {
     
-    NSNumber *identifier = self.user.submitted[indexPath.row];
+    NSNumber *identifier = _visibleItems[indexPath.row];
     if([[_itemsLookup allKeys] containsObject:identifier]) {
         return _itemsLookup[identifier];
     } else {
@@ -220,6 +260,15 @@
     self.title = self.user.name;
     self.headerView.user = user;
     
+    // Initially unfiltered
+    [_visibleItems addObjectsFromArray:self.user.submitted];
+    
+    // Ensure that if the user has < 20 submissions,
+    // the page isn't endlessly stuck loading
+    self.loadingProgress.completedUnitCount = 0;
+    self.loadingProgress.totalUnitCount = MIN(_currentVisibleStoryMax,
+                                              [_user.submitted count]);
+    
     int i = 0;
     for(NSNumber * item in self.user.submitted) {
         
@@ -228,6 +277,7 @@
             i++; continue;
             
         } else {
+            
             _itemsLoadStatus[item] = @(StoryLoadStatusNotLoaded);
             if(i < _currentVisibleStoryMax) {
                 NSString * itemUrl = [NSString stringWithFormat:
@@ -250,7 +300,7 @@
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 self.loadingProgress.completedUnitCount++;
-                                [self.tableView reloadData];
+                                [self applyFiltering];
                             });
                         }];
                         
@@ -261,7 +311,7 @@
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 self.loadingProgress.completedUnitCount++;
-                                [self.tableView reloadData];
+                                [self applyFiltering];
                             });
                         }];
                     }
@@ -274,6 +324,41 @@
             }
         }
     }
+}
+
+- (void)applyFiltering {
+    
+    [_visibleItems removeAllObjects];
+    
+    UserHeaderViewVisibleData visibleData = self.headerView.visibleData;
+    if(visibleData == UserHeaderViewVisibleDataAll) {
+        [self.visibleItems addObjectsFromArray:self.user.submitted];
+        
+    } else if(visibleData == UserHeaderViewVisibleDataComments ||
+              visibleData == UserHeaderViewVisibleDataSubmissions) {
+        
+        NSString * filterClassName = nil;
+        if(visibleData == UserHeaderViewVisibleDataSubmissions) {
+            filterClassName = @"Story";
+            
+        } else if(visibleData == UserHeaderViewVisibleDataComments) {
+            filterClassName = @"Comment";
+        }
+        
+        NSArray * filteredCommentItems = [self.user.submitted filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+            
+            NSNumber * identifier = (NSNumber*)evaluatedObject;
+            if([_itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)] &&
+               [[_itemsLookup allKeys] containsObject:identifier] &&
+               [NSStringFromClass([_itemsLookup[identifier] class])
+                isEqualToString:filterClassName]) {
+                   return YES;
+               }
+            return NO;
+        }]];
+        [self.visibleItems addObjectsFromArray:filteredCommentItems];
+    }
+    [self.tableView reloadData];
 }
 
 #pragma mark - StoryCellDelegate Methods
@@ -307,7 +392,22 @@
 
 #pragma mark - UserHeaderViewDelegate Methods
 - (void)userHeaderView:(UserHeaderView*)view didChangeVisibleData:(NSNumber*)data {
+    NSLog(@"UserViewController, userHeaderView, didChangeVisibleData");
+    [self applyFiltering];
+}
+
+#pragma mark - KVO Callback Methods
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
     
+    NSLog(@"UserViewController, %@", change);
+    
+    NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    if([fractionCompleted floatValue] == 1.0f) {
+        if(!_loadingView.hidden) {
+            _loadingView.hidden = YES;
+        }
+    }
 }
 
 @end

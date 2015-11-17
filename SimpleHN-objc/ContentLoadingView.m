@@ -9,6 +9,9 @@
 #import "ContentLoadingView.h"
 #import "UIFont+SSTextSize.h"
 
+// UIStackView means I don't even have to write a
+// layoutSubviews method!
+
 @interface ContentLoadingView ()
 
 @property (nonatomic, strong) UIStackView * stackView;
@@ -31,6 +34,7 @@
         _stackView.axis = UILayoutConstraintAxisHorizontal;
         _stackView.alignment = UIStackViewAlignmentCenter;
         _stackView.translatesAutoresizingMaskIntoConstraints = NO;
+        _stackView.spacing = 8.0f;
         
         self.loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
                             UIActivityIndicatorViewStyleGray];
@@ -39,7 +43,7 @@
         [self.stackView addArrangedSubview:_loadingView];
         
         NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
-        self.loadingLabel = [LabelHelper labelWithFont:[UIFont dynamicFontWithName:systemFontName baseSize:14.0f]];
+        self.loadingLabel = [LabelHelper labelWithFont:[UIFont dynamicFontWithName:systemFontName baseSize:16.0f]];
         
         _loadingLabel.textColor = RGBCOLOR(102, 102, 102);
         _loadingLabel.text = @"Loading...";
@@ -50,13 +54,8 @@
         
         [self addSubview:_stackView];
         
-//        NSDictionary * bindings = NSDictionaryOfVariableBindings(_stackView);
-        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_stackView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_stackView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
-        
-//        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_stackView]|" options:0 metrics:nil views:bindings]];
-//        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_stackView]|" options:0 metrics:nil views:bindings]];        
     }
     return self;
 }

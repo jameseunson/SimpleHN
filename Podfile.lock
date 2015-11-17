@@ -1,5 +1,6 @@
 PODS:
   - Firebase (2.4.2)
+  - JBNSLayoutConstraint (1.0.0)
   - KILabel (1.0.1)
   - Mantle (2.0.5):
     - Mantle/extobjc (= 2.0.5)
@@ -9,6 +10,7 @@ PODS:
 
 DEPENDENCIES:
   - Firebase (~> 2.4.0)
+  - JBNSLayoutConstraint (~> 1.0.0)
   - KILabel (~> 1.0.1)
   - Mantle
   - SSDynamicText (~> 0.5.0)
@@ -16,6 +18,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
+  JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006
   KILabel: 4797807cdc0b4992dad8bf91175ddc973c3b569b
   Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
   SSDynamicText: 775f8786d840e6d2b676e62600a42cf9c30cb9d6

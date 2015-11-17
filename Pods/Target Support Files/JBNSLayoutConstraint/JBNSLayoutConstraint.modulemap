@@ -1,0 +1,6 @@
+framework module JBNSLayoutConstraint {
+  umbrella header "JBNSLayoutConstraint-umbrella.h"
+
+  export *
+  module * { export * }
+}

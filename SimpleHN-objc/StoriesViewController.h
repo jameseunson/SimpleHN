@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Firebase.h"
 #import "StoryCell.h"
+#import "StoriesCommentsBaseViewController.h"
 
 @class StoryDetailViewController;
 
