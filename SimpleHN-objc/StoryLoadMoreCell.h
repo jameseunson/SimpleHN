@@ -10,7 +10,8 @@
 
 typedef NS_ENUM(NSInteger, StoryLoadMoreCellState) {
     StoryLoadMoreCellStateNormal, // Pull to load more
-    StoryLoadMoreCellStateTransition, // Keep pulling
+    StoryLoadMoreCellStateTransitionStart, // Keep pulling
+    StoryLoadMoreCellStateTransitionComplete, // Release
     StoryLoadMoreCellStateLoading // Loading
 };
 

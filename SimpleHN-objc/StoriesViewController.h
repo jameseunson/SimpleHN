@@ -12,7 +12,9 @@
 
 @class StoryDetailViewController;
 
-@interface StoriesViewController : UITableViewController <UIScrollViewDelegate, StoryCellDelegate>
+@interface StoriesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, StoryCellDelegate>
+
+@property (nonatomic, strong) UITableView * tableView;
 
 @property (nonatomic, strong) Firebase * ref;
 

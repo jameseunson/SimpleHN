@@ -12,6 +12,7 @@
 #import "StoryLoadMoreCell.h"
 #import "UserViewController.h"
 #import "SuProgress.h"
+#import "ContentLoadingView.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
@@ -29,7 +30,17 @@
 @property (nonatomic, strong) UIRefreshControl * bottomRefreshControl;
 
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
-@property (nonatomic, assign) CGFloat loadMoreYPosition;
+
+@property (nonatomic, assign) CGFloat loadMoreStartYPosition;
+@property (nonatomic, assign) CGFloat loadMoreCompleteYPosition;
+@property (nonatomic, assign) CGFloat lastContentOffset;
+
+// User has scrolled the tableview far enough to trigger a
+// load of 20 more articles, when the scrollview returns to
+// a neutral position
+@property (nonatomic, assign) BOOL loadMoreOnReleasePending;
+
+@property (nonatomic, strong) ContentLoadingView * loadingView;
 
 - (void)reloadContent:(id)sender;
 - (void)loadMoreStories:(id)sender;
@@ -45,11 +56,17 @@
     if(self.ref) {
         [self.ref removeAllObservers];
     }
+    [_loadingProgress removeObserver:self
+                          forKeyPath:@"fractionCompleted"];
 }
 
 - (void)awakeFromNib {
     
-    _loadMoreYPosition = -1;
+    _loadMoreStartYPosition = -1;
+    _loadMoreCompleteYPosition = -1;
+    _lastContentOffset = -1;
+    _loadMoreOnReleasePending = NO;
+    
     _currentVisibleStoryMax = 20;
     
     self.storiesList = [[NSMutableArray alloc] init];
@@ -61,10 +78,15 @@
     self.storyDiffLookup = [[NSMutableDictionary alloc] init];
     
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
+    [_loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                          options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)loadView {
     [super loadView];
+    
+    self.tableView = [[UITableView alloc] initWithFrame:
+                      CGRectZero style:UITableViewStylePlain];
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -76,17 +98,27 @@
     
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
-//    // Initialize the refresh control.
-//    self.refreshControl = [[UIRefreshControl alloc] init];
-//    self.refreshControl.backgroundColor = RGBCOLOR(235, 235, 235);
-//    self.refreshControl.tintColor = [UIColor grayColor];
-//    
-//    [self.refreshControl addTarget:self
-//                            action:@selector(reloadContent:)
-//                  forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:_tableView];
     
     [self SuProgressForProgress:self.loadingProgress];
+    
+    self.loadingView = [[ContentLoadingView alloc] init];
+    _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_loadingView];
+    
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                          @"H:|-0-[_loadingView]-0-|" options:0 metrics:nil views:bindings]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                          @"V:|-0-[_loadingView]-0-|" options:0 metrics:nil views:bindings]];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                               @"H:|-0-[_tableView]-0-|" options:0 metrics:nil views:bindings]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                               @"V:|-0-[_tableView]-0-|" options:0 metrics:nil views:bindings]];
 }
 
 - (void)viewDidLoad {
@@ -134,45 +166,73 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if(scrollView == self.tableView) {
         
-        if(_loadMoreYPosition == -1) {
+        // If the loading cell has yet to appear on screen,
+        // no reason to continue and waste resources
+        if(_loadMoreStartYPosition == -1 || _loadMoreCompleteYPosition == -1) {
+            return;
+        }
+        // If a load is currently in progress, ignore
+        if(_loadingProgress.completedUnitCount != _loadingProgress.totalUnitCount) {
             return;
         }
         
-//        NSLog(@"%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
-//        
-//        NSLog(@"scrollViewDidScroll: %f, %f, %f", scrollView.contentOffset.y, (scrollView.contentOffset.y + scrollView.frame.size.height) - 44.0f - self.tableView.contentInset.top, scrollView.contentSize.height - 44.0f);
-        
+        // contentOffset.y adjusted to match cell.frame.origin.y, taking into
+        // account screen height and inset from navigation bar b/c of translucency
         CGFloat adjustedYPosition = (scrollView.contentOffset.y + scrollView.frame.size.height) -
             44.0f - self.tableView.contentInset.top;
+        
+        BOOL scrollingDown = NO;
+        if(adjustedYPosition > _lastContentOffset) {
+            scrollingDown = YES;
+        }
         
         StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
                                             [NSIndexPath indexPathForRow:_currentVisibleStoryMax inSection:0]];
         
-        if(adjustedYPosition > _loadMoreYPosition) {
-            NSLog(@"%f > %f", adjustedYPosition, _loadMoreYPosition);
+        // Ensure that transition starts only when contentOffset is
+        // within the 44pt size of the loading cell, and when the user
+        // is scrolling down
+        
+        if( adjustedYPosition > _loadMoreStartYPosition &&
+            adjustedYPosition < _loadMoreCompleteYPosition &&
+            scrollingDown ) {
             
-            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
-                loadMoreCell.state = StoryLoadMoreCellStateTransition;
+            if(loadMoreCell.state != StoryLoadMoreCellStateTransitionStart) {
+                loadMoreCell.state = StoryLoadMoreCellStateTransitionStart;
             }
+            
+        } else if(adjustedYPosition > _loadMoreCompleteYPosition) {
+            
+            if(loadMoreCell.state != StoryLoadMoreCellStateTransitionComplete) {
+                loadMoreCell.state = StoryLoadMoreCellStateTransitionComplete;
+                
+                _loadMoreOnReleasePending = YES;
+            }
+            
         } else {
             
-            if(loadMoreCell.state != StoryLoadMoreCellStateNormal) {
+            if(_loadMoreOnReleasePending) {
+                
+                [self loadMoreStories:nil];
+                loadMoreCell.state = StoryLoadMoreCellStateLoading;
+                
+                // Ensure the loading operation only occurs once
+                // as scrollViewDidScroll is called frequently
+                _loadMoreOnReleasePending = NO;
+                
+                // All these values are now no longer relevant
+                // If left in place, loads will happen in the content y offset
+                // the load cell was previously in, which is undesirable
+                _loadMoreStartYPosition = -1;
+                _loadMoreCompleteYPosition = -1;
+                _lastContentOffset = -1;
+                
+            } else if(loadMoreCell.state != StoryLoadMoreCellStateNormal) {
                 loadMoreCell.state = StoryLoadMoreCellStateNormal;
             }
         }
         
-//        if(scrollView.contentOffset.y > (scrollView.contentSize.height - 44.0f)) {
-//
-//            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
-//                loadMoreCell.state = StoryLoadMoreCellStateTransition;
-//            }
-//            
-////            [_bottomRefreshControl beginRefreshing];
-//        } else {
-////            if(loadMoreCell.state != StoryLoadMoreCellStateTransition) {
-////                loadMoreCell.state = StoryLoadMoreCellStateTransition;
-////            }
-//        }
+        _lastContentOffset = adjustedYPosition;
     }
 }
 
@@ -194,14 +254,16 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if(indexPath.row == _currentVisibleStoryMax) {
-        _loadMoreYPosition = cell.frame.origin.y;
+        _loadMoreStartYPosition = cell.frame.origin.y;
+        _loadMoreCompleteYPosition = cell.frame.origin.y + cell.frame.size.height;
     }
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
     
     if(indexPath.row == _currentVisibleStoryMax) {
-        _loadMoreYPosition = -1;
+        _loadMoreStartYPosition = -1;
+        _loadMoreCompleteYPosition = -1;
     }
 }
 
@@ -244,9 +306,9 @@
 - (void)reloadContent:(id)sender {
     
     // Simulated reload, TODO: Real reload
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.refreshControl endRefreshing];
-    });
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self.refreshControl endRefreshing];
+//    });
 }
 
 #pragma mark - Private Methods
@@ -312,7 +374,7 @@
         [self loadVisibleStories];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.refreshControl endRefreshing];
+//            [self.refreshControl endRefreshing];
             [self.tableView reloadData];
         });
     }];
@@ -352,6 +414,9 @@
 }
 - (void)loadMoreStories:(id)sender {
     NSLog(@"loadMoreStories:");
+    
+    self.loadingProgress.completedUnitCount = 0;
+    self.loadingProgress.totalUnitCount = 20;
     
     self.currentVisibleStoryMax += 20;
     [self loadVisibleStories];
@@ -396,5 +461,14 @@
 - (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
     [StoryCell handleActionForStory:cell.story withType:type inController:self];
 }
+
+#pragma mark - KVO Callback Methods
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
+    
+    NSLog(@"observeValueForKeyPath: %@ ofObject: %@ change: %@",
+          keyPath, object, change);
+}
+
 
 @end

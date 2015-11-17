@@ -20,6 +20,9 @@
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
+		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
+		984DCC481BFAEFEB00BA5B86 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
+		984DCC4A1BFAF07E00BA5B86 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
@@ -84,6 +87,10 @@
 		984418B71BB69BCC00F66A02 /* StoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCell.m; sourceTree = "<group>"; };
 		984844D81BB6A83C00C1EB7A /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
 		984844D91BB6A83C00C1EB7A /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
+		984DCC441BFAE9E200BA5B86 /* ContentLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentLoadingView.h; sourceTree = "<group>"; };
+		984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentLoadingView.m; sourceTree = "<group>"; };
+		984DCC471BFAEFEB00BA5B86 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
+		984DCC491BFAF07E00BA5B86 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
@@ -130,7 +137,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				984DCC4A1BFAF07E00BA5B86 /* libz.tbd in Frameworks */,
 				311107E5FF8D104CED301173 /* Pods.framework in Frameworks */,
+				984DCC481BFAEFEB00BA5B86 /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +163,8 @@
 		608F052A0ECFAE47F8084751 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				984DCC491BFAF07E00BA5B86 /* libz.tbd */,
+				984DCC471BFAEFEB00BA5B86 /* Reveal.framework */,
 				5294386F028D553C3FAE5107 /* Pods.framework */,
 			);
 			name = Frameworks;
@@ -254,6 +265,8 @@
 				98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */,
 				98F5EBDC1BF0957800B1BA08 /* UserHeaderView.h */,
 				98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */,
+				984DCC441BFAE9E200BA5B86 /* ContentLoadingView.h */,
+				984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -532,6 +545,7 @@
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
 				98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */,
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
+				984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
@@ -618,6 +632,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -662,6 +677,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
