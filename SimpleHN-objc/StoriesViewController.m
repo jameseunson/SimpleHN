@@ -194,6 +194,8 @@
         self.shouldDisplayLoadMoreCell = NO;
     }
     
+    [self.visibleItems removeAllObjects];
+    
     NSArray * loadedItems = [self.storiesList subarrayWithRange:
                              NSMakeRange(0, MIN(self.currentVisibleItemMax, [self.storiesList count]))];
     [self.visibleItems addObjectsFromArray:loadedItems];

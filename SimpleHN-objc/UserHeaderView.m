@@ -27,6 +27,10 @@
 @property (nonatomic, strong) UIToolbar * toolbar;
 @property (nonatomic, strong) UISegmentedControl * sectionSegmentedControl;
 
+// List of views on which the intrinsicContentSize.height of this
+// view depends
+@property (nonatomic, strong) NSArray * heightDependentViews;
+
 - (void)didChangeSegment:(id)sender;
 
 @end
@@ -38,6 +42,8 @@
     if(self) {
         
         _visibleData = UserHeaderViewVisibleDataAll;
+        
+        self.heightDependentViews = @[];
         
         self.mainStackView = [[UIStackView alloc] init];
         
@@ -82,6 +88,10 @@
         
         [self addSubview:_karmaStackView];
         
+        self.aboutLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
+        self.aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_aboutLabel];
+        
         self.toolbar = [[UIToolbar alloc] init];
         _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
         _toolbar.translucent = YES;
@@ -98,18 +108,17 @@
         
         [self addSubview:_toolbar];
         
+        self.heightDependentViews = @[ _nameLabel, _accountCreatedLabel, _submissionsLabel, _aboutLabel ];
+        
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_mainStackView, _karmaStackView,
-                                                                 _toolbar, _sectionSegmentedControl);
+                                                                 _toolbar, _sectionSegmentedControl, _aboutLabel);
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"V:|-12-[_mainStackView]" options:0 metrics:nil views:bindings]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"V:[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
+                              @"V:|-12-[_mainStackView]-12-[_aboutLabel]-12-[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
         
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"H:|-12-[_mainStackView]" options:0 metrics:nil views:bindings]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"H:|-0-[_toolbar]-0-|" options:0 metrics:nil views:bindings]];
+        [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                              @"H:|-12-[_mainStackView];H:|-0-[_toolbar]-0-|;H:|-12-[_aboutLabel]-|"
+                                                                        options:0 metrics:nil views:bindings]];
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
                               @"V:|-12-[_karmaStackView]" options:0 metrics:nil views:bindings]];
@@ -121,13 +130,25 @@
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
                               @"H:|-12-[_sectionSegmentedControl]-12-|" options:0 metrics:nil views:bindings]];
 
-        
+        // Stackview is 75% of UserHeaderView width
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_mainStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
     }
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    [self invalidateIntrinsicContentSize];
+}
 
+- (CGSize)intrinsicContentSize {
+    
+    [_heightDependentViews makeObjectsPerformSelector:@selector(sizeToFit)];
+    
+    CGFloat heightForContent = roundf(12.0f + _nameLabel.frame.size.height + _accountCreatedLabel.frame.size.height + _submissionsLabel.frame.size.height + 12.0f + _aboutLabel.frame.size.height + 12.0f + 44.0f);
+    return CGSizeMake(UIViewNoIntrinsicMetric, heightForContent);
+}
 
 #pragma mark - Property Override Methods
 - (void)setUser:(User *)user {
@@ -138,6 +159,8 @@
     self.submissionsLabel.text = _user.submissionsString;
     
     self.karmaLabel.text = [_user.karma stringValue];
+    self.aboutLabel.text = _user.about;
+    [self setNeedsLayout];
 }
 
 - (void)didChangeSegment:(id)sender {

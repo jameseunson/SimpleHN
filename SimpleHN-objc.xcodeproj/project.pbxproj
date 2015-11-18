@@ -21,8 +21,6 @@
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
-		984DCC481BFAEFEB00BA5B86 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
-		984DCC4A1BFAF07E00BA5B86 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
@@ -140,9 +138,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				984DCC4A1BFAF07E00BA5B86 /* libz.tbd in Frameworks */,
 				311107E5FF8D104CED301173 /* Pods.framework in Frameworks */,
-				984DCC481BFAEFEB00BA5B86 /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,13 +701,13 @@
 			baseConfigurationReference = ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: James Eunson (45J782VD7S)";
 				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
+				PROVISIONING_PROFILE = "103633ed-b092-4fad-bae8-127e1fd561fa";
 			};
 			name = Debug;
 		};
@@ -720,13 +716,13 @@
 			baseConfigurationReference = 4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: James Eunson (45J782VD7S)";
 				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
+				PROVISIONING_PROFILE = "103633ed-b092-4fad-bae8-127e1fd561fa";
 			};
 			name = Release;
 		};

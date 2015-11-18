@@ -7,6 +7,7 @@
 //
 
 #import "LabelHelper.h"
+#import "UIFont+SSTextSize.h"
 
 @implementation LabelHelper
 
@@ -19,8 +20,29 @@
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    label.textColor = [UIColor blackColor];
     
     return label;
+}
+
++ (KILabel*)kiLabelWithFont:(UIFont*)font {
+    
+    KILabel * label = [[KILabel alloc] init];
+    
+    label.backgroundColor = [UIColor clearColor];
+    label.font = font;
+    
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.numberOfLines = 0;
+    label.textColor = [UIColor blackColor];
+    label.automaticLinkDetectionEnabled = YES;
+    
+    return label;
+}
+
++ (UIFont*)adjustedBodyFont {
+    NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
+    return [UIFont dynamicFontWithName:systemFontName baseSize:16.0f];
 }
 
 @end

@@ -13,6 +13,7 @@
 #import "Comment.h"
 #import "UserViewController.h"
 #import "SuProgress.h"
+#import "ActionDrawerButton.h"
 
 #define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
 
@@ -75,6 +76,9 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
+    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                   self.tabBarController.tabBar.frame.size.height, 0);
     [self.view addSubview:_tableView];
     
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
@@ -264,7 +268,10 @@
             [self addChildViewController:_webViewController];
             
             UIView * webView = self.webViewController.view;
-            webView.frame = CGRectMake(0, self.navigationController.navigationBar.frame.size.height + 10.0f, self.view.frame.size.width, self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + 10.0f));
+            webView.frame = CGRectMake(0,
+                                       self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height,
+                                       self.view.frame.size.width,
+                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + 10.0f));
             webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
             
             [self.view addSubview:webView];

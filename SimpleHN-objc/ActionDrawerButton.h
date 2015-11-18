@@ -8,6 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, ActionDrawerViewButtonType) {
+    ActionDrawerViewButtonTypeUser,
+    ActionDrawerViewButtonTypeFlag,
+    ActionDrawerViewButtonTypeLink,
+    ActionDrawerViewButtonTypeMore
+};
+
 @interface ActionDrawerButton : UIButton
+
+@property (nonatomic, assign) ActionDrawerViewButtonType drawerButtonType;
+
++ (ActionDrawerButton*)buttonWithType:(ActionDrawerViewButtonType)type;
 
 @end

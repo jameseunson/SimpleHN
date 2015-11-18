@@ -51,9 +51,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width, 132.0f);
-    [self.tableView setTableHeaderView:_headerView];
-    
     if(self.author) {
         [User createUserFromItemIdentifier:self.author completion:^(User *user) {
             self.user = user;
@@ -105,6 +102,7 @@
 #pragma mark - Private Methods
 - (void)loadMoreItems {
     NSLog(@"UserViewController, loadMoreItems");
+    [super loadMoreItems];
     
     self.loadingProgress.completedUnitCount = 0;
     self.loadingProgress.totalUnitCount = 20;
@@ -119,6 +117,14 @@
     
     self.title = self.user.name;
     self.headerView.user = user;
+    
+    // Content size can only be determined when we have a user object
+    // tableHeaderView frame can't be changed once assigned, so we have to
+    // size and set here
+    CGSize headerContentSize = _headerView.intrinsicContentSize;
+    _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width,
+                                   MAX( headerContentSize.height, 132.0f ) );
+    [self.tableView setTableHeaderView:_headerView];
     
     if([self.user.submitted count] > self.currentVisibleItemMax) {
         self.shouldDisplayLoadMoreCell = YES;
@@ -241,8 +247,6 @@
 #pragma mark - KVO Callback Methods
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-    
-    NSLog(@"UserViewController, %@", change);
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {

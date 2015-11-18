@@ -8,9 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "KILabel.h"
 
 @interface LabelHelper : NSObject
 
 + (UILabel*)labelWithFont:(UIFont*)font;
++ (KILabel*)kiLabelWithFont:(UIFont*)font;
+
+// Dynamic type body font adjusted from the
+// default 17pt to 16pt, which looks slightly less
+// over-large
++ (UIFont*)adjustedBodyFont;
 
 @end

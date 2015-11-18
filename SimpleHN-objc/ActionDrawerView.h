@@ -8,17 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, ActionDrawerViewButtonType) {
-    ActionDrawerViewButtonTypeUser,
-    ActionDrawerViewButtonTypeFlag,
-    ActionDrawerViewButtonTypeLink,
-    ActionDrawerViewButtonTypeMore
-};
-
 @protocol ActionDrawerViewDelegate;
 @interface ActionDrawerView : UIView
 
-@property (nonatomic, strong) NSArray < NSNumber * > * buttonTypes;
+//@property (nonatomic, strong) NSArray < NSNumber * > * buttonTypes;
 @property (nonatomic, assign) __unsafe_unretained
     id<ActionDrawerViewDelegate> delegate;
 

@@ -10,6 +10,7 @@
 #import "TimeAgoInWords-Swift.h"
 #import "UIFont+SSTextSize.h"
 #import "JBNSLayoutConstraint+Install.h"
+#import "ActionDrawerButton.h"
 
 @import SafariServices;
 
@@ -62,20 +63,8 @@
         
         _expanded = NO;        
         
-        self.commentLabel = [[KILabel alloc] init];
-        self.commentLabel.backgroundColor = [UIColor clearColor];
-        
-        NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
-        self.commentLabel.font = [UIFont dynamicFontWithName:systemFontName baseSize:16.0f];
-        
-        self.commentLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.commentLabel.numberOfLines = 0;
-        self.commentLabel.userInteractionEnabled = YES;
-        self.commentLabel.textColor = [UIColor blackColor];
-        
+        self.commentLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
         self.commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        self.commentLabel.automaticLinkDetectionEnabled = YES;
-        
         [self.contentView addSubview:_commentLabel];
         
         self.headerView = [[UIView alloc] init];

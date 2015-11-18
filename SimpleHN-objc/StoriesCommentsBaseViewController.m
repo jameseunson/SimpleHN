@@ -49,6 +49,9 @@
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
+    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                   self.tabBarController.tabBar.frame.size.height, 0);
     [self.view addSubview:_tableView];
     
     self.loadingView = [[ContentLoadingView alloc] init];
@@ -253,6 +256,11 @@
 // Stub method, to be overridden in subclass
 - (void)loadMoreItems {
     NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
+    
+    // Reset to original state
+    StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
+                                        [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
+    loadMoreCell.state = StoryLoadMoreCellStateNormal;
 }
 
 #pragma mark - Property Override Methods
