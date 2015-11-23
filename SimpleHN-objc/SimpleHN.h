@@ -9,6 +9,8 @@
 #ifndef SimpleHN_h
 #define SimpleHN_h
 
+#import "AppDelegate.h"
+
 #import "SimpleHNSplitViewController.h"
 #import "LabelHelper.h"
 

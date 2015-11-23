@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Mantle/Mantle.h>
 #import "CommentLink.h"
+#import "CommentStyle.h"
 #import "User.h"
 
 #define kCommentCreated @"commentCreated"
@@ -38,7 +39,11 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, assign) BOOL collapsed;
 
 // Generated properties
-@property (nonatomic, strong) NSArray <CommentLink *> * links;
+@property (nonatomic, strong, readonly) NSArray <CommentLink *> * links;
+@property (nonatomic, strong, readonly) NSArray <CommentStyle *> * styles;
+
+// text property with styles applied. Links are handled by KILabel
+@property (nonatomic, strong, readonly) NSAttributedString * attributedText;
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;

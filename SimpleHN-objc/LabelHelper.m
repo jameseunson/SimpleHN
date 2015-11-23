@@ -41,8 +41,19 @@
 }
 
 + (UIFont*)adjustedBodyFont {
-    NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
+    NSString * systemFontName = [[UIFont preferredFontForTextStyle:
+                                  UIFontTextStyleBody] fontName];
     return [UIFont dynamicFontWithName:systemFontName baseSize:16.0f];
+}
+
++ (UIFont*)adjustedItalicBodyFont {
+    return [UIFont dynamicFontWithName:[[UIFont italicSystemFontOfSize:
+                                         16.0f] fontName] baseSize:16.0f];
+}
+
++ (UIFont*)adjustedBoldBodyFont {
+    return [UIFont dynamicFontWithName:[[UIFont boldSystemFontOfSize:
+                                         16.0f] fontName] baseSize:16.0f];
 }
 
 @end

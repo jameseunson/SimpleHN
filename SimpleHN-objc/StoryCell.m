@@ -9,6 +9,7 @@
 #import "StoryCell.h"
 #import "StoryCommentsButton.h"
 #import "ActionDrawerButton.h"
+#import "TimeAgoInWords-Swift.h"
 
 @interface StoryCell ()
 
@@ -181,10 +182,6 @@
     if(actionType == ActionDrawerViewButtonTypeUser) {
         NSLog(@"StoryActionDrawerViewButtonTypeUser");
         
-//        [story loadUserForStory:^(User *user) {
-//
-//        }];
-        
         [controller performSegueWithIdentifier:@"showUser" sender:story.author];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
@@ -210,10 +207,10 @@
     
     if(story.url) {
         self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
-                                        story.url.host, story.author, story.timeString];
+                                        story.url.host, story.author, [story.time timeAgoInWords]];
     } else {
         self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@",
-                                        story.author, story.timeString];
+                                        story.author, [story.time timeAgoInWords]];
     }
     [_storySubtitleLabel sizeToFit];
     

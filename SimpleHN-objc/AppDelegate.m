@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "StoryDetailViewController.h"
-
 #import "Firebase.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
@@ -23,15 +22,17 @@
     SimpleHNSplitViewController *splitViewController =
         (SimpleHNSplitViewController *)self.window.rootViewController;
     
-    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
+//    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
+//    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     
     splitViewController.tabBarController = [splitViewController.viewControllers firstObject];
-    splitViewController.storyDetailViewController =
-        (StoryDetailViewController*)navigationController.topViewController;
+//    splitViewController.storyDetailViewController =
+//        (StoryDetailViewController*)navigationController.topViewController;
     
     [[UIView appearance] setTintColor:[UIColor orangeColor]];
+    
+    self.masterProgress = [NSProgress progressWithTotalUnitCount:0];
     
     return YES;
 }

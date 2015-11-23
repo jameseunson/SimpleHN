@@ -95,7 +95,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vka-Ln-1pQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-753" y="-2798"/>
+            <point key="canvasLocation" x="-761" y="-2766"/>
         </scene>
         <!--Show-->
         <scene sceneID="xYV-54-lTf">
@@ -142,7 +142,6 @@
                 <splitViewController id="H1p-Uh-vWS" customClass="SimpleHNSplitViewController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <connections>
-                        <segue destination="vC3-pB-5Vb" kind="relationship" relationship="detailViewController" id="Tll-UG-LXB"/>
                         <segue destination="fPw-CU-Vbx" kind="relationship" relationship="masterViewController" id="Z0I-pX-zpc"/>
                     </connections>
                 </splitViewController>
@@ -297,7 +296,7 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="7Bf-8e-F5d"/>
         <segue reference="4uA-2E-pDr"/>
-        <segue reference="VNP-Bx-Rgo"/>
     </inferredMetricsTieBreakers>
 </document>

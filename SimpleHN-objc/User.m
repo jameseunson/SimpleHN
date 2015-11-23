@@ -40,6 +40,15 @@
              };
 }
 
++ (NSValueTransformer *)aboutJSONTransformer {
+    return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
+        
+        NSString * about = ((NSString*)value);
+        about = [[[[[about componentsSeparatedByString:@"<p>"] componentsJoinedByString:@"\n\n"] componentsSeparatedByString:@"</p>"] componentsJoinedByString:@"\n\n"] stringByDecodingHTMLEntities];
+        return about;
+    }];
+}
+
 + (void)createUserFromItemIdentifier:(NSString*)identifier
                              completion:(UserBlock)completion {
     

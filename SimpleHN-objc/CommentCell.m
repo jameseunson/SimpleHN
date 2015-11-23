@@ -195,6 +195,11 @@
     if([self.contentView.constraints containsObject:_headerViewBottomConstraint]) {
         [self uncollapseCell];
     }
+    
+    self.commentLabel.text = nil;
+    
+    self.authorLabel.text = nil;
+    self.dateLabel.text = nil;
 }
 
 + (void)handleActionForComment:(Comment *)comment withType:(NSNumber *)type inController:(UIViewController *)controller {
@@ -231,10 +236,10 @@
     
     NSArray * links = comment.links;
     
-    if(comment.text) {
+    if(comment.attributedText) {
         
         @try {
-            self.commentLabel.text = comment.text;
+            self.commentLabel.attributedText = comment.attributedText;
         }
         @catch (NSException *exception) {
             NSLog(@"ERROR: %@", exception);

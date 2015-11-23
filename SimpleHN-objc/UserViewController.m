@@ -32,10 +32,19 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    self.loadingProgress = [NSProgress progressWithTotalUnitCount:
-                            self.currentVisibleItemMax];
+    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                   delegate]).masterProgress;
+    
+    [self.loadingProgress removeObserver:self
+                              forKeyPath:@"fractionCompleted"];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:20];
     [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
-                          options:NSKeyValueObservingOptionNew context:NULL];
+                              options:NSKeyValueObservingOptionNew context:NULL];
+    
+    masterProgress.completedUnitCount = 0;
+    masterProgress.totalUnitCount = 20;
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:20];
 }
 
 - (void)loadView {
@@ -44,8 +53,6 @@
     self.headerView = [[UserHeaderView alloc] init];
     _headerView.delegate = self;
     _headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
-    [self SuProgressForProgress:self.loadingProgress];
 }
 
 - (void)viewDidLoad {
@@ -104,8 +111,8 @@
     NSLog(@"UserViewController, loadMoreItems");
     [super loadMoreItems];
     
-    self.loadingProgress.completedUnitCount = 0;
-    self.loadingProgress.totalUnitCount = 20;
+//    self.loadingProgress.completedUnitCount = 0;
+//    self.loadingProgress.totalUnitCount = 20;
     
     self.currentVisibleItemMax += 20;
     [self loadVisibleItems];
@@ -137,11 +144,19 @@
 
 - (void)loadVisibleItems {
     
-    // Ensure that if the user has < 20 submissions,
-    // the page isn't endlessly stuck loading
-    self.loadingProgress.completedUnitCount = 0;
-    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
-                                              [_user.submitted count]);
+    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                   delegate]).masterProgress;
+    
+    [self.loadingProgress removeObserver:self
+                              forKeyPath:@"fractionCompleted"];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:20];
+    [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                              options:NSKeyValueObservingOptionNew context:NULL];
+    
+    masterProgress.completedUnitCount = 0;
+    masterProgress.totalUnitCount = 20;
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:20];
     
     int i = 0;
     for(NSNumber * item in self.user.submitted) {
@@ -173,7 +188,13 @@
                             self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                self.loadingProgress.completedUnitCount++;
+                                if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
+                                    self.loadingProgress.completedUnitCount++;
+                                }
+                                
+                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+                                
                                 [self applyFiltering];
                             });
                         }];
@@ -184,7 +205,14 @@
                             self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                self.loadingProgress.completedUnitCount++;
+                                
+                                if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
+                                    self.loadingProgress.completedUnitCount++;
+                                }
+                                
+                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+                                
                                 [self applyFiltering];
                             });
                         }];
@@ -242,6 +270,14 @@
 - (void)userHeaderView:(UserHeaderView*)view didChangeVisibleData:(NSNumber*)data {
     NSLog(@"UserViewController, userHeaderView, didChangeVisibleData");
     [self applyFiltering];
+}
+
+- (void)userHeaderView:(UserHeaderView *)view didTapLink:(NSURL *)link {
+    NSLog(@"UserViewController, userHeaderView, didTapLink");
+    
+    SFSafariViewController * controller = [[SFSafariViewController alloc]
+                                           initWithURL:link];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 #pragma mark - KVO Callback Methods

@@ -17,11 +17,13 @@
 		98052DC61BB68BB8004A0D3A /* SimpleHN_objcTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DC51BB68BB8004A0D3A /* SimpleHN_objcTests.m */; };
 		98052DD11BB68BB8004A0D3A /* SimpleHN_objcUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */; };
 		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; };
+		983401381C031EE800A85638 /* CommentStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401371C031EE800A85638 /* CommentStyle.m */; };
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
+		984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
@@ -80,6 +82,8 @@
 		98052DD21BB68BB8004A0D3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		980C6DB81BE7252400D4318C /* CommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentCell.h; sourceTree = "<group>"; };
 		980C6DB91BE7252400D4318C /* CommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentCell.m; sourceTree = "<group>"; };
+		983401361C031EE800A85638 /* CommentStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentStyle.h; sourceTree = "<group>"; };
+		983401371C031EE800A85638 /* CommentStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentStyle.m; sourceTree = "<group>"; };
 		984418B31BB696FA00F66A02 /* Story.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Story.h; sourceTree = "<group>"; };
 		984418B41BB696FA00F66A02 /* Story.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Story.m; sourceTree = "<group>"; };
 		984418B61BB69BCC00F66A02 /* StoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCell.h; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 		984DCC491BFAF07E00BA5B86 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		984DCC4B1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsBaseViewController.h; sourceTree = "<group>"; };
 		984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsBaseViewController.m; sourceTree = "<group>"; };
+		984DCC6A1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsSearchResultsViewController.h; sourceTree = "<group>"; };
+		984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchResultsViewController.m; sourceTree = "<group>"; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
@@ -281,6 +287,8 @@
 				98E0C80E1BE73DE4003E3A0A /* CommentLink.m */,
 				98F5EBD91BF086A400B1BA08 /* User.h */,
 				98F5EBDA1BF086A400B1BA08 /* User.m */,
+				983401361C031EE800A85638 /* CommentStyle.h */,
+				983401371C031EE800A85638 /* CommentStyle.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -327,6 +335,8 @@
 				9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */,
 				984DCC4B1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.h */,
 				984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */,
+				984DCC6A1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.h */,
+				984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -532,6 +542,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
+				984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
 				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
@@ -554,6 +565,7 @@
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
+				983401381C031EE800A85638 /* CommentStyle.m in Sources */,
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,
 				98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */,
 				98052DB31BB68BB7004A0D3A /* StoryDetailViewController.m in Sources */,

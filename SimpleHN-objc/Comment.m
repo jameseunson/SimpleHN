@@ -10,8 +10,14 @@
 #import "NSString+HTML.h"
 #import "Firebase.h"
 
+@interface Comment ()
+- (NSArray<CommentStyle*>*)createStylesWithType:(CommentStyleType)type;
+@end
+
 @implementation Comment
 @synthesize links = _links;
+@synthesize styles = _styles;
+@synthesize attributedText = _attributedText;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
@@ -46,6 +52,8 @@
     }];
 }
 
+// The 'from identifier' method is when we have the identification
+// number of the comment item, but the data must be loaded
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                              completion:(CommentBlock)completion {
     
@@ -61,6 +69,7 @@
     }];
 }
 
+// The 'from snapshot' method is when we've already loaded the data
 + (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
                        completion:(CommentBlock)completion {
     
@@ -167,6 +176,57 @@
     return _links;
 }
 
+- (NSArray<CommentStyle*>*)styles {
+    if(_styles) {
+        return _styles;
+    }
+    
+    NSArray * italicStyles = [self createStylesWithType:CommentStyleTypeItalic];
+    NSArray * boldStyles = [self createStylesWithType:CommentStyleTypeBold];
+    
+    NSMutableArray * stylesArray = [italicStyles mutableCopy];
+    [stylesArray addObjectsFromArray:boldStyles];
+    
+    _styles = [stylesArray copy];
+    
+    return _styles;
+}
+
+- (NSAttributedString*)attributedText {
+    if(_attributedText) {
+        return _attributedText;
+    }
+    
+    if(self.text == nil || [self.text length] == 0) {
+        return nil;
+    }
+    
+    _text = [[[[self.text componentsSeparatedByString:@"<p>"] componentsJoinedByString:@"\n\n"] componentsSeparatedByString:@"</p>"] componentsJoinedByString:@"\n\n"];
+    
+    NSMutableAttributedString * mutableAttributedText = [[NSMutableAttributedString alloc]
+                                                         initWithString:self.text];
+    [mutableAttributedText addAttribute:NSFontAttributeName value:
+        [LabelHelper adjustedBodyFont] range:NSMakeRange(0, [_text length])];
+    
+    for(CommentStyle * style in self.styles) {
+        
+        UIFont * fontForType = nil;
+        if(style.type == CommentStyleTypeItalic) {
+            fontForType = [LabelHelper adjustedItalicBodyFont];
+            
+        } else if(style.type == CommentStyleTypeBold) {
+            fontForType = [LabelHelper adjustedBoldBodyFont];
+        }
+        if(style.start < style.end) {
+            [mutableAttributedText addAttribute:NSFontAttributeName value:
+             fontForType range:NSMakeRange(style.start, (style.end - style.start))];
+        }
+    }
+    
+    _attributedText = [mutableAttributedText copy];
+    return _attributedText;
+}
+
 - (void)setCollapsed:(BOOL)collapsed {
     _collapsed = collapsed;
     
@@ -179,6 +239,76 @@
     for(Comment * comment in _childComments) {
         comment.collapsed = collapsed;
     }
+}
+
+- (BOOL)isEqual:(id)object {
+    return ([object isKindOfClass:[Comment class]] &&
+            [((Comment*)object).commentId isEqual:self.commentId]);
+}
+
+#pragma mark - Private Methods
+- (NSArray<CommentStyle*>*)createStylesWithType:(CommentStyleType)type {
+    
+    if(self.text == nil) {
+        return @[];
+    }
+    
+    NSMutableString * mutableText = [[NSMutableString alloc] initWithString:self.text];
+    
+    NSScanner* newScanner = [NSScanner scannerWithString:self.text];
+    NSMutableArray * mutableStyles = [[NSMutableArray alloc] init];
+    
+    NSString * activeStyleText = nil;
+    NSUInteger startScanLocation = NSUIntegerMax;
+    NSUInteger endScanLocation = NSUIntegerMax;
+    NSUInteger rangeOffset = 0;
+    
+    while (![newScanner isAtEnd]) {
+        
+        [newScanner scanUpToString:[CommentStyle openTagForType:type]
+                        intoString:nil];
+        startScanLocation = [newScanner scanLocation];
+        
+        [newScanner scanUpToString:[CommentStyle closeTagForType:type]
+                        intoString:&activeStyleText];
+        endScanLocation = [newScanner scanLocation];
+        
+        if(activeStyleText && startScanLocation != NSUIntegerMax
+           && endScanLocation != NSUIntegerMax) {
+            
+            NSString * cleanText = [activeStyleText stringByReplacingOccurrencesOfString:
+                               [CommentStyle openTagForType:type] withString:@""];
+            
+            activeStyleText = [NSString stringWithFormat:@"%@%@", activeStyleText,
+                               [CommentStyle closeTagForType:type]];
+            
+            NSRange styleRange = NSMakeRange(startScanLocation - rangeOffset, [activeStyleText length]);
+            NSLog(@"target string: %@", [mutableText substringWithRange:styleRange]);
+            
+            [mutableText deleteCharactersInRange:NSMakeRange(startScanLocation, [activeStyleText length])];
+            [mutableText insertString:cleanText atIndex:startScanLocation];
+            
+            rangeOffset += ([[CommentStyle openTagForType:type] length] +
+                            [[CommentStyle closeTagForType:type] length]);
+            
+            NSDictionary * styleDict = @{ kCommentStyleType: @(type),
+                                         kCommentStyleText: activeStyleText,
+                                         kCommentStyleStart: @(startScanLocation),
+                                         kCommentStyleEnd: @(endScanLocation) };
+            
+            CommentStyle * style = [[CommentStyle alloc] initWithDictionary:styleDict];
+            [mutableStyles addObject:style];
+            
+            // Reset values
+            activeStyleText = nil;
+            startScanLocation = NSUIntegerMax;
+            endScanLocation = NSUIntegerMax;
+        }
+    }
+    
+    _text = [mutableText copy];
+    
+    return mutableStyles;
 }
 
 @end

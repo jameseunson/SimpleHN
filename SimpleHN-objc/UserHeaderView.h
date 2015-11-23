@@ -27,4 +27,5 @@ typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
 
 @protocol UserHeaderViewDelegate <NSObject>
 - (void)userHeaderView:(UserHeaderView*)view didChangeVisibleData:(NSNumber*)data;
+- (void)userHeaderView:(UserHeaderView*)view didTapLink:(NSURL*)link;
 @end

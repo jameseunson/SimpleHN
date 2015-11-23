@@ -45,15 +45,23 @@
     
     self.storiesList = [[NSMutableArray alloc] init];
     
+    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                   delegate]).masterProgress;
+    
+    [self.loadingProgress removeObserver:self
+                              forKeyPath:@"fractionCompleted"];
+    
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
     [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                           options:NSKeyValueObservingOptionNew context:NULL];
+    
+    masterProgress.completedUnitCount = 0;
+    masterProgress.totalUnitCount = 21;
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:21];
 }
 
 - (void)loadView {
     [super loadView];
-    
-    [self SuProgressForProgress:self.loadingProgress];
 }
 
 - (void)viewDidLoad {
@@ -188,6 +196,20 @@
 
 - (void)loadVisibleItems {
     
+    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                   delegate]).masterProgress;
+    
+    [self.loadingProgress removeObserver:self
+                              forKeyPath:@"fractionCompleted"];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:20];
+    [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                              options:NSKeyValueObservingOptionNew context:NULL];
+    
+    masterProgress.completedUnitCount = 0;
+    masterProgress.totalUnitCount = 20;
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:20];
+    
     if([self.storiesList count] > self.currentVisibleItemMax) {
         self.shouldDisplayLoadMoreCell = YES;
     } else {
@@ -202,9 +224,9 @@
     
     // Ensure that if the user has < 20 submissions,
     // the page isn't endlessly stuck loading
-    self.loadingProgress.completedUnitCount = 0;
-    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
-                                              [self.storiesList count]);
+//    self.loadingProgress.completedUnitCount = 0;
+//    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
+//                                              [self.storiesList count]);
     
     int i = 0;
     for(NSNumber * identifier in self.storiesList) {
@@ -241,8 +263,8 @@
 - (void)loadMoreItems {
     NSLog(@"StoriesViewController, loadMoreItems");
     
-    self.loadingProgress.completedUnitCount = 0;
-    self.loadingProgress.totalUnitCount = 20;
+//    self.loadingProgress.completedUnitCount = 0;
+//    self.loadingProgress.totalUnitCount = 20;
     
     self.currentVisibleItemMax += 20;
     [self loadVisibleItems];

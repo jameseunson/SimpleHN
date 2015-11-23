@@ -19,8 +19,12 @@
 // Enables sharing of login for pull-to-load more functionality
 // between all controllers that use it
 
+@class StoriesCommentsSearchResultsViewController;
+@protocol StoriesCommentsSearchResultsViewControllerDelegate;
+
 @interface StoriesCommentsBaseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate,
-    StoryCellDelegate, CommentCellDelegate>
+    StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate,
+    StoriesCommentsSearchResultsViewControllerDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) ContentLoadingView * loadingView;
@@ -44,7 +48,16 @@
 
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
+@property (nonatomic, strong) UISearchController * searchController;
+@property (nonatomic, strong) StoriesCommentsSearchResultsViewController * searchResultsController;
+
+@property (nonatomic, assign) BOOL pendingSearchOperation;
+@property (nonatomic, strong) NSString * pendingSearchQuery;
+@property (nonatomic, strong) NSString * activeQuery;
+
 - (id)itemForIndexPath:(NSIndexPath *)indexPath;
 - (void)loadMoreItems;
+
+- (void)query:(NSString*)query;
 
 @end

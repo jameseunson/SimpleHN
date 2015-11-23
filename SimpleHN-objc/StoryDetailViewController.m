@@ -24,17 +24,11 @@
 @property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
 @property (nonatomic, strong) SFSafariViewController * webViewController;
 
-@property (nonatomic, strong) NSMutableArray * comments;
-@property (nonatomic, strong) NSMutableArray * flatDisplayComments;
-
 @property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
-
-//- (void)commentCreated:(NSNotification*)notification;
-//- (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation;
 
 - (void)commentCreated:(NSNotification*)notification;
 - (void)commentCollapsedChanged:(NSNotification*)notification;
@@ -50,14 +44,28 @@
 }
 
 - (void)awakeFromNib {
-//    self.comments = [[NSMutableArray alloc] init];
-//    self.flatDisplayComments = [[NSMutableArray alloc] init];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
                                                  name:kCommentCollapsedChanged object:nil];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self) {
+        NSLog(@"StoryDetailViewController, initWithCoder");
+    }
+    return self;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if(self) {
+        NSLog(@"StoryDetailViewController, init");
+    }
+    return self;
 }
 
 - (void)loadView {
@@ -89,9 +97,6 @@
 - (void)setDetailItem:(id)newDetailItem {
     if (_detailItem != newDetailItem) {
         _detailItem = newDetailItem;
-        
-        [_comments removeAllObjects];
-        [_flatDisplayComments removeAllObjects];
         
         if(_webViewController) {
             [_webViewController.view removeFromSuperview];
@@ -126,7 +131,15 @@
             
             self.loadingProgress = [NSProgress progressWithTotalUnitCount:
                                     [detailStory.totalCommentCount intValue]];
-            [self SuProgressForProgress:self.loadingProgress];
+            
+            NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                           delegate]).masterProgress;
+            
+            masterProgress.completedUnitCount = 0;
+            masterProgress.totalUnitCount = [detailStory.totalCommentCount intValue];
+            
+            [masterProgress addChild:self.loadingProgress withPendingUnitCount:
+                [detailStory.totalCommentCount intValue]];
         }
         
         if(!detailStory.url) {
@@ -241,7 +254,13 @@
         
         __block UserViewController *controller = (UserViewController *)
             [[segue destinationViewController] topViewController];
-        controller.user = sender;
+        
+        if(sender && [sender isKindOfClass:[NSString class]]) {
+            controller.author = sender;
+            
+        } else if(sender && [sender isKindOfClass:[User class]]) {
+            controller.user = sender;
+        }
         
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
@@ -285,7 +304,12 @@
 - (void)commentCreated:(NSNotification*)notification {
     [self.tableView reloadData];
     
-    self.loadingProgress.completedUnitCount++;
+    if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
+        self.loadingProgress.completedUnitCount++;
+    }
+    
+    NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+          self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
@@ -316,9 +340,8 @@
     if(actionType == ActionDrawerViewButtonTypeUser) {
         NSLog(@"ActionDrawerViewButtonTypeUser");
         
-        [cell.comment loadUserForComment:^(User *user) {
-            [self performSegueWithIdentifier:@"showUser" sender:user];
-        }];
+        [self performSegueWithIdentifier:@"showUser"
+                                  sender:cell.comment.author];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         

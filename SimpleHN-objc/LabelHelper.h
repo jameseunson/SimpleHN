@@ -19,5 +19,7 @@
 // default 17pt to 16pt, which looks slightly less
 // over-large
 + (UIFont*)adjustedBodyFont;
++ (UIFont*)adjustedItalicBodyFont;
++ (UIFont*)adjustedBoldBodyFont;
 
 @end

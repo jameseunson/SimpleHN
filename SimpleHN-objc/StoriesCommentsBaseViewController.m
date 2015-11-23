@@ -7,6 +7,8 @@
 //
 
 #import "StoriesCommentsBaseViewController.h"
+#import "StoriesCommentsSearchResultsViewController.h"
+#import "SuProgress.h"
 
 @import SafariServices;
 
@@ -58,11 +60,55 @@
     _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_loadingView];
     
+    self.searchResultsController = [[StoriesCommentsSearchResultsViewController alloc] init];
+    _searchResultsController.delegate = self;
+    
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
+    self.searchController.searchResultsUpdater = self;
+    
+    [self.searchController.searchBar sizeToFit];
+    self.searchController.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+//    self.searchController.searchBar.barTintColor = [UIColor whiteColor];
+//    self.searchController.searchBar.tintColor = RGBCOLOR(243, 243, 243);
+    
+    self.searchController.delegate = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO; // default is YES
+    self.searchController.searchBar.delegate = self; // so we can monitor text changes + others
+    
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
+    
+    [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
+                                                 delegate]).masterProgress];
+}
+
+// Stub method, to be overridden in subclass
+- (void)loadMoreItems {
+    NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
+    
+    // Reset to original state
+    StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
+                                        [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
+    loadMoreCell.state = StoryLoadMoreCellStateNormal;
+}
+
+- (void)query:(NSString*)query {
+    
+    NSLog(@"query: %@", query);
+    
+//    https://hn.algolia.com/api
+//    http://hn.algolia.com/api/v1/search?query=foo&tags=story
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -253,16 +299,6 @@
     }
 }
 
-// Stub method, to be overridden in subclass
-- (void)loadMoreItems {
-    NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
-    
-    // Reset to original state
-    StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
-                                        [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
-    loadMoreCell.state = StoryLoadMoreCellStateNormal;
-}
-
 #pragma mark - Property Override Methods
 - (void)setShouldDisplayLoadMoreCell:(BOOL)shouldDisplayLoadMoreCell {
     _shouldDisplayLoadMoreCell = shouldDisplayLoadMoreCell;
@@ -297,6 +333,38 @@
 }
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
     [CommentCell handleActionForComment:cell.comment withType:type inController:self];
+}
+
+#pragma mark - UISearchResultsUpdating Methods
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    
+    UISearchBar * searchBar = _searchController.searchBar;
+    NSString * query = searchBar.text;
+    
+    NSLog(@"updateSearchResultsForSearchController: %@", query);
+    
+    if([query isEqualToString:self.activeQuery]) {
+        NSLog(@"query is already activeQuery, returning early");
+        return;
+    }
+    
+    if(_pendingSearchOperation) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:
+         self selector:@selector(query:) object:_pendingSearchQuery];
+        
+        _pendingSearchQuery = nil;
+        _pendingSearchOperation = NO;
+    }
+    
+    [self performSelector:@selector(query:) withObject:query afterDelay:0.5];
+    
+    _pendingSearchOperation = YES;
+    _pendingSearchQuery = query;
+}
+
+#pragma mark - StoriesCommentsSearchResultsViewControllerDelegate <NSObject>
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
+    NSLog(@"storiesCommentsSearchResultsViewController:didSelectResult:");
 }
 
 @end

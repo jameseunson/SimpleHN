@@ -90,6 +90,16 @@
         
         self.aboutLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
         self.aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        __block UserHeaderView * blockSelf = self;
+        self.aboutLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
+            
+            if([blockSelf.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
+                [blockSelf.delegate performSelector:@selector(userHeaderView:didTapLink:)
+                                    withObject:blockSelf withObject:[NSURL URLWithString:string]];
+            }
+        };
+        
         [self addSubview:_aboutLabel];
         
         self.toolbar = [[UIToolbar alloc] init];
