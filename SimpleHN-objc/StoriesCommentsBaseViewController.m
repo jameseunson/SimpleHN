@@ -326,9 +326,9 @@
 }
 
 #pragma mark - CommentCellDelegate Methods
-- (void)commentCell:(CommentCell*)cell didTapLink:(CommentLink*)link {
+- (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link.url];
+                                           initWithURL:link];
     [self.navigationController pushViewController:controller animated:YES];
 }
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {

@@ -8,18 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		311107E5FF8D104CED301173 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5294386F028D553C3FAE5107 /* Pods.framework */; };
+		5AF00876D758B0B140200725 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5294386F028D553C3FAE5107 /* Pods.framework */; };
 		98052DAA1BB68BB7004A0D3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DA91BB68BB7004A0D3A /* main.m */; };
 		98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DAC1BB68BB7004A0D3A /* AppDelegate.m */; };
 		98052DB31BB68BB7004A0D3A /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DB21BB68BB7004A0D3A /* StoryDetailViewController.m */; };
 		98052DB61BB68BB7004A0D3A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB41BB68BB7004A0D3A /* Main.storyboard */; };
 		98052DB81BB68BB7004A0D3A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB71BB68BB7004A0D3A /* Assets.xcassets */; };
 		98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB91BB68BB7004A0D3A /* LaunchScreen.storyboard */; };
-		98052DC61BB68BB8004A0D3A /* SimpleHN_objcTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DC51BB68BB8004A0D3A /* SimpleHN_objcTests.m */; };
 		98052DD11BB68BB8004A0D3A /* SimpleHN_objcUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */; };
 		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; };
 		983401381C031EE800A85638 /* CommentStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401371C031EE800A85638 /* CommentStyle.m */; };
+		9834013A1C04105400A85638 /* BaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401391C04105400A85638 /* BaseTest.m */; };
+		9834013D1C0410AE00A85638 /* CommentTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9834013C1C0410AE00A85638 /* CommentTest.m */; };
+		983401401C04110800A85638 /* CommentTest-input-1.html in Resources */ = {isa = PBXBuildFile; fileRef = 9834013F1C04110800A85638 /* CommentTest-input-1.html */; };
+		983401411C0412DA00A85638 /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
+		9844CAF91C041CD000413F8D /* LabelHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBE11BF09EF100B1BA08 /* LabelHelper.m */; };
+		9844CAFA1C041D0000413F8D /* CommentStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401371C031EE800A85638 /* CommentStyle.m */; };
+		9844CAFB1C041DBD00413F8D /* CommentLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E0C80E1BE73DE4003E3A0A /* CommentLink.m */; };
+		9844CAFC1C041DCC00413F8D /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDA1BF086A400B1BA08 /* User.m */; };
+		9844CAFE1C042FBD00413F8D /* CommentTest-input-2.html in Resources */ = {isa = PBXBuildFile; fileRef = 9844CAFD1C042FBD00413F8D /* CommentTest-input-2.html */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
@@ -42,6 +51,11 @@
 		98F5EBDB1BF086A400B1BA08 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDA1BF086A400B1BA08 /* User.m */; };
 		98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */; };
 		98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBE11BF09EF100B1BA08 /* LabelHelper.m */; };
+		98F7D6251C0438D100E1D752 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; };
+		98F7D6261C04390300E1D752 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		98F7D6281C043E0800E1D752 /* CommentTest-input-4.html in Resources */ = {isa = PBXBuildFile; fileRef = 98F7D6271C043E0800E1D752 /* CommentTest-input-4.html */; };
+		98F7D62A1C043E1500E1D752 /* CommentTest-input-3.html in Resources */ = {isa = PBXBuildFile; fileRef = 98F7D6291C043E1500E1D752 /* CommentTest-input-3.html */; };
+		98F7D62C1C043E2C00E1D752 /* CommentTest-input-5.html in Resources */ = {isa = PBXBuildFile; fileRef = 98F7D62B1C043E2C00E1D752 /* CommentTest-input-5.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +89,6 @@
 		98052DBA1BB68BB7004A0D3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		98052DBC1BB68BB7004A0D3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		98052DC11BB68BB8004A0D3A /* SimpleHN-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SimpleHN-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		98052DC51BB68BB8004A0D3A /* SimpleHN_objcTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleHN_objcTests.m; sourceTree = "<group>"; };
 		98052DC71BB68BB8004A0D3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		98052DCC1BB68BB8004A0D3A /* SimpleHN-objcUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SimpleHN-objcUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleHN_objcUITests.m; sourceTree = "<group>"; };
@@ -84,10 +97,15 @@
 		980C6DB91BE7252400D4318C /* CommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentCell.m; sourceTree = "<group>"; };
 		983401361C031EE800A85638 /* CommentStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentStyle.h; sourceTree = "<group>"; };
 		983401371C031EE800A85638 /* CommentStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentStyle.m; sourceTree = "<group>"; };
+		983401391C04105400A85638 /* BaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTest.m; sourceTree = "<group>"; };
+		9834013B1C04106600A85638 /* BaseTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseTest.h; sourceTree = "<group>"; };
+		9834013C1C0410AE00A85638 /* CommentTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTest.m; sourceTree = "<group>"; };
+		9834013F1C04110800A85638 /* CommentTest-input-1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-1.html"; sourceTree = "<group>"; };
 		984418B31BB696FA00F66A02 /* Story.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Story.h; sourceTree = "<group>"; };
 		984418B41BB696FA00F66A02 /* Story.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Story.m; sourceTree = "<group>"; };
 		984418B61BB69BCC00F66A02 /* StoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCell.h; sourceTree = "<group>"; };
 		984418B71BB69BCC00F66A02 /* StoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCell.m; sourceTree = "<group>"; };
+		9844CAFD1C042FBD00413F8D /* CommentTest-input-2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-2.html"; sourceTree = "<group>"; };
 		984844D81BB6A83C00C1EB7A /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
 		984844D91BB6A83C00C1EB7A /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
 		984DCC441BFAE9E200BA5B86 /* ContentLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentLoadingView.h; sourceTree = "<group>"; };
@@ -136,6 +154,9 @@
 		98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserHeaderView.m; sourceTree = "<group>"; };
 		98F5EBE01BF09EF100B1BA08 /* LabelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelHelper.h; sourceTree = "<group>"; };
 		98F5EBE11BF09EF100B1BA08 /* LabelHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelHelper.m; sourceTree = "<group>"; };
+		98F7D6271C043E0800E1D752 /* CommentTest-input-4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-4.html"; sourceTree = "<group>"; };
+		98F7D6291C043E1500E1D752 /* CommentTest-input-3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-3.html"; sourceTree = "<group>"; };
+		98F7D62B1C043E2C00E1D752 /* CommentTest-input-5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-5.html"; sourceTree = "<group>"; };
 		ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -152,6 +173,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AF00876D758B0B140200725 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,8 +253,11 @@
 		98052DC41BB68BB8004A0D3A /* SimpleHN-objcTests */ = {
 			isa = PBXGroup;
 			children = (
-				98052DC51BB68BB8004A0D3A /* SimpleHN_objcTests.m */,
+				9834013E1C0410E800A85638 /* CommentTest */,
 				98052DC71BB68BB8004A0D3A /* Info.plist */,
+				983401391C04105400A85638 /* BaseTest.m */,
+				9834013B1C04106600A85638 /* BaseTest.h */,
+				9834013C1C0410AE00A85638 /* CommentTest.m */,
 			);
 			path = "SimpleHN-objcTests";
 			sourceTree = "<group>";
@@ -291,6 +316,18 @@
 				983401371C031EE800A85638 /* CommentStyle.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		9834013E1C0410E800A85638 /* CommentTest */ = {
+			isa = PBXGroup;
+			children = (
+				9834013F1C04110800A85638 /* CommentTest-input-1.html */,
+				9844CAFD1C042FBD00413F8D /* CommentTest-input-2.html */,
+				98F7D6291C043E1500E1D752 /* CommentTest-input-3.html */,
+				98F7D6271C043E0800E1D752 /* CommentTest-input-4.html */,
+				98F7D62B1C043E2C00E1D752 /* CommentTest-input-5.html */,
+			);
+			name = CommentTest;
 			sourceTree = "<group>";
 		};
 		988C10221BF1E4F700FA36B9 /* 3rd Party */ = {
@@ -386,9 +423,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 98052DD81BB68BB8004A0D3A /* Build configuration list for PBXNativeTarget "SimpleHN-objcTests" */;
 			buildPhases = (
+				B81B95C7F1D5FD98FBB87F41 /* Check Pods Manifest.lock */,
 				98052DBD1BB68BB8004A0D3A /* Sources */,
 				98052DBE1BB68BB8004A0D3A /* Frameworks */,
 				98052DBF1BB68BB8004A0D3A /* Resources */,
+				D0311B602F396276361B63CD /* Embed Pods Frameworks */,
+				758A05E5CD23C5E0E1D4EA9D /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -476,6 +516,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9844CAFE1C042FBD00413F8D /* CommentTest-input-2.html in Resources */,
+				98F7D6281C043E0800E1D752 /* CommentTest-input-4.html in Resources */,
+				98F7D62C1C043E2C00E1D752 /* CommentTest-input-5.html in Resources */,
+				983401401C04110800A85638 /* CommentTest-input-1.html in Resources */,
+				98F7D62A1C043E1500E1D752 /* CommentTest-input-3.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -504,7 +549,52 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		758A05E5CD23C5E0E1D4EA9D /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B81B95C7F1D5FD98FBB87F41 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		C2FC3B47CD36C75229D2E2C3 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D0311B602F396276361B63CD /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -577,7 +667,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98052DC61BB68BB8004A0D3A /* SimpleHN_objcTests.m in Sources */,
+				9834013A1C04105400A85638 /* BaseTest.m in Sources */,
+				9844CAFC1C041DCC00413F8D /* User.m in Sources */,
+				98F7D6261C04390300E1D752 /* GTMNSString+HTML.m in Sources */,
+				98F7D6251C0438D100E1D752 /* NSString+HTML.m in Sources */,
+				9844CAFB1C041DBD00413F8D /* CommentLink.m in Sources */,
+				9844CAFA1C041D0000413F8D /* CommentStyle.m in Sources */,
+				9834013D1C0410AE00A85638 /* CommentTest.m in Sources */,
+				983401411C0412DA00A85638 /* Comment.m in Sources */,
+				9844CAF91C041CD000413F8D /* LabelHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -740,6 +838,7 @@
 		};
 		98052DD91BB68BB8004A0D3A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = "SimpleHN-objcTests/Info.plist";
@@ -752,6 +851,7 @@
 		};
 		98052DDA1BB68BB8004A0D3A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = "SimpleHN-objcTests/Info.plist";

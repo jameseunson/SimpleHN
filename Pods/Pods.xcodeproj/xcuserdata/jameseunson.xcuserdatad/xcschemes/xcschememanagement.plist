@@ -29,6 +29,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>RegexKitLite.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SSDynamicText.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -47,12 +52,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2B83FB887394275260EE4F9C1A293A89</key>
+		<key>2E0B07269E686AAA5743369C2B34F439</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5962B42301754277D744BAA84F02C63B</key>
+		<key>6A78E74FBD896B6267BCAD8D4C3EAA78</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>723C6F9E88A94E3BCAD8420F229D19C5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -67,12 +77,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B7AC9326D819482593FE118E915409D7</key>
+		<key>B32B1A7DC0F17C7E0157CFAD557D0A9D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BA0EBA59C1B26FA40FEBBB77B02DE991</key>
+		<key>B7AC9326D819482593FE118E915409D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -21,5 +21,6 @@
 + (UIFont*)adjustedBodyFont;
 + (UIFont*)adjustedItalicBodyFont;
 + (UIFont*)adjustedBoldBodyFont;
++ (UIFont*)adjustedMonospacedBodyFont;
 
 @end

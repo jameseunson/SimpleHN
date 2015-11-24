@@ -16,7 +16,8 @@
 typedef NS_ENUM(NSInteger, CommentStyleType) {
     CommentStyleTypeBold,
     CommentStyleTypeItalic,
-    CommentStyleTypeQuote
+    CommentStyleTypeQuote,
+    CommentStyleTypeCode
 };
 
 @interface CommentStyle : NSObject
@@ -31,5 +32,7 @@ typedef NS_ENUM(NSInteger, CommentStyleType) {
 
 + (NSString*)openTagForType:(CommentStyleType)type;
 + (NSString*)closeTagForType:(CommentStyleType)type;
+
++ (CommentStyle*)styleWithType:(CommentStyleType)type start:(NSInteger)start end:(NSInteger)end text:(NSString*)text;
 
 @end

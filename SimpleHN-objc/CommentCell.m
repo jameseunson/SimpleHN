@@ -251,14 +251,8 @@
             if([blockSelf.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
                 
                 NSLog(@"urlLinkTapHandler: %@, %lu", string, range.location);
-                
-                for(CommentLink * link in links) {
-                    if(link.start == range.location) {
-                        [blockSelf.delegate performSelector:@selector(commentCell:didTapLink:)
-                                                 withObject:blockSelf withObject:link];
-                        break;
-                    }
-                }
+                [blockSelf.delegate performSelector:@selector(commentCell:didTapLink:)
+                                         withObject:blockSelf withObject:[NSURL URLWithString:string]];
             }
         };
     }

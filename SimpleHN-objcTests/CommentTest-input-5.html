@@ -1,0 +1,5 @@
+nginx configs can be difficult enough on their own without constraining them to formats that wouldn&#x27;t allow directives that take arguments preceding a block, not to mention the extra escaping that would come with quoting already-quoted strings.  This is a common formulation:<p><pre><code>  location ~* \.(jpe?g|png|gif|ico)$ {
+    ...
+    }
+</code></pre>
+That would be pretty messy inside of JSON or YAML.  You couldn&#x27;t have the location line be a key for a map&#x2F;hash, because you can have multiple blocks with the same &quot;key&quot;.<p>Besides, as bad as nginx configs are, just trying to understand which block &quot;traps&quot; a request is where you can spend most of your time; see ifIsEvil [1].<p>[1] <a href="https:&#x2F;&#x2F;www.nginx.com&#x2F;resources&#x2F;wiki&#x2F;start&#x2F;topics&#x2F;depth&#x2F;ifisevil&#x2F;" rel="nofollow">https:&#x2F;&#x2F;www.nginx.com&#x2F;resources&#x2F;wiki&#x2F;start&#x2F;topics&#x2F;depth&#x2F;ifis...</a>

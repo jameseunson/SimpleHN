@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '21E96883430C773B7EEC5FA6'
-               BlueprintName = 'JBNSLayoutConstraint'
+               BlueprintIdentifier = 'E528B3E68A228E5AA9D5509E'
+               BlueprintName = 'RegexKitLite'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'JBNSLayoutConstraint.framework'>
+               BuildableName = 'RegexKitLite.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -11,6 +11,7 @@
 #import "CommentLink.h"
 #import "CommentStyle.h"
 #import "User.h"
+#import "Firebase.h"
 
 #define kCommentCreated @"commentCreated"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"

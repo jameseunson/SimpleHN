@@ -56,4 +56,8 @@
                                          16.0f] fontName] baseSize:16.0f];
 }
 
++ (UIFont*)adjustedMonospacedBodyFont {
+    return [UIFont dynamicFontWithName:@"Menlo" baseSize:16.0f];
+}
+
 @end

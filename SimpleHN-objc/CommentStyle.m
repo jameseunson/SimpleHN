@@ -32,18 +32,44 @@
 + (NSString*)openTagForType:(CommentStyleType)type {
     if(type == CommentStyleTypeItalic) {
         return @"<i>";
+        
     } else if(type == CommentStyleTypeBold) {
         return @"<b>";
+        
+    } else if(type == CommentStyleTypeQuote) {
+        return @"\n>|^>"; // regex
+        
+    } else if(type == CommentStyleTypeCode) {
+        return @"<pre><code>";
     }
     return nil;
 }
 + (NSString*)closeTagForType:(CommentStyleType)type {
     if(type == CommentStyleTypeItalic) {
         return @"</i>";
+        
     } else if(type == CommentStyleTypeBold) {
         return @"</b>";
+      
+    // Missing: CommentStyleTypeQuote
+    // Reason: has no close tag, either next present \n or EOF
+        
+    } else if(type == CommentStyleTypeCode) {
+        return @"</code></pre>";        
     }
     return nil;
+}
+
++ (CommentStyle*)styleWithType:(CommentStyleType)type start:(NSInteger)start
+                           end:(NSInteger)end text:(NSString*)text {
+    
+    NSDictionary * styleDict = @{ kCommentStyleType: @(type),
+                                  kCommentStyleText: text,
+                                  kCommentStyleStart: @(start),
+                                  kCommentStyleEnd: @(end) };
+    
+    CommentStyle * style = [[CommentStyle alloc] initWithDictionary:styleDict];
+    return style;
 }
 
 @end
