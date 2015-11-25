@@ -12,13 +12,16 @@
 #import "ActionDrawerView.h"
 
 @protocol CommentCellDelegate;
-@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate>
+@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate>
 
 @property (nonatomic, strong) Comment * comment;
 
-@property (nonatomic, strong) KILabel * commentLabel;
+@property (nonatomic, strong) UITextView * commentTextView;
 
-//@property (nonatomic, strong) UIStackView * headerStackView;
+// Used when quotes are present in the comment, so we can indent
+// the quote views independently of the comment body views
+// We only use multiple views in this circumstance, for performance reasons
+@property (nonatomic, strong) NSArray <UITextView *>* commentTextViews;
 
 @property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UILabel * authorLabel;

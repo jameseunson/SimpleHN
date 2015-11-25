@@ -37,7 +37,8 @@
         return @"<b>";
         
     } else if(type == CommentStyleTypeQuote) {
-        return @"\n>|^>"; // regex
+//        return @"\n>|^>|^&gt;|\n&gt;"; // regex
+        return @"^&gt;|<p>&gt;"; // regex        
         
     } else if(type == CommentStyleTypeCode) {
         return @"<pre><code>";

@@ -30,6 +30,7 @@
 		9844CAFC1C041DCC00413F8D /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBDA1BF086A400B1BA08 /* User.m */; };
 		9844CAFE1C042FBD00413F8D /* CommentTest-input-2.html in Resources */ = {isa = PBXBuildFile; fileRef = 9844CAFD1C042FBD00413F8D /* CommentTest-input-2.html */; };
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
+		9849D0AC1C059FA000A23212 /* AskShowHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9849D0AB1C059FA000A23212 /* AskShowHeaderView.m */; };
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
 		984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */; };
@@ -108,6 +109,8 @@
 		9844CAFD1C042FBD00413F8D /* CommentTest-input-2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-2.html"; sourceTree = "<group>"; };
 		984844D81BB6A83C00C1EB7A /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
 		984844D91BB6A83C00C1EB7A /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
+		9849D0AA1C059FA000A23212 /* AskShowHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AskShowHeaderView.h; sourceTree = "<group>"; };
+		9849D0AB1C059FA000A23212 /* AskShowHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AskShowHeaderView.m; sourceTree = "<group>"; };
 		984DCC441BFAE9E200BA5B86 /* ContentLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentLoadingView.h; sourceTree = "<group>"; };
 		984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentLoadingView.m; sourceTree = "<group>"; };
 		984DCC471BFAEFEB00BA5B86 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
@@ -297,6 +300,8 @@
 				98F5EBDD1BF0957800B1BA08 /* UserHeaderView.m */,
 				984DCC441BFAE9E200BA5B86 /* ContentLoadingView.h */,
 				984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */,
+				9849D0AA1C059FA000A23212 /* AskShowHeaderView.h */,
+				9849D0AB1C059FA000A23212 /* AskShowHeaderView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -659,6 +664,7 @@
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,
 				98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */,
 				98052DB31BB68BB7004A0D3A /* StoryDetailViewController.m in Sources */,
+				9849D0AC1C059FA000A23212 /* AskShowHeaderView.m in Sources */,
 				984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
