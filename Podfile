@@ -6,10 +6,10 @@ link_with 'SimpleHN', 'SimpleHN-objcTests'
 pod 'Firebase', '~> 2.4.0'
 pod 'Mantle'
 pod 'TimeAgoInWords', '~> 2.0.0'
-pod 'KILabel', '~> 1.0.1'
 pod 'SSDynamicText', '~> 0.5.0'
 pod 'JBNSLayoutConstraint', '~> 1.0.0'
 pod 'RegexKitLite', '~> 4.0'
+pod 'hpple', :git => 'https://github.com/topfunky/hpple.git' # YOLO
 
 pre_install do |installer|
     # workaround for https://github.com/CocoaPods/CocoaPods/issues/3289

@@ -43,8 +43,6 @@
 @property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 @property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
 
-@property (nonatomic, strong) NSArray * blockQuoteRanges;
-
 - (void)didTapBackgroundView:(id)sender;
 
 - (void)commentCollapsedChanged:(NSNotification*)notification;
@@ -73,6 +71,8 @@
         _commentTextView.dataDetectorTypes = UIDataDetectorTypeLink;
         _commentTextView.selectable = YES;
         _commentTextView.delegate = self;
+//        _commentTextView.contentInset = UIEdgeInsetsMake(0, 0, 50.0f, 0);
+        
         [self.contentView addSubview:_commentTextView];
         
         self.headerView = [[UIView alloc] init];
@@ -248,55 +248,8 @@
     _comment = comment;
     
     if(comment.text != nil) {
-        
-        NSString * commentSourceText = nil;
-        
-        if([comment.text rangeOfRegex: [CommentStyle openTagForType: CommentStyleTypeQuote]].location != NSNotFound) {
-            
-            NSMutableString * mutableText = [[NSMutableString alloc] initWithString:comment.text];
-            [mutableText insertString:@"<style>blockquote{ color: #999999; }</style>" atIndex:0];
-            
-            while([mutableText rangeOfRegex: [CommentStyle openTagForType: CommentStyleTypeQuote]].location != NSNotFound) {
-                
-                NSRange rangeOfOpenTag = [mutableText rangeOfRegex:
-                                          [CommentStyle openTagForType: CommentStyleTypeQuote]];
-                NSString * matchedString = [mutableText stringByMatching:
-                                            [CommentStyle openTagForType: CommentStyleTypeQuote]];
-                
-                NSLog(@"quote detected: %@, %@", NSStringFromRange(rangeOfOpenTag), matchedString);
-                
-                NSString * blockQuoteString = nil;
-                NSScanner * scanner = [NSScanner scannerWithString:mutableText];
-                
-                scanner.scanLocation = rangeOfOpenTag.location + [matchedString length];
-                [scanner scanUpToString:@"<p>" intoString:&blockQuoteString];
-                
-                [mutableText deleteCharactersInRange:rangeOfOpenTag];
-                [mutableText insertString:@"<blockquote>" atIndex:rangeOfOpenTag.location];
-                
-                if(blockQuoteString && [blockQuoteString length] > 0) {
-                    
-                    NSLog(@"blockQuoteString: %@", blockQuoteString);
-                    
-                    NSRange blockQuoteRange = [mutableText rangeOfString:blockQuoteString];
-                    [mutableText insertString:@"</blockquote><p></p>" atIndex:
-                     (blockQuoteRange.location + blockQuoteRange.length)];
-                    
-                    NSLog(@"mutableText: %@", mutableText);
-                    
-                } else {
-                    
-                    [mutableText insertString:@"</blockquote>" atIndex:mutableText.length];
-                }
-            }
-            
-            commentSourceText = [mutableText copy];
-            
-        } else {
-            commentSourceText = comment.text;
-        }
 
-        NSMutableAttributedString * commentText = [[[NSAttributedString alloc] initWithData:[commentSourceText dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+        NSMutableAttributedString * commentText = [[[NSAttributedString alloc] initWithData:[self.comment.text dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
                                                                          documentAttributes:nil error:nil] mutableCopy];
         
         NSRange range = (NSRange){0, [commentText length]};
@@ -304,37 +257,18 @@
             UIFont* currentFont = value;
            
             if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-//                NSLog(@"currentFont: %@ BOLD", [currentFont fontName]);
                 [commentText addAttribute:NSFontAttributeName
                                     value:[LabelHelper adjustedBoldBodyFont] range:range];
                 
             } else if ([currentFont.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-//                NSLog(@"currentFont: %@ ITALIC", [currentFont fontName]);
                 [commentText addAttribute:NSFontAttributeName
                                     value:[LabelHelper adjustedItalicBodyFont] range:range];
             } else {
-//                NSLog(@"currentFont: %@", [currentFont fontName]);
                 [commentText addAttribute:NSFontAttributeName
                                     value:[LabelHelper adjustedBodyFont] range:range];
             }
 
         }];
-        
-        NSMutableArray * mutableBlockQuoteRanges = [[NSMutableArray alloc] init];
-        [commentText enumerateAttribute:NSForegroundColorAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-            
-            UIColor * colorValue = value;
-            if(![colorValue isEqual:[UIColor blackColor]]) {
-                // Block quote
-                [mutableBlockQuoteRanges addObject:@[ @(range.location), @(range.length) ]];
-            }
-        }];
-        
-        for(NSArray * rangeArray in mutableBlockQuoteRanges) {
-            NSLog(@"%@", rangeArray);
-        }
-        
-        self.blockQuoteRanges = [mutableBlockQuoteRanges copy];
         
 //        self.commentLabel.attributedText = commentText;
         self.commentTextView.attributedText = commentText;
@@ -476,30 +410,5 @@
     
     return NO;
 }
-
-
-//- (BOOL)layoutManager:(NSLayoutManager *)layoutManager shouldSetLineFragmentRect:(inout CGRect *)lineFragmentRect lineFragmentUsedRect:(inout CGRect *)lineFragmentUsedRect baselineOffset:(inout CGFloat *)baselineOffset inTextContainer:(NSTextContainer *)textContainer forGlyphRange:(NSRange)glyphRange {
-//    
-//    if(_blockQuoteRanges) {
-////        NSLog(@"_blockQuoteRanges: %@", _blockQuoteRanges);
-//        
-//        for(NSArray * rangeArray in _blockQuoteRanges) {
-//            NSRange blockQuoteRange = NSMakeRange([[rangeArray firstObject] integerValue], [[rangeArray lastObject] integerValue]);
-//            NSRange intersection = NSIntersectionRange(glyphRange, blockQuoteRange);
-//            if(intersection.length > 0) {
-////                NSLog(@"found intersection, lineFragmentRect: %@, lineFragmentUsedRect: %@, baselineOffset: %f", NSStringFromCGRect(*lineFragmentRect), NSStringFromCGRect(*lineFragmentUsedRect), *baselineOffset);
-//                
-//                
-////                *lineFragmentUsedRect = CGRectMake((*lineFragmentUsedRect).origin.x + 20.0f, (*lineFragmentUsedRect).origin.y, (*lineFragmentUsedRect).size.width - 20.0f, (*lineFragmentUsedRect).size.height);
-////                *lineFragmentRect = CGRectMake((*lineFragmentRect).origin.x + 20.0f, (*lineFragmentRect).origin.y, (*lineFragmentRect).size.width - 20.0f, (*lineFragmentRect).size.height);
-//            }
-//        }
-//        
-//        return YES;
-//    }
-////    NSLog(@"shouldSetLineFragmentRect, %@, layoutManager.textStorage substringWithRange: %@", NSStringFromRange(glyphRange), [[layoutManager.textStorage string] substringWithRange:glyphRange]);    
-//    
-//    return NO;
-//}
 
 @end

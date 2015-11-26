@@ -1,0 +1,6 @@
+framework module Hpple {
+  umbrella header "hpple-umbrella.h"
+
+  export *
+  module * { export * }
+}

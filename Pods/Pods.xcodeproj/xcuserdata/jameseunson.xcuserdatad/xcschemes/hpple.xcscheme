@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '21F6221FC2869BFFBEA49C8B'
-               BlueprintName = 'KILabel'
+               BlueprintIdentifier = 'EF9CF141767FCCCA85FFE538'
+               BlueprintName = 'hpple'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'KILabel.framework'>
+               BuildableName = 'Hpple.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -1,0 +1,27 @@
+{
+  "name": "hpple",
+  "version": "0.3.0",
+  "summary": "A nice Objective-C wrapper on the XPathQuery library for parsing HTML.",
+  "homepage": "http://topfunky.com",
+  "license": "MIT",
+  "authors": "topfunky",
+  "platforms": {
+    "ios": "7.0"
+  },
+  "source": {
+    "git": "https://github.com/topfunky/hpple.git",
+    "tag": "0.3.0"
+  },
+  "source_files": [
+    "Pod/Classes",
+    "Pod/Classes/**/*.{h,m}"
+  ],
+  "ios": {
+    "libraries": "xml2"
+  },
+  "xcconfig": {
+    "HEADER_SEARCH_PATHS": "$(SDKROOT)/usr/include/libxml2"
+  },
+  "requires_arc": true,
+  "module_name": "Hpple"
+}

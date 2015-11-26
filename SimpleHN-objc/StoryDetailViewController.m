@@ -15,6 +15,7 @@
 #import "SuProgress.h"
 #import "ActionDrawerButton.h"
 
+#define kStoryCellReuseIdentifier @"kStoryCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
 
 @import WebKit;
@@ -77,6 +78,9 @@
     self.tableView.delegate = self;
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self.tableView registerClass:[StoryCell class]
+           forCellReuseIdentifier:kStoryCellReuseIdentifier];
     
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
@@ -84,9 +88,15 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
-                                                   self.tabBarController.tabBar.frame.size.height, 0);
+    // Disable content inset on simulator, where it doesn't work
+    // for some unknown reason
+    if ([[[UIDevice currentDevice] model] rangeOfString:@"Phone"].location != NSNotFound &&
+        [[[UIDevice currentDevice] model] rangeOfString:@"Simulator"].location == NSNotFound ) {
+        
+        self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                       [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                       self.tabBarController.tabBar.frame.size.height, 0);
+    }
     [self.view addSubview:_tableView];
     
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
@@ -167,30 +177,49 @@
 
 #pragma mark - UITableViewDataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [_detailItem.flatDisplayComments count];
+    
+    if(section == 0) {
+        return 1;
+        
+    } else {
+        return [_detailItem.flatDisplayComments count];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-    
-    CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
-                                                         forIndexPath:indexPath];
-    cell.comment = comment;
-    if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+    if(indexPath.section == 0) {
+        StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                           kStoryCellReuseIdentifier forIndexPath:indexPath];
+        
+        cell.story = self.detailItem;
         cell.expanded = YES;
+        cell.delegate = self;
+        
+        return cell;
         
     } else {
-        cell.expanded = NO;
+        
+        Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+        
+        CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                             forIndexPath:indexPath];
+        cell.comment = comment;
+        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+            cell.expanded = YES;
+            
+        } else {
+            cell.expanded = NO;
+        }
+        
+        cell.delegate = self;
+        
+        return cell;
     }
-    
-    cell.delegate = self;
-    
-    return cell;
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
@@ -205,12 +234,18 @@
 //}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-    if(comment.collapsed && comment.parentComment) {
-        return 0;
-
+    
+    if(indexPath.section == 0) {
+        return UITableViewAutomaticDimension;        
+        
     } else {
-        return UITableViewAutomaticDimension;
+        Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+        if(comment.collapsed && comment.parentComment) {
+            return 0;
+            
+        } else {
+            return UITableViewAutomaticDimension;
+        }
     }
 }
 
@@ -357,6 +392,14 @@
         [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
         [self presentViewController:controller animated:YES completion:nil];
     }
+}
+
+#pragma mark - StoryCellDelegate Methods
+- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
+    NSLog(@"storyCellDidDisplayActionDrawer");
+}
+- (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
+    [StoryCell handleActionForStory:cell.story withType:type inController:self];
 }
 
 @end

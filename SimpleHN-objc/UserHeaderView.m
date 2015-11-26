@@ -7,7 +7,7 @@
 //
 
 #import "UserHeaderView.h"
-#import "KILabel.h"
+//#import "KILabel.h"
 
 @interface UserHeaderView ()
 
@@ -22,7 +22,7 @@
 
 @property (nonatomic, strong) UIStackView * karmaStackView;
 
-@property (nonatomic, strong) KILabel * aboutLabel;
+@property (nonatomic, strong) UITextView * aboutTextView;
 
 @property (nonatomic, strong) UIToolbar * toolbar;
 @property (nonatomic, strong) UISegmentedControl * sectionSegmentedControl;
@@ -88,19 +88,29 @@
         
         [self addSubview:_karmaStackView];
         
-        self.aboutLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
-        self.aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.aboutTextView = [[UITextView alloc] init];
+        _aboutTextView.translatesAutoresizingMaskIntoConstraints = NO;
+        _aboutTextView.scrollEnabled = NO;
+        _aboutTextView.editable = NO;
+        _aboutTextView.dataDetectorTypes = UIDataDetectorTypeLink;
+        _aboutTextView.selectable = YES;
+        _aboutTextView.delegate = self;
+        _aboutTextView.font = [LabelHelper adjustedBodyFont];
+        
+        //        _commentTextView.contentInset = UIEdgeInsetsMake(0, 0, 50.0f, 0);
+        
+        [self addSubview:_aboutTextView];
+        
+//        self.aboutLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
+//        self.aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
         
         __block UserHeaderView * blockSelf = self;
-        self.aboutLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
-            
-            if([blockSelf.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
-                [blockSelf.delegate performSelector:@selector(userHeaderView:didTapLink:)
-                                    withObject:blockSelf withObject:[NSURL URLWithString:string]];
-            }
-        };
+//        self.aboutLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
+//            
+
+//        };
         
-        [self addSubview:_aboutLabel];
+//        [self addSubview:_aboutLabel];
         
         self.toolbar = [[UIToolbar alloc] init];
         _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
@@ -118,16 +128,16 @@
         
         [self addSubview:_toolbar];
         
-        self.heightDependentViews = @[ _nameLabel, _accountCreatedLabel, _submissionsLabel, _aboutLabel ];
+        self.heightDependentViews = @[ _nameLabel, _accountCreatedLabel, _submissionsLabel, _aboutTextView ];
         
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_mainStackView, _karmaStackView,
-                                                                 _toolbar, _sectionSegmentedControl, _aboutLabel);
+                                                                 _toolbar, _sectionSegmentedControl, _aboutTextView);
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"V:|-12-[_mainStackView]-12-[_aboutLabel]-12-[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
+                              @"V:|-12-[_mainStackView]-12-[_aboutTextView]-12-[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
         
         [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                              @"H:|-12-[_mainStackView];H:|-0-[_toolbar]-0-|;H:|-12-[_aboutLabel]-|"
+                              @"H:|-12-[_mainStackView];H:|-0-[_toolbar]-0-|;H:|-12-[_aboutTextView]-|"
                                                                         options:0 metrics:nil views:bindings]];
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
@@ -156,7 +166,7 @@
     
     [_heightDependentViews makeObjectsPerformSelector:@selector(sizeToFit)];
     
-    CGFloat heightForContent = roundf(12.0f + _nameLabel.frame.size.height + _accountCreatedLabel.frame.size.height + _submissionsLabel.frame.size.height + 12.0f + _aboutLabel.frame.size.height + 12.0f + 44.0f);
+    CGFloat heightForContent = roundf(12.0f + _nameLabel.frame.size.height + _accountCreatedLabel.frame.size.height + _submissionsLabel.frame.size.height + 12.0f + _aboutTextView.frame.size.height + 12.0f + 44.0f);
     return CGSizeMake(UIViewNoIntrinsicMetric, heightForContent);
 }
 
@@ -169,7 +179,9 @@
     self.submissionsLabel.text = _user.submissionsString;
     
     self.karmaLabel.text = [_user.karma stringValue];
-    self.aboutLabel.text = _user.about;
+    self.aboutTextView.text = _user.about;
+    
+    [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
 }
 
@@ -182,6 +194,16 @@
         [self.delegate performSelector:@selector(userHeaderView:didChangeVisibleData:)
                             withObject:self withObject:@(_visibleData)];
     }
+}
+
+#pragma mark - UITextViewDelegate Methods
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
+    if([self.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
+        [self.delegate performSelector:@selector(userHeaderView:didTapLink:)
+                            withObject:self withObject:URL];
+    }
+    
+    return NO;
 }
 
 @end

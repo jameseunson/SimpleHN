@@ -11,9 +11,9 @@
 #import "Firebase.h"
 #import "CommentCell.h"
 #import "Story.h"
+#import "StoryCell.h"
 
-//UITableViewDataSource, UITableViewDelegate, 
-@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate>
+@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate, StoryCellDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) Story * detailItem;

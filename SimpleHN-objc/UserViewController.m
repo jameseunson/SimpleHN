@@ -150,13 +150,15 @@
     [self.loadingProgress removeObserver:self
                               forKeyPath:@"fractionCompleted"];
     
-    self.loadingProgress = [NSProgress progressWithTotalUnitCount:20];
+    NSInteger itemsToLoadCount = MIN([self.user.submitted count], 20);
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:itemsToLoadCount];
     [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                               options:NSKeyValueObservingOptionNew context:NULL];
     
     masterProgress.completedUnitCount = 0;
-    masterProgress.totalUnitCount = 20;
-    [masterProgress addChild:self.loadingProgress withPendingUnitCount:20];
+    masterProgress.totalUnitCount = itemsToLoadCount;
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:itemsToLoadCount];
     
     int i = 0;
     for(NSNumber * item in self.user.submitted) {

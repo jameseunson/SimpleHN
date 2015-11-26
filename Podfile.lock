@@ -1,7 +1,7 @@
 PODS:
   - Firebase (2.4.2)
+  - hpple (0.3.0)
   - JBNSLayoutConstraint (1.0.0)
-  - KILabel (1.0.1)
   - Mantle (2.0.5):
     - Mantle/extobjc (= 2.0.5)
   - Mantle/extobjc (2.0.5)
@@ -11,17 +11,26 @@ PODS:
 
 DEPENDENCIES:
   - Firebase (~> 2.4.0)
+  - hpple (from `https://github.com/topfunky/hpple.git`)
   - JBNSLayoutConstraint (~> 1.0.0)
-  - KILabel (~> 1.0.1)
   - Mantle
   - RegexKitLite (~> 4.0)
   - SSDynamicText (~> 0.5.0)
   - TimeAgoInWords (~> 2.0.0)
 
+EXTERNAL SOURCES:
+  hpple:
+    :git: https://github.com/topfunky/hpple.git
+
+CHECKOUT OPTIONS:
+  hpple:
+    :commit: dd7f4cd029f3ffea3dfac4c7e7239761df1c7d25
+    :git: https://github.com/topfunky/hpple.git
+
 SPEC CHECKSUMS:
   Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
+  hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006
-  KILabel: 4797807cdc0b4992dad8bf91175ddc973c3b569b
   Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
   RegexKitLite: c0e4c12e6e7de0769f3a3ed679f0f61604170661
   SSDynamicText: 775f8786d840e6d2b676e62600a42cf9c30cb9d6

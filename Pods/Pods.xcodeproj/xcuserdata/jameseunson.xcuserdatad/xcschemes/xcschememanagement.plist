@@ -14,11 +14,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>KILabel.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Mantle.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -44,25 +39,30 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>hpple.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>162B59B96FF1F5B6B21CF89AC9E41170</key>
+		<key>018F66BA204AF26FCFAB5B4AAFC0E8B1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2E0B07269E686AAA5743369C2B34F439</key>
+		<key>48EFB1C6A9AD4851813E28D915591597</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6A78E74FBD896B6267BCAD8D4C3EAA78</key>
+		<key>4A7D9A27042E4B745C4BF7739D6B2E3C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>723C6F9E88A94E3BCAD8420F229D19C5</key>
+		<key>5B8698D0AAB3C65B311AD9BDC442F618</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,12 +72,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AFFB42C6FD0CB8D37DC07009A5437BAF</key>
+		<key>99C66B0359695722C68DF5871D04792C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B32B1A7DC0F17C7E0157CFAD557D0A9D</key>
+		<key>AFFB42C6FD0CB8D37DC07009A5437BAF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

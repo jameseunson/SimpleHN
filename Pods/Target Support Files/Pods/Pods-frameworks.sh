@@ -86,18 +86,18 @@ strip_invalid_archs() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods/Firebase.framework"
   install_framework "Pods/JBNSLayoutConstraint.framework"
-  install_framework "Pods/KILabel.framework"
   install_framework "Pods/Mantle.framework"
   install_framework "Pods/RegexKitLite.framework"
   install_framework "Pods/SSDynamicText.framework"
   install_framework "Pods/TimeAgoInWords.framework"
+  install_framework "Pods/Hpple.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods/Firebase.framework"
   install_framework "Pods/JBNSLayoutConstraint.framework"
-  install_framework "Pods/KILabel.framework"
   install_framework "Pods/Mantle.framework"
   install_framework "Pods/RegexKitLite.framework"
   install_framework "Pods/SSDynamicText.framework"
   install_framework "Pods/TimeAgoInWords.framework"
+  install_framework "Pods/Hpple.framework"
 fi

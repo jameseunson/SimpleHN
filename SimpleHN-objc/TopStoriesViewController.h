@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "StoriesViewController.h"
+#import "StoriesTimePeriodSelectViewController.h"
+#import "TopStoriesTitleView.h"
 
-@interface TopStoriesViewController : StoriesViewController
+@interface TopStoriesViewController : StoriesViewController <StoriesTimePeriodSelectViewController,
+    TopStoriesTitleViewDelegate>
 
 @end

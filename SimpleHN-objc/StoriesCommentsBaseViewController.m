@@ -12,6 +12,10 @@
 
 @import SafariServices;
 
+@interface StoriesCommentsBaseViewController ()
+- (void)didToggleNightMode:(id)sender;
+@end
+
 @implementation StoriesCommentsBaseViewController
 
 - (void)awakeFromNib {
@@ -51,9 +55,16 @@
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
-                                                   self.tabBarController.tabBar.frame.size.height, 0);
+    // Disable content inset on simulator, where it doesn't work
+    // for some unknown reason
+    if ([[[UIDevice currentDevice] model] rangeOfString:@"Phone"].location != NSNotFound &&
+        [[[UIDevice currentDevice] model] rangeOfString:@"Simulator"].location == NSNotFound ) {
+        
+        self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                       [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                       self.tabBarController.tabBar.frame.size.height, 0);
+    }
+    
     [self.view addSubview:_tableView];
     
     self.loadingView = [[ContentLoadingView alloc] init];
@@ -81,6 +92,15 @@
                                @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
+    
+    UITapGestureRecognizer * nightModeTapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                           initWithTarget:self action:@selector(didToggleNightMode:)];
+    nightModeTapGestureRecognizer.numberOfTapsRequired = 2;
+    nightModeTapGestureRecognizer.numberOfTouchesRequired = 2;
+    
+    [self.navigationController.navigationBar
+     addGestureRecognizer:nightModeTapGestureRecognizer];
+    
 }
 
 - (void)viewDidLoad {
@@ -365,6 +385,11 @@
 #pragma mark - StoriesCommentsSearchResultsViewControllerDelegate <NSObject>
 - (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
     NSLog(@"storiesCommentsSearchResultsViewController:didSelectResult:");
+}
+
+#pragma mark - Private Methods
+- (void)didToggleNightMode:(id)sender {
+    NSLog(@"didToggleNightMode:");
 }
 
 @end

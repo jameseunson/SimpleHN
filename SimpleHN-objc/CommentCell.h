@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Comment.h"
-#import "KILabel.h"
 #import "ActionDrawerView.h"
 
 @protocol CommentCellDelegate;
