@@ -7,6 +7,7 @@
 //
 
 #import "UserHeaderView.h"
+#import "CommentTextView.h"
 //#import "KILabel.h"
 
 @interface UserHeaderView ()
@@ -31,6 +32,7 @@
 // view depends
 @property (nonatomic, strong) NSArray * heightDependentViews;
 
+- (void)tappedTextView:(id)sender;
 - (void)didChangeSegment:(id)sender;
 
 @end
@@ -88,7 +90,7 @@
         
         [self addSubview:_karmaStackView];
         
-        self.aboutTextView = [[UITextView alloc] init];
+        self.aboutTextView = [[CommentTextView alloc] init];
         _aboutTextView.translatesAutoresizingMaskIntoConstraints = NO;
         _aboutTextView.scrollEnabled = NO;
         _aboutTextView.editable = NO;
@@ -97,7 +99,11 @@
         _aboutTextView.delegate = self;
         _aboutTextView.font = [LabelHelper adjustedBodyFont];
         
-        //        _commentTextView.contentInset = UIEdgeInsetsMake(0, 0, 50.0f, 0);
+        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                        action:@selector(tappedTextView:)];
+        tapRecognizer.delegate = self;
+        
+        [_aboutTextView addGestureRecognizer:tapRecognizer];
         
         [self addSubview:_aboutTextView];
         
@@ -179,7 +185,10 @@
     self.submissionsLabel.text = _user.submissionsString;
     
     self.karmaLabel.text = [_user.karma stringValue];
-    self.aboutTextView.text = _user.about;
+    
+    if(_user.about) {
+        self.aboutTextView.text = _user.about;
+    }
     
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
@@ -194,6 +203,32 @@
         [self.delegate performSelector:@selector(userHeaderView:didChangeVisibleData:)
                             withObject:self withObject:@(_visibleData)];
     }
+}
+
+#pragma mark - Private Methods
+- (void)tappedTextView:(id)sender {
+    
+    UITapGestureRecognizer * recognizer = sender;
+    UITextView *textView = (UITextView *)recognizer.view;
+    CGPoint tapLocation = [recognizer locationInView:textView];
+    
+    UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
+    NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
+    
+    if([[attributes allKeys] containsObject:NSLinkAttributeName]) {
+        
+        NSURL *url = attributes[NSLinkAttributeName];
+        
+        if([self.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
+            [self.delegate performSelector:@selector(userHeaderView:didTapLink:)
+                                withObject:self withObject:url];
+        }
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate Methods
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 #pragma mark - UITextViewDelegate Methods

@@ -1,4 +1,25 @@
 PODS:
+  - AFNetworking (2.6.3):
+    - AFNetworking/NSURLConnection (= 2.6.3)
+    - AFNetworking/NSURLSession (= 2.6.3)
+    - AFNetworking/Reachability (= 2.6.3)
+    - AFNetworking/Security (= 2.6.3)
+    - AFNetworking/Serialization (= 2.6.3)
+    - AFNetworking/UIKit (= 2.6.3)
+  - AFNetworking/NSURLConnection (2.6.3):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.6.3):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.6.3)
+  - AFNetworking/Security (2.6.3)
+  - AFNetworking/Serialization (2.6.3)
+  - AFNetworking/UIKit (2.6.3):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
   - Firebase (2.4.2)
   - hpple (0.3.0)
   - JBNSLayoutConstraint (1.0.0)
@@ -10,6 +31,7 @@ PODS:
   - TimeAgoInWords (2.0.0)
 
 DEPENDENCIES:
+  - AFNetworking (~> 2.6.3)
   - Firebase (~> 2.4.0)
   - hpple (from `https://github.com/topfunky/hpple.git`)
   - JBNSLayoutConstraint (~> 1.0.0)
@@ -28,6 +50,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/topfunky/hpple.git
 
 SPEC CHECKSUMS:
+  AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
   hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006

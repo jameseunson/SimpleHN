@@ -22,7 +22,7 @@
 - (void)loadVisibleItems;
 
 @property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
-@property (nonatomic, strong) NSMutableDictionary * storyDiffLookup;
+@property (nonatomic, strong) NSMutableDictionary * storyDiffLookup; // NYI
 
 @end
 
@@ -66,6 +66,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
     
     self.detailViewController = ((SimpleHNSplitViewController*)
                                  self.splitViewController).storyDetailViewController;

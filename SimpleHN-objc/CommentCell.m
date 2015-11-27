@@ -50,6 +50,8 @@
 - (void)collapseCell;
 - (void)uncollapseCell;
 
+- (void)tappedTextView:(id)sender;
+
 @end
 
 @implementation CommentCell
@@ -64,7 +66,7 @@
         
         _expanded = NO;
         
-        self.commentTextView = [[UITextView alloc] init];
+        self.commentTextView = [[CommentTextView alloc] init];
         _commentTextView.translatesAutoresizingMaskIntoConstraints = NO;
         _commentTextView.scrollEnabled = NO;
         _commentTextView.editable = NO;
@@ -72,6 +74,11 @@
         _commentTextView.selectable = YES;
         _commentTextView.delegate = self;
 //        _commentTextView.contentInset = UIEdgeInsetsMake(0, 0, 50.0f, 0);
+        
+        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                        action:@selector(tappedTextView:)];
+        tapRecognizer.delegate = self;
+        [_commentTextView addGestureRecognizer:tapRecognizer];
         
         [self.contentView addSubview:_commentTextView];
         
@@ -248,30 +255,7 @@
     _comment = comment;
     
     if(comment.text != nil) {
-
-        NSMutableAttributedString * commentText = [[[NSAttributedString alloc] initWithData:[self.comment.text dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
-                                                                         documentAttributes:nil error:nil] mutableCopy];
-        
-        NSRange range = (NSRange){0, [commentText length]};
-        [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
-            UIFont* currentFont = value;
-           
-            if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-                [commentText addAttribute:NSFontAttributeName
-                                    value:[LabelHelper adjustedBoldBodyFont] range:range];
-                
-            } else if ([currentFont.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-                [commentText addAttribute:NSFontAttributeName
-                                    value:[LabelHelper adjustedItalicBodyFont] range:range];
-            } else {
-                [commentText addAttribute:NSFontAttributeName
-                                    value:[LabelHelper adjustedBodyFont] range:range];
-            }
-
-        }];
-        
-//        self.commentLabel.attributedText = commentText;
-        self.commentTextView.attributedText = commentText;
+        self.commentTextView.attributedText = self.comment.attributedText;
     }
     
     if(self.comment.collapsed) {
@@ -401,7 +385,6 @@
 
 #pragma mark - UITextViewDelegate Methods
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
-    NSLog(@"textView:shouldInteractWithURL:inRange:");
     
     if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
         [self.delegate performSelector:@selector(commentCell:didTapLink:)
@@ -409,6 +392,38 @@
     }
     
     return NO;
+}
+
+#pragma mark - Private Methods
+- (void)tappedTextView:(id)sender {
+    
+    UITapGestureRecognizer * recognizer = sender;
+    UITextView *textView = (UITextView *)recognizer.view;
+    CGPoint tapLocation = [recognizer locationInView:textView];
+    
+    UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
+    NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
+    
+    if([[attributes allKeys] containsObject:NSLinkAttributeName]) {
+        
+        NSURL *url = attributes[NSLinkAttributeName];
+        
+        if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
+            [self.delegate performSelector:@selector(commentCell:didTapLink:)
+                                withObject:self withObject:url];
+        }
+        
+    } else {
+        if([self.delegate respondsToSelector:@selector(commentCell:didTapTextView:)]) {
+            [self.delegate performSelector:@selector(commentCell:didTapTextView:)
+                                withObject:self withObject:textView];
+        }
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate Methods
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 @end

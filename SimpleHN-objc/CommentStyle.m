@@ -38,7 +38,10 @@
         
     } else if(type == CommentStyleTypeQuote) {
 //        return @"\n>|^>"; // regex
-        return @"^&gt;|<p>&gt;|<p><pre><code>[ ]+&gt;"; // regex
+        return @"^&gt;|<p>&gt;"; // regex
+        
+    } else if(type == CommentStyleTypeMultiQuote) {
+        return @"<p><pre><code>[ ]+&gt;";
         
     } else if(type == CommentStyleTypeCode) {
         return @"<pre><code>";

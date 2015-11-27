@@ -194,8 +194,8 @@
                                     self.loadingProgress.completedUnitCount++;
                                 }
                                 
-                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+//                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+//                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
                                 
                                 [self applyFiltering];
                             });
@@ -212,8 +212,8 @@
                                     self.loadingProgress.completedUnitCount++;
                                 }
                                 
-                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+//                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+//                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
                                 
                                 [self applyFiltering];
                             });

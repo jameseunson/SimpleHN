@@ -44,8 +44,11 @@ typedef void (^StoryBlock)(Story* story);
 
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                            completion:(StoryBlock)completion;
+
 + (void)createStoryFromSnapshot:(FDataSnapshot*)snapshot
                            completion:(StoryBlock)completion;
+
++ (Story*)createStoryFromAlgoliaResult:(NSDictionary*)result;
 
 - (void)loadCommentsForStory;
 - (void)loadUserForStory:(UserBlock)completion;

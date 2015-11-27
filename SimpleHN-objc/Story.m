@@ -151,6 +151,45 @@ static NSDateFormatter * _timeDateFormatter = nil;
                                                         object:obj];
 }
 
++ (Story*)createStoryFromAlgoliaResult:(NSDictionary*)result {
+    
+    NSMutableDictionary * mutableStoryDict = [[NSMutableDictionary alloc] init];
+    if([[result allKeys] containsObject:@"title"]) {
+        mutableStoryDict[@"title"] = result[@"title"];
+    }
+    if([[result allKeys] containsObject:@"url"]) {
+        mutableStoryDict[@"url"] = result[@"url"];
+    }
+    if([[result allKeys] containsObject:@"author"]) {
+        mutableStoryDict[@"by"] = result[@"author"];
+    }
+    if([[result allKeys] containsObject:@"points"]) {
+        mutableStoryDict[@"score"] = @([result[@"points"] intValue]);
+    }
+    if([[result allKeys] containsObject:@"num_comments"]) {
+        if([result[@"num_comments"] isKindOfClass:[NSNull class]]) {
+            mutableStoryDict[@"descendants"] = @(0);
+        } else {
+            mutableStoryDict[@"descendants"] = @([result[@"num_comments"] intValue]);
+        }
+    }
+    if([[result allKeys] containsObject:@"objectID"]) {
+        mutableStoryDict[@"id"] = @([result[@"objectID"] intValue]);
+    }
+    if([[result allKeys] containsObject:@"created_at_i"]) {
+        mutableStoryDict[@"time"] = @([result[@"created_at_i"] intValue]);
+    }
+    
+    NSError * error = nil;
+    Story * obj = [MTLJSONAdapter modelOfClass:Story.class
+                            fromJSONDictionary:mutableStoryDict error:&error];
+    if(error) {
+        NSLog(@"createStoryFromAlgoliaResult, ERROR: %@", error);
+    }
+    
+    return obj;
+}
+
 - (NSDictionary*)diffOtherStory:(Story*)otherStory {
     
     NSArray * mantleKeys = [[Story JSONKeyPathsByPropertyKey] allKeys];

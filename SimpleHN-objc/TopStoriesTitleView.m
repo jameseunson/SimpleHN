@@ -49,8 +49,6 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    NSLog(@"%@", NSStringFromCGRect(_titleLabel.frame));
-    
     CGFloat combinedHeight = _titleLabel.frame.size.height + _subtitleLabel.frame.size.height;
     CGFloat contentOrigin = roundf((self.frame.size.height / 2) - (combinedHeight / 2));
     

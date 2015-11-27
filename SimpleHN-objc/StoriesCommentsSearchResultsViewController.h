@@ -13,6 +13,8 @@
 
 @property (nonatomic, assign) __unsafe_unretained id<StoriesCommentsSearchResultsViewControllerDelegate> delegate;
 
+- (void)addSearchResults:(NSArray*)results;
+
 @end
 
 @protocol StoriesCommentsSearchResultsViewControllerDelegate <NSObject>

@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, CommentStyleType) {
     CommentStyleTypeBold,
     CommentStyleTypeItalic,
     CommentStyleTypeQuote,
+    CommentStyleTypeMultiQuote,
     CommentStyleTypeCode
 };
 

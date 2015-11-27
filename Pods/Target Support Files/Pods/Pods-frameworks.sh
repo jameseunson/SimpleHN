@@ -84,6 +84,7 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "Pods/AFNetworking.framework"
   install_framework "Pods/Firebase.framework"
   install_framework "Pods/JBNSLayoutConstraint.framework"
   install_framework "Pods/Mantle.framework"
@@ -93,6 +94,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods/Hpple.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "Pods/AFNetworking.framework"
   install_framework "Pods/Firebase.framework"
   install_framework "Pods/JBNSLayoutConstraint.framework"
   install_framework "Pods/Mantle.framework"

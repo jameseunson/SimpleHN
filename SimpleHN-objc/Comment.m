@@ -16,7 +16,10 @@ static NSString * _commentCSS = nil;
 
 @interface Comment ()
 + (NSString*)completeParagraphTags:(NSString*)string;
+
 + (NSString*)wrapQuotesInBlockQuoteTags:(NSString*)string;
++ (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string;
+
 //+ (NSString*)commentCSS;
 
 @end
@@ -52,15 +55,12 @@ static NSString * _commentCSS = nil;
         
         NSString * string = (NSString*)value;
         
-//        NSMutableString * mutableText = [[NSMutableString alloc] initWithString:string];
-//        [mutableText insertString:[[self class] commentCSS] atIndex:0];
-//        string = [mutableText copy];
-        
         string = [[self class] completeParagraphTags:string];
         if([string containsString:@"<p></p>"]) {
             string = [string stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""];
         }
         string = [[self class] wrapQuotesInBlockQuoteTags:string];
+        string = [[self class] wrapMultiQuotesInBlockQuoteTags:string];
         
         return [string copy];
     }];
@@ -130,6 +130,46 @@ static NSString * _commentCSS = nil;
     }
 }
 
+- (NSAttributedString*)attributedText {
+    if(_attributedText) {
+        return _attributedText;
+    }
+    
+    NSMutableAttributedString * commentText = [[[NSAttributedString alloc] initWithData:[self.text dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)} documentAttributes:nil error:nil] mutableCopy];
+    
+    NSRange range = (NSRange){0, [commentText length]};
+    [commentText enumerateAttribute:NSParagraphStyleAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        
+        NSMutableParagraphStyle * style = [((NSParagraphStyle*)value) mutableCopy];
+        style.paragraphSpacing = 10;
+        
+        [commentText removeAttribute:value range:range];
+        [commentText addAttribute:NSParagraphStyleAttributeName
+                            value:style range:range];
+    }];
+    
+    [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
+        UIFont* currentFont = value;
+        
+        if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [commentText addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedBoldBodyFont] range:range];
+            
+        } else if ([currentFont.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [commentText addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedItalicBodyFont] range:range];
+        } else {
+            [commentText addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedBodyFont] range:range];
+        }
+        
+    }];
+    
+    _attributedText = commentText;
+    
+    return _attributedText;
+}
+
 - (BOOL)isEqual:(id)object {
     return ([object isKindOfClass:[Comment class]] &&
             [((Comment*)object).commentId isEqual:self.commentId]);
@@ -179,8 +219,6 @@ static NSString * _commentCSS = nil;
 
 + (NSString*)wrapQuotesInBlockQuoteTags:(NSString *)string {
     
-    string = @"<p><pre><code>  &gt; Think MSIE. For a long time it was a horrible browser,&gt; but held its market-share simply by being the default. </code></pre> That&#x27;s not entirely true. IE since about ~4 was the best browser around (I choose to ignore IE5 for Mac). NN4 was horrible. The problem with IE was that it stagnated, so when Firefox came out it soon started to kick IEs ass and only then the &quot;default&quot; part became a problem.</p>";
-    
     if([string rangeOfRegex:[CommentStyle openTagForType:CommentStyleTypeQuote]].location != NSNotFound) {
         
         NSMutableString * commentMutable = [[NSMutableString alloc] init];
@@ -201,21 +239,6 @@ static NSString * _commentCSS = nil;
         }
         
         NSString * commentRaw = [commentMutable copy];
-        if([string rangeOfRegex:@"<p><pre><code>[ ]+&gt;"].location != NSNotFound) {
-            
-            NSArray * preElements = [doc searchWithXPathQuery:@"//pre/code"];
-            for(TFHppleElement * e in preElements) {
-                NSLog(@"%@", e);
-                
-                NSString * rawWithoutTags = [[e.raw stringByReplacingOccurrencesOfString:@"<code>" withString:@""] stringByReplacingOccurrencesOfString:@"</code>" withString:@""];
-                
-                NSArray * quotes = [[rawWithoutTags componentsSeparatedByString:@"&gt;"] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-                    return [[((NSString*)evaluatedObject) stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] > 0;
-                }]];
-                NSLog(@"%@", quotes);
-            }
-        }
-        
         for(NSString * quote in quotesToReplace) {
             
             NSString * modifiedQuote = [quote stringByReplacingOccurrencesOfString:@"<p>" withString:@""];
@@ -235,21 +258,70 @@ static NSString * _commentCSS = nil;
     return string;
 }
 
-//+ (NSString*)commentCSS {
-//    if(_commentCSS) {
-//        return _commentCSS;
-//    }
-//    
-//    NSString *path = [[NSBundle mainBundle] pathForResource:@"reset" ofType:@"css"];
-//    NSURL * url = [NSURL fileURLWithPath:path];
-//    
-//    NSError * fileError = nil;
-//    NSString * cssReset = [NSString stringWithContentsOfURL:url
-//                                                   encoding:NSUTF8StringEncoding error:&fileError];
-//    
-//    _commentCSS = [NSString stringWithFormat:@"<style>%@ blockquote{ color: #999999; } p {margin-bottom: 20px;}</style>",
-//                      cssReset];
-//    return _commentCSS;
-//}
++ (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string {
+ 
+//    string = @"<p><pre><code>  &gt; Think MSIE. For a long time it was a horrible browser,&gt; but held its market-share simply by being the default. </code></pre> That&#x27;s not entirely true. IE since about ~4 was the best browser around (I choose to ignore IE5 for Mac). NN4 was horrible. The problem with IE was that it stagnated, so when Firefox came out it soon started to kick IEs ass and only then the &quot;default&quot; part became a problem.</p>";
+    
+    // Alternative case, has both quote and initial part of comment embedded in pre/code tag
+    // Part of comment should not be discarded
+//    string = @"<p><pre><code>  &gt; i particularly like the &quot;send tab to desktop browser&quot; feature</code></pre>Is this feature a discrete mechanism? Because I do this all the time, but by a different means: on desktop, I go Hamburger Menu &gt; History &gt; Tabs From Other Devices, which shows you a list of all your tabs from every synced device.</p>";
+    
+    if([string rangeOfRegex:[CommentStyle openTagForType:CommentStyleTypeMultiQuote]].location != NSNotFound) {
+     
+        NSMutableString * commentMutable = [[NSMutableString alloc] init];
+        NSMutableArray * quotesToReplace = [[NSMutableArray alloc] init];
+        
+        TFHpple * doc = [[TFHpple alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+        NSArray * elements = [doc searchWithXPathQuery:@"//html/body/*"];
+        
+        for(TFHppleElement * e in elements) {
+            [commentMutable appendString:e.raw];
+        }
+        
+        NSString * commentRaw = [commentMutable copy];
+        NSArray * preElements = [doc searchWithXPathQuery:@"//pre/code"];
+        
+        for(TFHppleElement * e in preElements) {
+            NSString * rawWithoutTags = [[e.raw stringByReplacingOccurrencesOfString:@"<code>" withString:@""]
+                                         stringByReplacingOccurrencesOfString:@"</code>" withString:@""];
+            
+            NSMutableArray * quotes = [[NSMutableArray alloc] init];
+            for(NSString * quote in [rawWithoutTags componentsSeparatedByString:@"&gt;"]) {
+                
+                NSString * trimmedString = [quote stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                if([trimmedString length] > 0) {
+                    [quotes addObject:trimmedString];
+                }
+            }
+            
+            NSString * multiString = [NSString stringWithFormat:@"<p><blockquote>%@</blockquote></p>",
+                                      [quotes componentsJoinedByString:@"\n "]];
+            
+            // Get the entire paragraph for the multi-quote
+            NSString * paragraphForMultiString = [NSString stringWithFormat:@"<pre>%@</pre>", e.raw];
+            [quotesToReplace addObject:@[ paragraphForMultiString, multiString ]];
+        }
+        
+        for(NSArray * quote in quotesToReplace) {
+            // Also replace empty paragraph tags, which just increase size of textview needlessly
+            commentRaw = [[commentRaw stringByReplacingOccurrencesOfString:
+                           [quote firstObject] withString:[quote lastObject]]
+                          stringByReplacingOccurrencesOfString:@"<p/>" withString:@""];
+        }
+        
+        NSArray * preComponents = [string componentsSeparatedByString:@"</pre>"];
+        if(![[preComponents lastObject] isEqualToString:@"</p>"]) {
+            NSString * subsequentComment = [NSString stringWithFormat:@"<p>%@",
+                                            [preComponents lastObject]];
+            NSLog(@"%@", subsequentComment);
+            commentRaw = [commentRaw stringByAppendingString:subsequentComment];
+        }
+        NSLog(@"%@", preComponents);
+        
+        string = commentRaw;
+    }
+    
+    return string;
+}
 
 @end

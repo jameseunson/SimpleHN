@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
 };
 
 @protocol UserHeaderViewDelegate;
-@interface UserHeaderView : UIView <UITextViewDelegate>
+@interface UserHeaderView : UIView <UITextViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) User * user;
 @property (nonatomic, assign) __unsafe_unretained id<UserHeaderViewDelegate> delegate;

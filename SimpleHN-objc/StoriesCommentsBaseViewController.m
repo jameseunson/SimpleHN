@@ -106,9 +106,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
-    
     [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
                                                  delegate]).masterProgress];
 }
@@ -126,6 +123,26 @@
 - (void)query:(NSString*)query {
     
     NSLog(@"query: %@", query);
+    
+    [[HNAlgoliaAPIManager sharedManager] query:query withCompletion:^(NSDictionary *result) {
+        NSLog(@"StoriesCommentsBaseViewController, HNAlgoliaAPIManager query, result: %@", result);
+
+        if(!result) {
+            UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error"
+                                                                           message:@"Unable to contact the search server. Please try again later."
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {}];
+            [alert addAction:defaultAction];
+            [self presentViewController:alert animated:YES completion:nil];
+            
+        } else {
+            
+            NSArray * results = result[kHNAlgoliaAPIManagerResults];
+            [_searchResultsController addSearchResults:results];
+        }
+    }];
     
 //    https://hn.algolia.com/api
 //    http://hn.algolia.com/api/v1/search?query=foo&tags=story

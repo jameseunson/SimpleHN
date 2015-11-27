@@ -30,7 +30,7 @@
 //    splitViewController.storyDetailViewController =
 //        (StoryDetailViewController*)navigationController.topViewController;
     
-    [[UIView appearance] setTintColor:[UIColor orangeColor]];
+    self.window.tintColor = [UIColor orangeColor];
     
     self.masterProgress = [NSProgress progressWithTotalUnitCount:0];
     

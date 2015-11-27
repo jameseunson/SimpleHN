@@ -34,6 +34,8 @@
 - (void)commentCreated:(NSNotification*)notification;
 - (void)commentCollapsedChanged:(NSNotification*)notification;
 
+- (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
+
 @end
 
 @implementation StoryDetailViewController
@@ -253,32 +255,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-    if(comment.collapsed) {
-        comment.collapsed = NO;
-        return;
-    }
-    
-    if(_expandedCellIndexPath) {
-        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                      _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-    
-    // User has tapped an expanded cell, toggle only
-    if([indexPath isEqual:_expandedCellIndexPath]) {
-        _expandedCellIndexPath = nil;
-        
-    } else { // Otherwise, set new expanded cell
-        self.expandedCellIndexPath = indexPath;
-        
-        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                      _expandedCellIndexPath];
-        expandedCell.expanded = YES;
-    }
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
+    [self expandCollapseCommentForRow:indexPath];
 }
 
 #pragma mark - Private Methods
@@ -343,8 +320,8 @@
         self.loadingProgress.completedUnitCount++;
     }
     
-    NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-          self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+//    NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+//          self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
@@ -361,12 +338,52 @@
     NSLog(@"reloadContent:");
 }
 
+- (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
+    
+    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+    if(comment.collapsed) {
+        comment.collapsed = NO;
+        return;
+    }
+    
+    if(_expandedCellIndexPath) {
+        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                      _expandedCellIndexPath];
+        expandedCell.expanded = NO;
+    }
+    
+    // User has tapped an expanded cell, toggle only
+    if([indexPath isEqual:_expandedCellIndexPath]) {
+        _expandedCellIndexPath = nil;
+        
+    } else { // Otherwise, set new expanded cell
+        self.expandedCellIndexPath = indexPath;
+        
+        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+                                      _expandedCellIndexPath];
+        expandedCell.expanded = YES;
+    }
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
     SFSafariViewController * controller = [[SFSafariViewController alloc]
                                            initWithURL:link];
     [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (void)commentCell:(CommentCell *)cell didTapTextView:(UITextView *)textView {
+    
+    NSInteger indexOfRow = [_detailItem.flatDisplayComments indexOfObject:cell.comment];
+    if(indexOfRow != NSNotFound) {
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:indexOfRow inSection:1];
+        [self expandCollapseCommentForRow:indexPath];
+    }
 }
 
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
