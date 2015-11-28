@@ -92,13 +92,9 @@
     
     // Disable content inset on simulator, where it doesn't work
     // for some unknown reason
-    if ([[[UIDevice currentDevice] model] rangeOfString:@"Phone"].location != NSNotFound &&
-        [[[UIDevice currentDevice] model] rangeOfString:@"Simulator"].location == NSNotFound ) {
-        
-        self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-                                                       [UIApplication sharedApplication].statusBarFrame.size.height, 0,
-                                                       self.tabBarController.tabBar.frame.size.height, 0);
-    }
+//    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+//                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+//                                                   self.tabBarController.tabBar.frame.size.height, 0);
     [self.view addSubview:_tableView];
     
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);

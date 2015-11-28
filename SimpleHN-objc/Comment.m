@@ -12,6 +12,9 @@
 #import "RegexKitLite.h"
 #import "TFHpple.h"
 
+#import "NSAttributedString+HTML.h"
+#import "DTCoreTextConstants.h"
+
 static NSString * _commentCSS = nil;
 
 @interface Comment ()
@@ -135,19 +138,10 @@ static NSString * _commentCSS = nil;
         return _attributedText;
     }
     
-    NSMutableAttributedString * commentText = [[[NSAttributedString alloc] initWithData:[self.text dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)} documentAttributes:nil error:nil] mutableCopy];
-    
+    NSMutableAttributedString *commentText = [[[NSAttributedString alloc] initWithHTMLData:[self.text dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
     NSRange range = (NSRange){0, [commentText length]};
-    [commentText enumerateAttribute:NSParagraphStyleAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-        
-        NSMutableParagraphStyle * style = [((NSParagraphStyle*)value) mutableCopy];
-        style.paragraphSpacing = 10;
-        
-        [commentText removeAttribute:value range:range];
-        [commentText addAttribute:NSParagraphStyleAttributeName
-                            value:style range:range];
-    }];
-    
+
+
     [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont* currentFont = value;
         

@@ -9,6 +9,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>DTCoreText.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>DTFoundation.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Firebase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -57,12 +67,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>0F90A49C3C5DF94F32B23819F699C795</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>2AF2CD38E75DEB9756DFE7749BDF9217</key>
+		<key>3D9A1E638C158F21F6B71B73C9A4FC8E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,12 +77,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>7316DE1B2DBB96560394FD64431C900F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>76D14624C893010505D4468C79AD611B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>814D7F0C846B4DCB10FE73B71013FF5D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>92716435641ED13DEC345CD6EADFB142</key>
+		<key>A78FA4A3D4C583CBA47B02C147BF38AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AA73AC63B71544008C7BD900564A8A4C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -92,7 +112,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BC639969B75B83DAFE8BD5F0CFDDEC0C</key>
+		<key>FC284BE6419EB1B4BE9EB8313561624F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

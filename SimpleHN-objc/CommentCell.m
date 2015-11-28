@@ -50,8 +50,6 @@
 - (void)collapseCell;
 - (void)uncollapseCell;
 
-- (void)tappedTextView:(id)sender;
-
 @end
 
 @implementation CommentCell
@@ -66,21 +64,19 @@
         
         _expanded = NO;
         
-        self.commentTextView = [[CommentTextView alloc] init];
-        _commentTextView.translatesAutoresizingMaskIntoConstraints = NO;
-        _commentTextView.scrollEnabled = NO;
-        _commentTextView.editable = NO;
-        _commentTextView.dataDetectorTypes = UIDataDetectorTypeLink;
-        _commentTextView.selectable = YES;
-        _commentTextView.delegate = self;
-//        _commentTextView.contentInset = UIEdgeInsetsMake(0, 0, 50.0f, 0);
+        self.commentLabel = [LabelHelper labelWithFont:[LabelHelper adjustedBodyFont]];
+        _commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
+//        _commentLabel.automaticLinkDetectionEnabled = YES;
         
-        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                        action:@selector(tappedTextView:)];
-        tapRecognizer.delegate = self;
-        [_commentTextView addGestureRecognizer:tapRecognizer];
-        
-        [self.contentView addSubview:_commentTextView];
+//        __block CommentCell * blockSelf = self;
+//        _commentLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
+//            if([blockSelf.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
+//                [blockSelf.delegate performSelector:@selector(commentCell:didTapLink:)
+//                                    withObject:blockSelf withObject:[NSURL URLWithString:string]];
+//            }
+//        };
+//        
+        [self.contentView addSubview:_commentLabel];
         
         self.headerView = [[UIView alloc] init];
         _headerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -131,15 +127,15 @@
         _actionDrawerBorderLayer.hidden = YES;
         [self.contentView.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
         
-        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentTextView, _headerView, _actionDrawerView, _dateLabel, _authorLabel, _headerUpDownLabel);
+        NSDictionary * bindings = NSDictionaryOfVariableBindings(_commentLabel, _headerView, _actionDrawerView, _dateLabel, _authorLabel, _headerUpDownLabel);
         
         self.headerViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_headerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0];
         
         NSArray * verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                         @"V:|-[_headerView(20)]-10-[_commentTextView]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
+                                         @"V:|-[_headerView(20)]-10-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
         int i = 0;
         for(NSLayoutConstraint * constraint in verticalConstraints) {
-            if(constraint.constant == 10 && constraint.firstItem == self.commentTextView) {
+            if(constraint.constant == 10 && constraint.firstItem == _commentLabel) {
 //            if(constraint.constant == 10 && constraint.firstItem == self.commentLabel) {
                 self.stackViewLabelJoinConstraint = constraint;
                 
@@ -168,7 +164,7 @@
 //        NSArray * labelHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
 //                                                @"H:|-20-[_commentLabel]-|" options:0 metrics:nil views:bindings];
         NSArray * labelHorizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                                @"H:|-20-[_commentTextView]-|" options:0 metrics:nil views:bindings];
+                                                @"H:|-20-[_commentLabel]-|" options:0 metrics:nil views:bindings];
         
         for(NSLayoutConstraint * constraint in labelHorizontalConstraints) {
             if(constraint.constant == 20) {
@@ -205,7 +201,7 @@
                                              _headerView.frame.size.height + 5.0f);
     
 //    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
-    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _commentTextView.frame.origin.y + _commentTextView.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
+    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 - (void)prepareForReuse {
@@ -215,7 +211,7 @@
         [self uncollapseCell];
     }
     
-    self.commentTextView.attributedText = nil;
+//    _commentLabel.attributedText = nil;
 //    self.commentLabel.text = nil;
     
     self.authorLabel.text = nil;
@@ -255,7 +251,8 @@
     _comment = comment;
     
     if(comment.text != nil) {
-        self.commentTextView.attributedText = self.comment.attributedText;
+//        self.commentTextView.attributedText = self.comment.attributedText;
+        self.commentLabel.attributedText = self.comment.attributedText;
     }
     
     if(self.comment.collapsed) {
@@ -323,8 +320,8 @@
     
 //    NSLog(@"collapseCell");
     
-//    self.commentLabel.hidden = YES;
-    self.commentTextView.hidden = YES;
+    self.commentLabel.hidden = YES;
+//    self.commentTextView.hidden = YES;
     
     [self.contentView removeConstraint:_stackViewLabelJoinConstraint];
     [self.contentView removeConstraint:_drawerBottomConstraint];
@@ -350,8 +347,8 @@
 
 //    NSLog(@"uncollapseCell");
     
-//    self.commentLabel.hidden = NO;
-    self.commentTextView.hidden = NO;
+    self.commentLabel.hidden = NO;
+//    self.commentTextView.hidden = NO;
     
     if(self.comment.parentComment) {
         _headerViewHeightConstraint.constant = 20;
@@ -381,49 +378,6 @@
         [self.delegate performSelector:@selector(commentCell:didTapActionWithType:)
                             withObject:self withObject:type];
     }
-}
-
-#pragma mark - UITextViewDelegate Methods
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
-    
-    if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
-        [self.delegate performSelector:@selector(commentCell:didTapLink:)
-                            withObject:self withObject:URL];
-    }
-    
-    return NO;
-}
-
-#pragma mark - Private Methods
-- (void)tappedTextView:(id)sender {
-    
-    UITapGestureRecognizer * recognizer = sender;
-    UITextView *textView = (UITextView *)recognizer.view;
-    CGPoint tapLocation = [recognizer locationInView:textView];
-    
-    UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
-    NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
-    
-    if([[attributes allKeys] containsObject:NSLinkAttributeName]) {
-        
-        NSURL *url = attributes[NSLinkAttributeName];
-        
-        if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
-            [self.delegate performSelector:@selector(commentCell:didTapLink:)
-                                withObject:self withObject:url];
-        }
-        
-    } else {
-        if([self.delegate respondsToSelector:@selector(commentCell:didTapTextView:)]) {
-            [self.delegate performSelector:@selector(commentCell:didTapTextView:)
-                                withObject:self withObject:textView];
-        }
-    }
-}
-
-#pragma mark - UIGestureRecognizerDelegate Methods
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
 }
 
 @end

@@ -9,14 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "Comment.h"
 #import "ActionDrawerView.h"
-#import "CommentTextView.h"
 
 @protocol CommentCellDelegate;
 @interface CommentCell : UITableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) Comment * comment;
 
-@property (nonatomic, strong) CommentTextView * commentTextView;
+@property (nonatomic, strong) UILabel * commentLabel;
+//@property (nonatomic, strong) CommentTextView * commentTextView;
 
 // Used when quotes are present in the comment, so we can indent
 // the quote views independently of the comment body views

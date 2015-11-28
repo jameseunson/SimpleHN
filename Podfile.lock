@@ -20,6 +20,17 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - DTCoreText (1.6.16):
+    - DTFoundation/Core (~> 1.7.5)
+    - DTFoundation/DTAnimatedGIF (~> 1.7.5)
+    - DTFoundation/DTHTMLParser (~> 1.7.5)
+    - DTFoundation/UIKit (~> 1.7.5)
+  - DTFoundation/Core (1.7.8)
+  - DTFoundation/DTAnimatedGIF (1.7.8)
+  - DTFoundation/DTHTMLParser (1.7.8):
+    - DTFoundation/Core
+  - DTFoundation/UIKit (1.7.8):
+    - DTFoundation/Core
   - Firebase (2.4.2)
   - hpple (0.3.0)
   - JBNSLayoutConstraint (1.0.0)
@@ -32,6 +43,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.6.3)
+  - DTCoreText (~> 1.6.16)
   - Firebase (~> 2.4.0)
   - hpple (from `https://github.com/topfunky/hpple.git`)
   - JBNSLayoutConstraint (~> 1.0.0)
@@ -51,6 +63,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  DTCoreText: 934a16fe9ffdd169c96261721b39dc312b75713d
+  DTFoundation: 46e2b2fafe78d67febfd8d1f85fe9845a093f00e
   Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
   hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006
