@@ -13,7 +13,9 @@
 #import "Story.h"
 #import "StoryCell.h"
 
-@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate, StoryCellDelegate>
+@import SafariServices;
+
+@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) Story * detailItem;

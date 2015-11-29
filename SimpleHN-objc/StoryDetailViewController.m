@@ -6,8 +6,6 @@
 //  Copyright © 2015 JEON. All rights reserved.
 //
 
-@import SafariServices;
-
 #import "StoryDetailViewController.h"
 #import "Story.h"
 #import "Comment.h"
@@ -252,7 +250,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    [self expandCollapseCommentForRow:indexPath];
+    if(indexPath.section == 0 && indexPath.row == 0) {
+        self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
+        [self didSelectContentSegment:self.contentSelectSegmentedControl];
+        
+    } else {
+        [self expandCollapseCommentForRow:indexPath];
+    }
 }
 
 #pragma mark - Private Methods
@@ -308,13 +312,14 @@
             }
             
             self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url];
+            _webViewController.delegate = self;
             [self addChildViewController:_webViewController];
             
             UIView * webView = self.webViewController.view;
             webView.frame = CGRectMake(0,
                                        self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height,
                                        self.view.frame.size.width,
-                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + 10.0f));
+                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
             webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
             
             [self.view addSubview:webView];
@@ -439,6 +444,15 @@
         }]];
         [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
         [self presentViewController:controller animated:YES completion:nil];
+    }
+}
+
+#pragma mark - SFSafariViewControllerDelegate Methods
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    self.contentSelectSegmentedControl.selectedSegmentIndex = 0;
+    
+    if(_webViewController) {
+        [_webViewController.view removeFromSuperview];
     }
 }
 
