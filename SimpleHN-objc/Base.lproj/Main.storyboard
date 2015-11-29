@@ -231,6 +231,7 @@
                     <navigationItem key="navigationItem" id="xv3-Cl-jeF"/>
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="4uA-2E-pDr"/>
+                        <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="owg-Cf-oBn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4P1-2u-kze" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -347,6 +348,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="4uA-2E-pDr"/>
-        <segue reference="7Bf-8e-F5d"/>
+        <segue reference="owg-Cf-oBn"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -10,8 +10,9 @@
 #import "StoriesViewController.h"
 #import "StoriesTimePeriodSelectViewController.h"
 #import "TopStoriesTitleView.h"
+#import "IASKAppSettingsViewController.h"
 
 @interface TopStoriesViewController : StoriesViewController <StoriesTimePeriodSelectViewController,
-    TopStoriesTitleViewDelegate>
+    TopStoriesTitleViewDelegate, IASKSettingsDelegate>
 
 @end

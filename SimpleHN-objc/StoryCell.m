@@ -133,6 +133,16 @@
         } else {
             [self.contentView addConstraint:_storyCommentsScoreRegularWidthConstraint];
         }
+        
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.normalBackgroundColor = UIColorFromRGB(0xffffff);
+            self.nightBackgroundColor = UIColorFromRGB(0x333333);
+            
+            self.storyTitleLabel.normalTextColor = [UIColor blackColor];
+            self.storyTitleLabel.nightTextColor = UIColorFromRGB(0x999999);
+        }];
     }
     return self;
 }

@@ -14,6 +14,7 @@
 #import "UserViewController.h"
 #import "SuProgress.h"
 #import "ActionDrawerButton.h"
+#import "RegexKitLite.h"
 
 #define kStoryCellReuseIdentifier @"kStoryCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
@@ -273,6 +274,21 @@
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
+        
+    } else if([[segue identifier] isEqualToString:@"showDetail"]) {
+        
+        NSNumber * storyIdentifier = (NSNumber*)sender;
+        
+        StoryDetailViewController *controller = (StoryDetailViewController *)
+            [[segue destinationViewController] topViewController];
+        
+        [Story createStoryFromItemIdentifier:storyIdentifier completion:^(Story *story) {
+            controller.detailItem = story;
+        }];
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
 
@@ -367,9 +383,28 @@
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link];
-    [self.navigationController pushViewController:controller animated:YES];
+    NSString * internalLinkRegex = @"https?:\\/\\/news.ycombinator.com\\/item\\?id=([0-9]+)";
+    
+    NSError * error = nil;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:internalLinkRegex options:NSRegularExpressionCaseInsensitive error:&error];
+    
+    NSArray* matches = [regex matchesInString:[link absoluteString] options:0 range:NSMakeRange(0, [[link absoluteString] length])];
+    if([matches count] > 0) {
+        
+        @try {
+            NSNumber * identifier = @([[[[link absoluteString] componentsSeparatedByString:@"?id="] lastObject] intValue]);
+            [self performSegueWithIdentifier:@"showDetail" sender:identifier];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"ERROR: Could not extract identifier from %@", [link absoluteString]);
+        }
+        
+    } else {
+        
+        SFSafariViewController * controller = [[SFSafariViewController alloc]
+                                               initWithURL:link];
+        [self.navigationController pushViewController:controller animated:YES];
+    }
 }
 
 - (void)commentCell:(CommentCell *)cell didTapTextView:(UITextView *)textView {

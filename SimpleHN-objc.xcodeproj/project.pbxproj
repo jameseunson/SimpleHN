@@ -17,6 +17,8 @@
 		98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB91BB68BB7004A0D3A /* LaunchScreen.storyboard */; };
 		98052DD11BB68BB8004A0D3A /* SimpleHN_objcUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */; };
 		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; };
+		9821C9021C0A684600EC514E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
+		9821C9031C0A684600EC514E /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
 		983401381C031EE800A85638 /* CommentStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401371C031EE800A85638 /* CommentStyle.m */; };
 		9834013A1C04105400A85638 /* BaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401391C04105400A85638 /* BaseTest.m */; };
 		9834013D1C0410AE00A85638 /* CommentTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9834013C1C0410AE00A85638 /* CommentTest.m */; };
@@ -33,8 +35,6 @@
 		984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		9849D0AC1C059FA000A23212 /* AskShowHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9849D0AB1C059FA000A23212 /* AskShowHeaderView.m */; };
 		9849D0AF1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9849D0AE1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m */; };
-		9849D0B01C069EBA00A23212 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
-		9849D0B11C069EBB00A23212 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
 		984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */; };
@@ -188,8 +188,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				311107E5FF8D104CED301173 /* Pods.framework in Frameworks */,
-				9849D0B01C069EBA00A23212 /* Reveal.framework in Frameworks */,
-				9849D0B11C069EBB00A23212 /* libz.tbd in Frameworks */,
+				9821C9021C0A684600EC514E /* libz.tbd in Frameworks */,
+				9821C9031C0A684600EC514E /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

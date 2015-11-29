@@ -7,7 +7,7 @@
 //
 
 #import "ContentLoadingView.h"
-#import "UIFont+SSTextSize.h"
+//#import "UIFont+SSTextSize.h"
 
 // UIStackView means I don't even have to write a
 // layoutSubviews method!
@@ -42,8 +42,7 @@
         [_loadingView sizeToFit];
         [self.stackView addArrangedSubview:_loadingView];
         
-        NSString * systemFontName = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody] fontName];
-        self.loadingLabel = [LabelHelper labelWithFont:[UIFont dynamicFontWithName:systemFontName baseSize:16.0f]];
+        self.loadingLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
         
         _loadingLabel.textColor = RGBCOLOR(102, 102, 102);
         _loadingLabel.text = @"Loading...";

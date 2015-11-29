@@ -145,6 +145,8 @@ static NSString * _commentCSS = nil;
     [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont* currentFont = value;
         
+//        NSLog(@"commentText: NSFontAttributeName: %@", value);
+        
         if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
             [commentText addAttribute:NSFontAttributeName
                                 value:[LabelHelper adjustedBoldBodyFont] range:range];
@@ -156,7 +158,42 @@ static NSString * _commentCSS = nil;
             [commentText addAttribute:NSFontAttributeName
                                 value:[LabelHelper adjustedBodyFont] range:range];
         }
+    }];
+    [commentText enumerateAttributesInRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         
+        // Detect block quotes and apply custom paragraph style with indent
+        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
+            
+            if([attrs[NSForegroundColorAttributeName] isEqual:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]]) {
+                NSLog(@"Block quote");
+                
+                if([[attrs allKeys] containsObject:NSParagraphStyleAttributeName]) {
+                    NSMutableParagraphStyle * style = [attrs[NSParagraphStyleAttributeName] mutableCopy];
+                    
+//                    style.firstLineHeadIndent = 100.0f;
+//                    style.headIndent = 100.0f;
+                    
+//                    style.tailIndent = -style.headIndent;
+                    
+                    // TODO, not sure what to do here, tailIndent behaves unpredictably
+                    
+                    [commentText removeAttribute:NSParagraphStyleAttributeName range:range];
+                    [commentText addAttribute:NSParagraphStyleAttributeName value:style range:range];
+                }
+            }
+        }
+        
+        // Detect links and remove any link metadata created by DTCoreText
+        // As appreciated as it is, it screws with our label class, which is also
+        // trying to detect links and does not function with pre-detected links
+        if([[attrs allKeys] containsObject:NSLinkAttributeName]) {
+            [commentText removeAttribute:NSLinkAttributeName range:range];
+            [commentText removeAttribute:@"CTForegroundColorFromContext" range:range];
+            [commentText removeAttribute:@"DTGUID" range:range];
+            [commentText removeAttribute:@"DTLinkHighlightColor" range:range];
+            [commentText removeAttribute:NSUnderlineStyleAttributeName range:range];
+            [commentText removeAttribute:NSParagraphStyleAttributeName range:range];
+        }
     }];
     
     _attributedText = commentText;

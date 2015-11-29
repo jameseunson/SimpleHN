@@ -9,13 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "Comment.h"
 #import "ActionDrawerView.h"
+#import "TTTAttributedLabel.h"
 
 @protocol CommentCellDelegate;
-@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate, UIGestureRecognizerDelegate>
+@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate,
+    UIGestureRecognizerDelegate, TTTAttributedLabelDelegate>
 
 @property (nonatomic, strong) Comment * comment;
 
-@property (nonatomic, strong) UILabel * commentLabel;
+@property (nonatomic, strong) TTTAttributedLabel * commentLabel;
 //@property (nonatomic, strong) CommentTextView * commentTextView;
 
 // Used when quotes are present in the comment, so we can indent

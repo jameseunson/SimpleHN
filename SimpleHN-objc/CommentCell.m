@@ -8,7 +8,6 @@
 
 #import "CommentCell.h"
 #import "TimeAgoInWords-Swift.h"
-#import "UIFont+SSTextSize.h"
 #import "JBNSLayoutConstraint+Install.h"
 #import "ActionDrawerButton.h"
 #import "RegexKitLite.h"
@@ -64,8 +63,10 @@
         
         _expanded = NO;
         
-        self.commentLabel = [LabelHelper labelWithFont:[LabelHelper adjustedBodyFont]];
+        self.commentLabel = [LabelHelper tttLabelWithFont:[LabelHelper adjustedBodyFont]];
         _commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _commentLabel.delegate = self;
+        
 //        _commentLabel.automaticLinkDetectionEnabled = YES;
         
 //        __block CommentCell * blockSelf = self;
@@ -252,7 +253,8 @@
     
     if(comment.text != nil) {
 //        self.commentTextView.attributedText = self.comment.attributedText;
-        self.commentLabel.attributedText = self.comment.attributedText;
+//        self.commentLabel.attributedText = self.comment.attributedText;
+        self.commentLabel.text = self.comment.attributedText;
     }
     
     if(self.comment.collapsed) {
@@ -368,6 +370,16 @@
     self.authorLabel.textColor = [UIColor orangeColor];
     
     [self setNeedsUpdateConstraints];
+}
+
+#pragma mark - TTTAttributedLabelDelegate Methods
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url {
+    
+    if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
+        [self.delegate performSelector:@selector(commentCell:didTapLink:)
+                            withObject:self withObject:url];
+    }
 }
 
 #pragma mark -StoryActionDrawerViewDelegate Methods

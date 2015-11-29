@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>DKNightVersion.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>DTCoreText.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -20,6 +25,16 @@
 			<false/>
 		</dict>
 		<key>Firebase.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>InAppSettingsKit-InAppSettingsKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>InAppSettingsKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -44,7 +59,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SSDynamicText.xcscheme</key>
+		<key>TTTAttributedLabel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -67,7 +82,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3D9A1E638C158F21F6B71B73C9A4FC8E</key>
+		<key>359430B1F1FC571EB3532B6671B786D2</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -77,12 +92,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7316DE1B2DBB96560394FD64431C900F</key>
+		<key>4C93B3DD29CD744DCE1D77503147D791</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>76D14624C893010505D4468C79AD611B</key>
+		<key>670A44E63C52448D7E5F0FBAC32FA7AC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>71DED17FFB1ECA18AF721782AF975518</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7316DE1B2DBB96560394FD64431C900F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -92,7 +117,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A78FA4A3D4C583CBA47B02C147BF38AA</key>
+		<key>83C4CD03F7BF40A6D950B34D7A956D0C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,7 +137,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FC284BE6419EB1B4BE9EB8313561624F</key>
+		<key>C2E0E063E92E2CD1FADB7477180D18B9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DAE300BFCB196ED7F72727FFA274790D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

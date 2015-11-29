@@ -17,31 +17,35 @@
 - (instancetype)init {
     if(self = [super init]) {
         
-        NSString * baseTitleString = @"Top ˅";
+//        NSString * baseTitleString = @"Top ˅";
+//        NSMutableAttributedString * titleAttributedString = [[NSMutableAttributedString alloc] initWithString:baseTitleString];
+//        [titleAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor orangeColor] range:[baseTitleString rangeOfString:@"˅"]];
+//        [titleAttributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo-Regular" size:17.0f] range:[baseTitleString rangeOfString:@"˅"]];
+//        
+//        self.titleLabel = [LabelHelper labelWithFont:[UIFont boldSystemFontOfSize:17.0f]];
+//        _titleLabel.attributedText = titleAttributedString;
+//        _titleLabel.textAlignment = NSTextAlignmentRight;
+//        [_titleLabel sizeToFit];
+//        [self addSubview:_titleLabel];
+        
+        NSString * baseTitleString = @"Now ˅";
         NSMutableAttributedString * titleAttributedString = [[NSMutableAttributedString alloc] initWithString:baseTitleString];
-        [titleAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor orangeColor] range:[baseTitleString rangeOfString:@"˅"]];
+        [titleAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor orangeColor] range:NSMakeRange(0, [baseTitleString length])];
         [titleAttributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo-Regular" size:17.0f] range:[baseTitleString rangeOfString:@"˅"]];
         
-        self.titleLabel = [LabelHelper labelWithFont:[UIFont boldSystemFontOfSize:17.0f]];
-        _titleLabel.attributedText = titleAttributedString;
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        [_titleLabel sizeToFit];
-        [self addSubview:_titleLabel];
-        
-        self.subtitleLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
-        _subtitleLabel.textAlignment = NSTextAlignmentCenter;
-        _subtitleLabel.text = @"Now";
-        _subtitleLabel.textColor = [UIColor grayColor];
+        self.subtitleLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+        _subtitleLabel.textAlignment = NSTextAlignmentRight;
+        _subtitleLabel.attributedText = titleAttributedString;
         [_subtitleLabel sizeToFit];
         
         [self addSubview:_subtitleLabel];
         
-        UITapGestureRecognizer * singleTapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                               initWithTarget:self action:@selector(didTapSelf:)];
-        singleTapGestureRecognizer.numberOfTapsRequired = 1;
-        [self addGestureRecognizer:singleTapGestureRecognizer];
+//        UITapGestureRecognizer * singleTapGestureRecognizer = [[UITapGestureRecognizer alloc]
+//                                                               initWithTarget:self action:@selector(didTapSelf:)];
+//        singleTapGestureRecognizer.numberOfTapsRequired = 1;
+//        [self addGestureRecognizer:singleTapGestureRecognizer];
         
-        self.userInteractionEnabled = YES;
+//        self.userInteractionEnabled = YES;
     }
     return self;
 }
@@ -49,19 +53,21 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGFloat combinedHeight = _titleLabel.frame.size.height + _subtitleLabel.frame.size.height;
-    CGFloat contentOrigin = roundf((self.frame.size.height / 2) - (combinedHeight / 2));
-    
-    _titleLabel.frame = CGRectMake(0, contentOrigin, self.frame.size.width, _titleLabel.frame.size.height);
-    _subtitleLabel.frame = CGRectMake(0, _titleLabel.frame.origin.y + _titleLabel.frame.size.height,
-                                      self.frame.size.width, _subtitleLabel.frame.size.height);
+//    CGFloat combinedHeight = _titleLabel.frame.size.height + _subtitleLabel.frame.size.height;
+//    CGFloat contentOrigin = roundf((self.frame.size.height / 2) - (combinedHeight / 2));
+//    
+//    _titleLabel.frame = CGRectMake(0, contentOrigin, self.frame.size.width, _titleLabel.frame.size.height);
+//    _subtitleLabel.frame = CGRectMake(0, _titleLabel.frame.origin.y + _titleLabel.frame.size.height,
+//                                      self.frame.size.width, _subtitleLabel.frame.size.height);
+    _subtitleLabel.frame = CGRectMake(0, 0,
+                                      self.frame.size.width, self.frame.size.height);
 }
 
-#pragma mark - Private Methods
-- (void)didTapSelf:(id)sender {
-    if([self.delegate respondsToSelector:@selector(topStoriesTitleViewDidTapTitleView:)]) {
-        [self.delegate performSelector:@selector(topStoriesTitleViewDidTapTitleView:) withObject:self];
-    }
-}
+//#pragma mark - Private Methods
+//- (void)didTapSelf:(id)sender {
+//    if([self.delegate respondsToSelector:@selector(topStoriesTitleViewDidTapTitleView:)]) {
+//        [self.delegate performSelector:@selector(topStoriesTitleViewDidTapTitleView:) withObject:self];
+//    }
+//}
 
 @end
