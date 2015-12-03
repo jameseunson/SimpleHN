@@ -42,6 +42,12 @@
 		98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; };
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */; };
+		98B841391C0EDC9200FC80F6 /* AppConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841381C0EDC9200FC80F6 /* AppConfig.m */; };
+		98B8413B1C0EDEFC00FC80F6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 98B8413A1C0EDEFC00FC80F6 /* Settings.bundle */; };
+		98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B8413D1C0EE01600FC80F6 /* AppConfigBase.m */; };
+		98B841411C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841401C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m */; };
+		98B841441C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841431C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m */; };
+		98B841471C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */; };
 		98CE4BEA1C06BABB009EAE00 /* TopStoriesTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98CE4BE91C06BABB009EAE00 /* TopStoriesTitleView.m */; };
 		98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E0C80E1BE73DE4003E3A0A /* CommentLink.m */; };
 		98E43D8F1C08094B0041CC6F /* NSString+EscapedURLString.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E43D8E1C08094B0041CC6F /* NSString+EscapedURLString.m */; };
@@ -142,6 +148,17 @@
 		98B0FB831BE4BAEE0059E5F2 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentsButton.h; sourceTree = "<group>"; };
 		98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCommentsButton.m; sourceTree = "<group>"; };
+		98B841371C0EDC9200FC80F6 /* AppConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConfig.h; sourceTree = "<group>"; };
+		98B841381C0EDC9200FC80F6 /* AppConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConfig.m; sourceTree = "<group>"; };
+		98B8413A1C0EDEFC00FC80F6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		98B8413C1C0EE01600FC80F6 /* AppConfigBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConfigBase.h; sourceTree = "<group>"; };
+		98B8413D1C0EE01600FC80F6 /* AppConfigBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConfigBase.m; sourceTree = "<group>"; };
+		98B8413F1C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentBaseTableViewCell.h; sourceTree = "<group>"; };
+		98B841401C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCommentBaseTableViewCell.m; sourceTree = "<group>"; };
+		98B841421C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsSearchResultsSectionHeaderView.h; sourceTree = "<group>"; };
+		98B841431C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchResultsSectionHeaderView.m; sourceTree = "<group>"; };
+		98B841451C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsSearchFilterViewController.h; sourceTree = "<group>"; };
+		98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchFilterViewController.m; sourceTree = "<group>"; };
 		98CE4BE81C06BABB009EAE00 /* TopStoriesTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopStoriesTitleView.h; sourceTree = "<group>"; };
 		98CE4BE91C06BABB009EAE00 /* TopStoriesTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopStoriesTitleView.m; sourceTree = "<group>"; };
 		98E0C80C1BE734AC003E3A0A /* SimpleHN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleHN.h; sourceTree = "<group>"; };
@@ -265,6 +282,7 @@
 		98052DA81BB68BB7004A0D3A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				98B8413A1C0EDEFC00FC80F6 /* Settings.bundle */,
 				98052DA91BB68BB7004A0D3A /* main.m */,
 				98F9F8AE1C06D62600C946AC /* reset.css */,
 			);
@@ -301,6 +319,8 @@
 				980C6DB91BE7252400D4318C /* CommentCell.m */,
 				9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */,
 				9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */,
+				98B8413F1C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.h */,
+				98B841401C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -308,6 +328,8 @@
 		980C6DB61BE7229C00D4318C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				98B841421C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.h */,
+				98B841431C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m */,
 				98B0FB851BE4BF7B0059E5F2 /* StoryCommentsButton.h */,
 				98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */,
 				98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */,
@@ -405,6 +427,8 @@
 				984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */,
 				9849D0AD1C0699E000A23212 /* StoriesTimePeriodSelectViewController.h */,
 				9849D0AE1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m */,
+				98B841451C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.h */,
+				98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -416,6 +440,10 @@
 				98F5EBE11BF09EF100B1BA08 /* LabelHelper.m */,
 				98F9F8A91C06C58200C946AC /* HNAlgoliaAPIManager.h */,
 				98F9F8AA1C06C58200C946AC /* HNAlgoliaAPIManager.m */,
+				98B841371C0EDC9200FC80F6 /* AppConfig.h */,
+				98B841381C0EDC9200FC80F6 /* AppConfig.m */,
+				98B8413C1C0EE01600FC80F6 /* AppConfigBase.h */,
+				98B8413D1C0EE01600FC80F6 /* AppConfigBase.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -541,6 +569,7 @@
 			files = (
 				98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */,
 				98052DB81BB68BB7004A0D3A /* Assets.xcassets in Resources */,
+				98B8413B1C0EDEFC00FC80F6 /* Settings.bundle in Resources */,
 				98052DB61BB68BB7004A0D3A /* Main.storyboard in Resources */,
 				98F9F8AF1C06D62600C946AC /* reset.css in Resources */,
 			);
@@ -669,10 +698,12 @@
 				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
 				984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
+				98B841471C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m in Sources */,
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
 				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
 				98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */,
 				984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */,
+				98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				98CE4BEA1C06BABB009EAE00 /* TopStoriesTitleView.m in Sources */,
@@ -682,6 +713,8 @@
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
+				98B841411C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m in Sources */,
+				98B841391C0EDC9200FC80F6 /* AppConfig.m in Sources */,
 				98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */,
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
 				984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */,
@@ -695,6 +728,7 @@
 				983401381C031EE800A85638 /* CommentStyle.m in Sources */,
 				983A19D71C07F93A00072B40 /* CommentTextView.m in Sources */,
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,
+				98B841441C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m in Sources */,
 				98F9F8AB1C06C58200C946AC /* HNAlgoliaAPIManager.m in Sources */,
 				98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */,
 				98052DB31BB68BB7004A0D3A /* StoryDetailViewController.m in Sources */,

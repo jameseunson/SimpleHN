@@ -29,6 +29,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>FirebaseUI.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>InAppSettingsKit-InAppSettingsKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -40,6 +45,11 @@
 			<false/>
 		</dict>
 		<key>JBNSLayoutConstraint.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>MCSwipeTableViewCell.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -77,12 +87,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0003E8B0DE7EAF0A1E3C9404F7137022</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>018F66BA204AF26FCFAB5B4AAFC0E8B1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>359430B1F1FC571EB3532B6671B786D2</key>
+		<key>284EDF57C05A61464C9A2FA3F6A605C9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>325FCB3AA44A44E4B8B7FD9B98138709</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -102,11 +122,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>71DED17FFB1ECA18AF721782AF975518</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>7316DE1B2DBB96560394FD64431C900F</key>
 		<dict>
 			<key>primary</key>
@@ -117,7 +132,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>83C4CD03F7BF40A6D950B34D7A956D0C</key>
+		<key>84FAC9B7C7C42104287C0115C087B8DC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9155EFD2B0119F5DF2B9D1627EBAB952</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -137,12 +157,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C2E0E063E92E2CD1FADB7477180D18B9</key>
+		<key>DAE300BFCB196ED7F72727FFA274790D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DAE300BFCB196ED7F72727FFA274790D</key>
+		<key>F25A39724C1F236915EF8279D2B63339</key>
 		<dict>
 			<key>primary</key>
 			<true/>

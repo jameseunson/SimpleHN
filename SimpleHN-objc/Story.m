@@ -192,12 +192,30 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (NSDictionary*)diffOtherStory:(Story*)otherStory {
     
-    NSArray * mantleKeys = [[Story JSONKeyPathsByPropertyKey] allKeys];
+    NSMutableDictionary * diff = [[NSMutableDictionary alloc] init];    
+    NSDictionary * storyDict = [self dictionaryValue];
+    NSDictionary * otherStoryDict = [otherStory dictionaryValue];
     
-    NSMutableDictionary * diff = [[NSMutableDictionary alloc] init];
-    for(NSString * key in mantleKeys) {
-        if(![[self valueForKey:key] isEqual:[otherStory valueForKey:key]]) {
-            diff[key] = @[ [self valueForKey:key], [otherStory valueForKey:key] ];
+    for(NSString * key in [storyDict allKeys]) {
+        
+        if([key isEqualToString:@"diff"] || [key isEqualToString:@"description"]) {
+            continue;
+        }
+        
+        id value = storyDict[key];
+        if(!value) {
+            value = [NSNull null];
+        }
+
+        id otherValue = otherStoryDict[key];
+        if(!otherValue) {
+            otherValue = [NSNull null];
+        }
+        if([value isKindOfClass:[NSNull class]] && [otherValue isKindOfClass:[NSNull class]]) {
+            continue;
+        }
+        if(![value isEqual:otherValue]) {
+            diff[key] = @[ value, otherValue ];
         }
     }
     
@@ -227,6 +245,10 @@ static NSDateFormatter * _timeDateFormatter = nil;
         _timeDateFormatter.dateFormat = @"hh:mm aaa, dd MMM";
     }
     return _timeDateFormatter;
+}
+
+- (void)setDiff:(NSDictionary *)diff {
+    _diff = diff;
 }
 
 @end

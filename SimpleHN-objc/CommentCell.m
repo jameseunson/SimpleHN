@@ -66,17 +66,6 @@
         self.commentLabel = [LabelHelper tttLabelWithFont:[LabelHelper adjustedBodyFont]];
         _commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _commentLabel.delegate = self;
-        
-//        _commentLabel.automaticLinkDetectionEnabled = YES;
-        
-//        __block CommentCell * blockSelf = self;
-//        _commentLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
-//            if([blockSelf.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
-//                [blockSelf.delegate performSelector:@selector(commentCell:didTapLink:)
-//                                    withObject:blockSelf withObject:[NSURL URLWithString:string]];
-//            }
-//        };
-//        
         [self.contentView addSubview:_commentLabel];
         
         self.headerView = [[UIView alloc] init];
@@ -132,8 +121,11 @@
         
         self.headerViewBottomConstraint = [NSLayoutConstraint constraintWithItem:_headerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0];
         
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                                          @"V:|-[_headerView(20)]" options:0 metrics:nil views:bindings]];
+        
         NSArray * verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:
-                                         @"V:|-[_headerView(20)]-10-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
+                                         @"V:|-40-[_commentLabel]-10-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
         int i = 0;
         for(NSLayoutConstraint * constraint in verticalConstraints) {
             if(constraint.constant == 10 && constraint.firstItem == _commentLabel) {
@@ -320,34 +312,39 @@
 
 - (void)collapseCell {
     
-//    NSLog(@"collapseCell");
-    
     self.commentLabel.hidden = YES;
-//    self.commentTextView.hidden = YES;
     
-    [self.contentView removeConstraint:_stackViewLabelJoinConstraint];
+    if(_stackViewLabelJoinConstraint) {
+        [self.contentView removeConstraint:_stackViewLabelJoinConstraint];
+    }
     [self.contentView removeConstraint:_drawerBottomConstraint];
     [self.contentView removeConstraint:_labelDrawerJoinConstraint];
     
-    [self.contentView addConstraint:_headerViewBottomConstraint];
+    if(_headerViewBottomConstraint) {
+        [self.contentView addConstraint:_headerViewBottomConstraint];
+    }
     
     self.headerUpDownLabel.text = kHeaderDownIcon;
     self.headerUpDownLabel.textColor = [UIColor grayColor];
     self.authorLabel.textColor = [UIColor grayColor];
     
+    // Completely hide this comment, if the parent comment is also collapsed
     if(self.comment.parentComment) {
-        _headerViewHeightConstraint.constant = 0;
-        _headerView.hidden = YES;
+    
+        _actionDrawerView.hidden = YES;
         _actionDrawerBorderLayer.hidden = YES;
-        _headerBorderLayer.hidden = YES;
+        
+        if(self.comment.parentComment.collapsed) {
+            _headerViewHeightConstraint.constant = 0;
+            _headerView.hidden = YES;
+            _headerBorderLayer.hidden = YES;
+        }
     }
     
     [self setNeedsUpdateConstraints];
 }
 
 - (void)uncollapseCell {
-
-//    NSLog(@"uncollapseCell");
     
     self.commentLabel.hidden = NO;
 //    self.commentTextView.hidden = NO;
@@ -355,13 +352,17 @@
     if(self.comment.parentComment) {
         _headerViewHeightConstraint.constant = 20;
         _headerView.hidden = NO;
+        _actionDrawerView.hidden = YES;
         _actionDrawerBorderLayer.hidden = NO;
         _headerBorderLayer.hidden = NO;
     }
     
-    [self.contentView removeConstraint:_headerViewBottomConstraint];
-    
-    [self.contentView addConstraint:_stackViewLabelJoinConstraint];
+    if(_headerViewBottomConstraint) {
+        [self.contentView removeConstraint:_headerViewBottomConstraint];
+    }
+    if(_stackViewLabelJoinConstraint) {
+        [self.contentView addConstraint:_stackViewLabelJoinConstraint];
+    }
     [self.contentView addConstraint:_drawerBottomConstraint];
     [self.contentView addConstraint:_labelDrawerJoinConstraint];
     

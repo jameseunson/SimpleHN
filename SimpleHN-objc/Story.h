@@ -36,8 +36,12 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, copy, readonly) NSNumber * totalCommentCount;
 
 // Custom properties
+@property (nonatomic, strong) NSNumber * ranking; // Position in top stories array
+
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
+
+@property (nonatomic, strong) NSDictionary * diff;
 
 // Generated properties
 @property (nonatomic, strong, readonly) NSString * timeString;

@@ -89,11 +89,6 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    // Disable content inset on simulator, where it doesn't work
-    // for some unknown reason
-//    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-//                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
-//                                                   self.tabBarController.tabBar.frame.size.height, 0);
     [self.view addSubview:_tableView];
     
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
@@ -154,6 +149,22 @@
         } else {
             self.contentSelectSegmentedControl.enabled = YES;
         }
+        
+        if(self.detailItem.url) {
+            BOOL enterReaderModeAutomatically = [[AppConfig sharedConfig] storyAutomaticallyShowReader];
+            
+            self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url
+                                                         entersReaderIfAvailable:enterReaderModeAutomatically];
+            _webViewController.delegate = self;
+            [self addChildViewController:_webViewController];
+            
+            UIView * webView = self.webViewController.view;
+            webView.frame = CGRectMake(0,
+                                       self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height,
+                                       self.view.frame.size.width,
+                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
+            webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+        }
     }
 }
 
@@ -195,7 +206,8 @@
         
         cell.story = self.detailItem;
         cell.expanded = YES;
-        cell.delegate = self;
+        
+        cell.storyCellDelegate = self;
         
         return cell;
         
@@ -213,7 +225,7 @@
             cell.expanded = NO;
         }
         
-        cell.delegate = self;
+        cell.commentCellDelegate = self;
         
         return cell;
     }
@@ -306,25 +318,7 @@
         
     } else {
         
-        if(!_webViewController) {
-            if(!self.detailItem.url) {
-                return;
-            }
-            
-            self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url];
-            _webViewController.delegate = self;
-            [self addChildViewController:_webViewController];
-            
-            UIView * webView = self.webViewController.view;
-            webView.frame = CGRectMake(0,
-                                       self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height,
-                                       self.view.frame.size.width,
-                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
-            webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-            
-            [self.view addSubview:webView];
-            
-        } else {
+        if(_webViewController) {
             [self.view addSubview:self.webViewController.view];
         }
     }

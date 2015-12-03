@@ -24,7 +24,7 @@
 
 @interface StoriesCommentsBaseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate,
     StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate,
-    StoriesCommentsSearchResultsViewControllerDelegate>
+    StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) ContentLoadingView * loadingView;
@@ -50,6 +50,7 @@
 
 @property (nonatomic, strong) UISearchController * searchController;
 @property (nonatomic, strong) StoriesCommentsSearchResultsViewController * searchResultsController;
+@property (nonatomic, strong) UITableView * recentQueriesTableView;
 
 @property (nonatomic, assign) BOOL pendingSearchOperation;
 @property (nonatomic, strong) NSString * pendingSearchQuery;

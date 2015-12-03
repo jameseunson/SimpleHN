@@ -10,6 +10,9 @@
 #import "StoriesTimePeriodSelectViewController.h"
 
 #define kHNAlgoliaAPIManagerResults @"HNAlgoliaAPIManagerResults"
+#define kHNAlgoliaAPIManagerTotalHits @"HNAlgoliaAPIManagerTotalHits"
+#define kHNAlgoliaAPIManagerTotalPages @"HNAlgoliaAPIManagerTotalPages"
+#define kHNAlgoliaAPIManagerCurrentPage @"HNAlgoliaAPIManagerCurrentPage"
 
 @interface HNAlgoliaAPIManager : NSObject
 

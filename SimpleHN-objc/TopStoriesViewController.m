@@ -129,6 +129,8 @@
     
     IASKAppSettingsViewController * controller = [[IASKAppSettingsViewController alloc] init];
     controller.delegate = self;
+    controller.showCreditsFooter = NO;
+    controller.settingsStore = [AppConfig sharedConfig];
     
     UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self presentViewController:navController animated:YES completion:nil];

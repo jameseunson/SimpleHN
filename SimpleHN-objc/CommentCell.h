@@ -10,20 +10,14 @@
 #import "Comment.h"
 #import "ActionDrawerView.h"
 #import "TTTAttributedLabel.h"
+#import "StoryCommentBaseTableViewCell.h"
 
 @protocol CommentCellDelegate;
-@interface CommentCell : UITableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate,
+@interface CommentCell : StoryCommentBaseTableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate,
     UIGestureRecognizerDelegate, TTTAttributedLabelDelegate>
 
 @property (nonatomic, strong) Comment * comment;
-
 @property (nonatomic, strong) TTTAttributedLabel * commentLabel;
-//@property (nonatomic, strong) CommentTextView * commentTextView;
-
-// Used when quotes are present in the comment, so we can indent
-// the quote views independently of the comment body views
-// We only use multiple views in this circumstance, for performance reasons
-@property (nonatomic, strong) NSArray <UITextView *>* commentTextViews;
 
 @property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UILabel * authorLabel;
@@ -36,7 +30,7 @@
 
 @property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 
-@property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> delegate;
+@property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> commentCellDelegate;
 
 // Assigned to cell when story is updated, value is only retained
 // for 1 second or so, while an update animation plays

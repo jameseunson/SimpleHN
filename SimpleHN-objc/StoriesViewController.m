@@ -17,12 +17,23 @@
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
 
+#define kAPIExpectedItemsCount 500
+
 @interface StoriesViewController ()
 
 - (void)loadVisibleItems;
+- (void)cancelPendingOperation:(id)sender;
 
-@property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
+//@property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
 @property (nonatomic, strong) NSMutableDictionary * storyDiffLookup; // NYI
+
+// Ignore
+@property (nonatomic, assign) BOOL initialLoadDone;
+
+@property (nonatomic, assign) BOOL awaitingSecondMoveOperation;
+@property (nonatomic, strong) NSArray * pendingMoveOperation;
+@property (nonatomic, strong) NSTimer * pendingOperationTimer;
+
 
 @end
 
@@ -39,11 +50,14 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
+    _initialLoadDone = NO;
+    _awaitingSecondMoveOperation = NO;
+    
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
     self.storyDiffLookup = [[NSMutableDictionary alloc] init];
     
-    self.storiesList = [[NSMutableArray alloc] init];
+//    self.storiesList = [[NSMutableArray alloc] init];
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
@@ -58,10 +72,6 @@
     masterProgress.completedUnitCount = 0;
     masterProgress.totalUnitCount = 21;
     [masterProgress addChild:self.loadingProgress withPendingUnitCount:21];
-}
-
-- (void)loadView {
-    [super loadView];
 }
 
 - (void)viewDidLoad {
@@ -79,7 +89,14 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        Story * story = [self itemForIndexPath:[self.tableView indexPathForSelectedRow]];
+        Story * story = nil;
+        if(sender) { // Search result
+            story = (Story*)sender;
+            
+        } else { // Everything else
+            story = [self itemForIndexPath:
+                     [self.tableView indexPathForSelectedRow]];
+        }
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
             [[segue destinationViewController] topViewController];
@@ -130,71 +147,9 @@
 
 #pragma mark - Private Methods
 - (void)loadStoryIdentifiersWithRef:(Firebase *)ref {
-    
-//    [ref observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
-//        NSLog(@"FEventTypeChildAdded: %@", snapshot);
-//    }];
-//    [ref observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
-//        NSLog(@"FEventTypeChildChanged: %@", snapshot);
-//        
-//        // We use the 'loaded' status of the story as a proxy
-//        // for whether it is visible or not. If it isn't visible,
-//        // there's no need to waste resources on reloading it
-//        NSNumber * identifier = snapshot.value;
-//        if(![_storiesLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)]) {
-//            NSLog(@"skipping story with identifier: %@, it's not visible/loaded", identifier);
-//            return;
-//        }
-//        
-//        NSLog(@"reloading changed story with identifier: %@", identifier);
-//        
-//        __block Story * previousStory = _storiesLookup[identifier];
-//        
-//        [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
-//            
-//            NSDictionary * diff = [previousStory diffOtherStory:story];
-//            if([[diff allKeys] count] == 0) {
-//                NSLog(@"No difference, no reason to update table, returning early");
-//                return;
-//            }
-//            
-//            _storiesLookup[identifier] = story;
-//            _storiesLoadStatus[identifier] = @(StoryLoadStatusLoaded);
-//            
-//            NSLog(@"diff: %@", diff);
-//            
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                NSLog(@"updating tableview for story with identifier: %@", identifier);
-//                
-//                NSIndexPath * reloadIndexPath = [self indexPathForStory:story];
-//                if(reloadIndexPath) {
-//                    [self.tableView beginUpdates];
-//                    [self.tableView reloadRowsAtIndexPaths:@[ reloadIndexPath ]
-//                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-//                    [self.tableView endUpdates];
-//                    NSLog(@"done updating tableview for story with identifier: %@", identifier);
-//                }
-//            });
-//        }];
-//    }];
-    [ref observeEventType:FEventTypeChildMoved withBlock:^(FDataSnapshot *snapshot) {
-        NSLog(@"FEventTypeChildMoved: %@", snapshot);
-    }];
-//    [ref observeEventType:FEventTypeChildRemoved withBlock:^(FDataSnapshot *snapshot) {
-//        NSLog(@"FEventTypeChildRemoved: %@", snapshot);
-//    }];
-    
-    [ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        [self.storiesList addObjectsFromArray:snapshot.value];
-        self.loadingProgress.completedUnitCount++;
-        
-        [self loadVisibleItems];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self.refreshControl endRefreshing];
-            [self.tableView reloadData];
-        });
-    }];
+
+    self.storiesList = [[FirebaseArray alloc] initWithRef:ref];
+    _storiesList.delegate = self;
 }
 
 - (void)loadVisibleItems {
@@ -220,19 +175,19 @@
     }
     
     [self.visibleItems removeAllObjects];
+
+    NSMutableArray * loadedItems = [[NSMutableArray alloc] init];
     
-    NSArray * loadedItems = [self.storiesList subarrayWithRange:
-                             NSMakeRange(0, MIN(self.currentVisibleItemMax, [self.storiesList count]))];
+    NSInteger currentMax = MIN(self.currentVisibleItemMax, [self.storiesList count]);
+    for(NSInteger i = 0; i < currentMax; i++) {
+        FDataSnapshot * snap = [self.storiesList objectAtIndex:i];
+        [loadedItems addObject:snap.value];
+    }
+    
     [self.visibleItems addObjectsFromArray:loadedItems];
     
-    // Ensure that if the user has < 20 submissions,
-    // the page isn't endlessly stuck loading
-//    self.loadingProgress.completedUnitCount = 0;
-//    self.loadingProgress.totalUnitCount = MIN(self.currentVisibleItemMax,
-//                                              [self.storiesList count]);
-    
     int i = 0;
-    for(NSNumber * identifier in self.storiesList) {
+    for(NSNumber * identifier in loadedItems) {
         
         if([self.itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoading)] ||
            [self.itemsLoadStatus[identifier] isEqual:@(StoryLoadStatusLoaded)]) {
@@ -251,6 +206,8 @@
                     self.itemsLookup[identifier] = story;
                     self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
                     
+                    story.ranking = @(i + 1);
+                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         self.loadingProgress.completedUnitCount++;
@@ -266,9 +223,6 @@
 - (void)loadMoreItems {
     NSLog(@"StoriesViewController, loadMoreItems");
     
-//    self.loadingProgress.completedUnitCount = 0;
-//    self.loadingProgress.totalUnitCount = 20;
-    
     self.currentVisibleItemMax += 20;
     [self loadVisibleItems];
 }
@@ -281,9 +235,166 @@
     if([fractionCompleted floatValue] == 1.0f) {
         if(!self.loadingView.hidden) {
             self.loadingView.hidden = YES;
+            
+            _initialLoadDone = YES;
         }
     }
 }
 
+#pragma mark - FirebaseArrayDelegate Methods
+- (void)childAdded:(id)object atIndex:(NSUInteger)index {
+    
+    if([self.storiesList count] == kAPIExpectedItemsCount) {
+        
+        _initialLoadDone = YES;
+        self.loadingProgress.completedUnitCount++;        
+        
+        [self loadVisibleItems];
+    }
+}
+
+- (void)childChanged:(id)object atIndex:(NSUInteger)index {
+    
+    if(!_initialLoadDone) {
+        NSLog(@"change before initial load, ignoring");
+        return;
+    }
+    
+    FDataSnapshot * snap = [self.storiesList objectAtIndex:index];
+    NSNumber * identifier = snap.value;
+    
+    if(index >= self.currentVisibleItemMax) {
+        return;
+    }
+    
+    NSNumber * previousIdentifier = self.visibleItems[index];
+    
+    if([identifier isEqual:previousIdentifier]) { // Item update
+        
+        __block Story * previousStory = self.itemsLookup[identifier];
+        [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
+
+            NSDictionary * diff = [previousStory diffOtherStory:story];
+
+            self.itemsLookup[identifier] = story;
+            self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
+
+            NSLog(@"diff: %@", diff);
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"updating tableview for story with identifier: %@", identifier);
+
+                NSInteger indexOfStory = [self.visibleItems indexOfObject:identifier];
+                if(indexOfStory != NSNotFound) {
+                    
+                    NSIndexPath * reloadIndexPath = [NSIndexPath indexPathForRow:indexOfStory inSection:0];
+                    if(reloadIndexPath) {
+                        
+                        [self.tableView beginUpdates];
+                        [self.tableView reloadRowsAtIndexPaths:@[ reloadIndexPath ]
+                                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                        [self.tableView endUpdates];
+                        NSLog(@"done updating tableview for story at index: %lu", indexOfStory);
+                    }
+                }
+            });
+        }];
+        
+        
+    } else { // Item position move
+        
+        if(_awaitingSecondMoveOperation) {
+            _awaitingSecondMoveOperation = NO;
+            NSLog(@"Detected second of a two part move operation");
+            
+            if(!_pendingMoveOperation) {
+                [self cancelPendingOperation:nil];
+                return;
+            }
+            
+            NSInteger previousIndex = [[_pendingMoveOperation lastObject] integerValue];
+            NSInteger currentIndex = index;
+            
+            NSIndexPath * previousIndexPath = [NSIndexPath indexPathForRow:previousIndex inSection:0];
+            NSIndexPath * currentIndexPath = [NSIndexPath indexPathForRow:currentIndex inSection:0];
+            
+            NSLog(@"%@ -> %@", previousIndexPath, currentIndexPath);
+            
+//            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MIN(previousIndex, currentIndex) inSection:0]
+//                                  atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            
+            [self.tableView beginUpdates];
+            
+            [self.visibleItems exchangeObjectAtIndex:currentIndex withObjectAtIndex:previousIndex];
+            
+            [self.tableView moveRowAtIndexPath:previousIndexPath toIndexPath:currentIndexPath];
+            [self.tableView moveRowAtIndexPath:currentIndexPath toIndexPath:previousIndexPath];
+            
+            [self.tableView endUpdates];
+            
+            [self cancelPendingOperation:nil];
+            
+            for(NSNumber * index in @[ @(previousIndex), @(currentIndex) ]) {
+                
+                NSNumber * identifier = self.visibleItems[[index integerValue]];
+                self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoading);
+                
+                __block Story * previousStory = self.itemsLookup[identifier];
+                
+                [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
+                    
+                    self.itemsLookup[identifier] = story;
+                    self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
+                    
+                    story.ranking = index;
+                    
+                    story.diff = [story diffOtherStory:previousStory];
+                    NSLog(@"diff: %@", story.diff);
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.tableView reloadRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:[index integerValue] inSection:0] ]
+                                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                    });
+                }];
+            }
+            
+        } else {
+            
+            [self cancelPendingOperation:nil];
+            
+            NSLog(@"Detected first of a two part move operation at index: %lu", index);
+            _awaitingSecondMoveOperation = YES;
+            
+            _pendingMoveOperation = @[ identifier, previousIdentifier, @(index) ];
+
+            self.pendingOperationTimer = [NSTimer scheduledTimerWithTimeInterval:[[NSDate date] timeIntervalSinceNow] + 1.5
+                                                                          target:self selector:@selector(cancelPendingOperation:) userInfo:nil repeats:NO];
+        }
+    }
+}
+
+- (void)childRemoved:(id)object atIndex:(NSUInteger)index {
+    NSLog(@"childRemoved: %lu", index);
+}
+
+- (void)childMoved:(id)object fromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex {
+    NSLog(@"childMoved: %lu, %lu", fromIndex, toIndex);
+}
+
+- (void)cancelPendingOperation:(id)sender {
+    
+    if(sender) {
+        NSLog(@"cancelPendingOperation: AS A RESULT OF SECOND OPERATION NOT BEING SENT");
+        
+    } else {
+        NSLog(@"cancelPendingOperation:");
+    }
+    if(_pendingOperationTimer) {
+        [_pendingOperationTimer invalidate];
+        _pendingOperationTimer = nil;
+    }
+    _awaitingSecondMoveOperation = NO;
+    _pendingMoveOperation = nil;
+}
 
 @end

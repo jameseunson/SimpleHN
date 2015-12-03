@@ -45,7 +45,7 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
     
     [self.searchManager GET:searchURL parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         NSLog(@"_searchManager, GET, response for query: %@, url: %@", query, searchURL);
-        NSLog(@"responseObject: %@", responseObject);
+//        NSLog(@"responseObject: %@", responseObject);
         
         NSDictionary * responseDict = (NSDictionary*)responseObject;
         if(![[responseDict allKeys] containsObject:@"hits"] || ![responseDict[@"hits"] isKindOfClass:[NSArray class]]) {
@@ -60,7 +60,17 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
             [stories addObject:story];
         }
         
-        completion(@{ kHNAlgoliaAPIManagerResults: stories });
+        NSMutableDictionary * output = [@{ kHNAlgoliaAPIManagerResults: stories } mutableCopy];
+        if([[responseDict allKeys] containsObject:@"nbHits"]) {
+            output[kHNAlgoliaAPIManagerTotalHits] = responseDict[@"nbHits"];
+        }
+        if([[responseDict allKeys] containsObject:@"nbPages"]) {
+            output[kHNAlgoliaAPIManagerTotalPages] = responseDict[@"nbPages"];
+        }
+        if([[responseDict allKeys] containsObject:@"page"]) {
+            output[kHNAlgoliaAPIManagerCurrentPage] = responseDict[@"page"];
+        }
+        completion(output);
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"_searchManager, ERROR: %@", error);

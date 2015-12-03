@@ -9,12 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "Story.h"
 #import "ActionDrawerView.h"
+#import "MCSwipeTableViewCell.h"
+#import "StoryCommentBaseTableViewCell.h"
 
 @protocol StoryCellDelegate;
-@interface StoryCell : UITableViewCell <ActionDrawerViewDelegate>
+@interface StoryCell : StoryCommentBaseTableViewCell <ActionDrawerViewDelegate>
 
 @property (nonatomic, strong) Story * story;
-@property (nonatomic, assign) __unsafe_unretained id<StoryCellDelegate> delegate;
+@property (nonatomic, assign) __unsafe_unretained id<StoryCellDelegate> storyCellDelegate;
 
 @property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 

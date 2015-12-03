@@ -42,12 +42,15 @@ PODS:
   - DTFoundation/UIKit (1.7.8):
     - DTFoundation/Core
   - Firebase (2.4.2)
+  - FirebaseUI/Core (0.3.1):
+    - Firebase (~> 2.2)
   - hpple (0.3.0)
   - InAppSettingsKit (2.6)
   - JBNSLayoutConstraint (1.0.0)
   - Mantle (2.0.5):
     - Mantle/extobjc (= 2.0.5)
   - Mantle/extobjc (2.0.5)
+  - MCSwipeTableViewCell (2.1.4)
   - RegexKitLite (4.0)
   - TimeAgoInWords (2.0.0)
   - TTTAttributedLabel (1.13.4)
@@ -57,10 +60,12 @@ DEPENDENCIES:
   - DKNightVersion (~> 0.9.1)
   - DTCoreText (~> 1.6.16)
   - Firebase (~> 2.4.0)
+  - FirebaseUI/Core (~> 0.3)
   - hpple (from `https://github.com/topfunky/hpple.git`)
   - InAppSettingsKit
   - JBNSLayoutConstraint (~> 1.0.0)
   - Mantle
+  - MCSwipeTableViewCell (~> 2.1.4)
   - RegexKitLite (~> 4.0)
   - TimeAgoInWords (~> 2.0.0)
   - TTTAttributedLabel
@@ -80,10 +85,12 @@ SPEC CHECKSUMS:
   DTCoreText: 934a16fe9ffdd169c96261721b39dc312b75713d
   DTFoundation: 46e2b2fafe78d67febfd8d1f85fe9845a093f00e
   Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
+  FirebaseUI: 62f01e067dcfc5c903d8b9cb7d77d03fa163c71a
   hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006
   Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
+  MCSwipeTableViewCell: 1b303e16c3a26b1982f3a68386e9b8c5fc8344c3
   RegexKitLite: c0e4c12e6e7de0769f3a3ed679f0f61604170661
   TimeAgoInWords: be1144596814c8de5d2fe51a60977ec98115e4fb
   TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f

@@ -7,13 +7,21 @@
 //
 
 #import "StoriesCommentsBaseViewController.h"
+#import "StoriesCommentsSearchResultsSectionHeaderView.h"
+#import "StoriesCommentsSearchFilterViewController.h"
 
 @protocol StoriesCommentsSearchResultsViewControllerDelegate;
-@interface StoriesCommentsSearchResultsViewController : StoriesCommentsBaseViewController
+@interface StoriesCommentsSearchResultsViewController : StoriesCommentsBaseViewController <StoriesCommentsSearchResultsSectionHeaderViewDelegate,
+    StoriesCommentsSearchFilterViewControllerDelegate>
 
 @property (nonatomic, assign) __unsafe_unretained id<StoriesCommentsSearchResultsViewControllerDelegate> delegate;
+@property (nonatomic, assign) BOOL loading;
+
+@property (nonatomic, assign) NSInteger totalResultsCount;
+@property (nonatomic, assign) NSInteger currentPage;
 
 - (void)addSearchResults:(NSArray*)results;
+- (void)clearAllResults;
 
 @end
 

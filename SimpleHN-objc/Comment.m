@@ -165,7 +165,7 @@ static NSString * _commentCSS = nil;
         if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
             
             if([attrs[NSForegroundColorAttributeName] isEqual:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]]) {
-                NSLog(@"Block quote");
+//                NSLog(@"Block quote");
                 
                 if([[attrs allKeys] containsObject:NSParagraphStyleAttributeName]) {
                     NSMutableParagraphStyle * style = [attrs[NSParagraphStyleAttributeName] mutableCopy];

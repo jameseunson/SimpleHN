@@ -135,6 +135,12 @@
             
         } else {
             
+            if([[result allKeys] containsObject:kHNAlgoliaAPIManagerTotalHits]) {
+                _searchResultsController.totalResultsCount = [result[kHNAlgoliaAPIManagerTotalHits] integerValue];
+            }
+            if([[result allKeys] containsObject:kHNAlgoliaAPIManagerCurrentPage]) {
+                _searchResultsController.currentPage = [result[kHNAlgoliaAPIManagerCurrentPage] integerValue];
+            }
             NSArray * results = result[kHNAlgoliaAPIManagerResults];
             [_searchResultsController addSearchResults:results];
         }
@@ -189,7 +195,9 @@
                 cell.expanded = NO;
             }
             
-            cell.delegate = self;
+            cell.storyCellDelegate = self;
+            cell.votingDelegate = self;
+            
             return cell;
             
         } else {
@@ -204,7 +212,7 @@
                 cell.expanded = NO;
             }
             
-            cell.delegate = self;
+            cell.commentCellDelegate = self;
             
             return cell;
         }
@@ -319,8 +327,7 @@
     
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        Story * story = [self itemForIndexPath:
-                         [self.tableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath: [self.tableView indexPathForSelectedRow]];
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
         [[segue destinationViewController] topViewController];
@@ -374,6 +381,8 @@
     UISearchBar * searchBar = _searchController.searchBar;
     NSString * query = searchBar.text;
     
+    [self.searchResultsController clearAllResults];
+    
     NSLog(@"updateSearchResultsForSearchController: %@", query);
     
     if([query isEqualToString:self.activeQuery]) {
@@ -398,11 +407,23 @@
 #pragma mark - StoriesCommentsSearchResultsViewControllerDelegate <NSObject>
 - (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
     NSLog(@"storiesCommentsSearchResultsViewController:didSelectResult:");
+    
+    [self.searchController setActive:NO];
+    [self performSegueWithIdentifier:@"showDetail" sender:result];
 }
 
 #pragma mark - Private Methods
 - (void)didToggleNightMode:(id)sender {
     NSLog(@"didToggleNightMode:");
+}
+
+#pragma mark - StoryCommentVotingTableViewCellDelegate Methods
+- (void)storyCommentCellDidUpvote:(StoryCommentBaseTableViewCell*)cell {
+    
+}
+
+- (void)storyCommentCellDidDownvote:(StoryCommentBaseTableViewCell*)cell {
+    
 }
 
 @end
