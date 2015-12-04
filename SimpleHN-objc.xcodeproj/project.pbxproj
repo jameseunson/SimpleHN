@@ -470,6 +470,7 @@
 				98052DA31BB68BB7004A0D3A /* Resources */,
 				C2FC3B47CD36C75229D2E2C3 /* Embed Pods Frameworks */,
 				1D48F5C3C75BC4872099942B /* Copy Pods Resources */,
+				9892BA521C119E22008AE64B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -626,6 +627,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9892BA521C119E22008AE64B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 0bc871f87946657e5278dbb5fafe9c4b334a3950 c97982d3df8ad7e7e7227481e0cd03557e7c4b78f10e6d47219a36d7b6de7616";
 		};
 		B81B95C7F1D5FD98FBB87F41 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -885,13 +899,13 @@
 			baseConfigurationReference = ED7247C849A308AAD42ECFB6 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: James Eunson (45J782VD7S)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: James Eunson (P68VLQ6LPN)";
 				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "103633ed-b092-4fad-bae8-127e1fd561fa";
+				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
 			};
 			name = Debug;
 		};
@@ -900,13 +914,13 @@
 			baseConfigurationReference = 4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: James Eunson (45J782VD7S)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: James Eunson (P68VLQ6LPN)";
 				GCC_PREFIX_HEADER = "${PRODUCT_NAME}-objc/${PRODUCT_NAME}.h";
 				INFOPLIST_FILE = "SimpleHN-objc/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JEON.SimpleHN;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "103633ed-b092-4fad-bae8-127e1fd561fa";
+				PROVISIONING_PROFILE = "4dcf4f39-5c73-4ea4-a3a7-467420778c90";
 			};
 			name = Release;
 		};

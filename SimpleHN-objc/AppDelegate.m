@@ -10,6 +10,10 @@
 #import "StoryDetailViewController.h"
 #import "Firebase.h"
 
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
+
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
 @end
@@ -18,6 +22,11 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+//    [Fabric with:@[[Crashlytics class]]];
+    
+    [Fabric with:@[[Crashlytics class]]];
+    
     // Override point for customization after application launch.
     SimpleHNSplitViewController *splitViewController =
         (SimpleHNSplitViewController *)self.window.rootViewController;

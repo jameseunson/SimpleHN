@@ -10,7 +10,6 @@
 #import "Firebase.h"
 #import "StoryCell.h"
 #import "StoriesCommentsBaseViewController.h"
-#import "FirebaseUI.h"
 
 @class StoryDetailViewController;
 

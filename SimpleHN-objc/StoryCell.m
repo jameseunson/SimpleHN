@@ -93,7 +93,7 @@
     
     // 20pts padding either side
     CGFloat horizontalMargin = 20.0f;
-    CGFloat widthConstraintForTitleSubtitle = roundf(self.frame.size.width * 0.75f) - (horizontalMargin * 2);
+    CGFloat widthConstraintForTitleSubtitle = roundf(self.frame.size.width * 0.80f) - (horizontalMargin * 2);
     
     CGRect boundingRectForTitleLabel = [self.storyTitleLabel.text boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: self.storyTitleLabel.font } context:nil];
     self.storyTitleLabel.frame = CGRectIntegral( CGRectMake(horizontalMargin, 10.0f, widthConstraintForTitleSubtitle, boundingRectForTitleLabel.size.height) );
@@ -151,7 +151,7 @@
     
     // 20pts padding either side
     CGFloat horizontalMargin = 20.0f;
-    CGFloat widthConstraintForTitleSubtitle = roundf(width * 0.75f) - (horizontalMargin * 2);
+    CGFloat widthConstraintForTitleSubtitle = roundf(width * 0.80f) - (horizontalMargin * 2);
     
     // Calculate title + subtitle height
     CGRect boundingRectForTitleLabel = [story.title boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3] } context:nil];

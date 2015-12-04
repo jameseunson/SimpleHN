@@ -20,6 +20,8 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - Crashlytics (3.4.1):
+    - Fabric (~> 1.6.0)
   - DKNightVersion (0.9.1):
     - DKNightVersion/Core (= 0.9.1)
     - DKNightVersion/Generator (= 0.9.1)
@@ -41,7 +43,8 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit (1.7.8):
     - DTFoundation/Core
-  - Firebase (2.4.2)
+  - Fabric (1.6.1)
+  - Firebase (2.4.3)
   - FirebaseUI/Core (0.3.1):
     - Firebase (~> 2.2)
   - hpple (0.3.0)
@@ -57,8 +60,10 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.6.3)
+  - Crashlytics
   - DKNightVersion (~> 0.9.1)
   - DTCoreText (~> 1.6.16)
+  - Fabric
   - Firebase (~> 2.4.0)
   - FirebaseUI/Core (~> 0.3)
   - hpple (from `https://github.com/topfunky/hpple.git`)
@@ -81,10 +86,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  Crashlytics: 41574a245bc6ae10c55d57f385ebd2004e5bee05
   DKNightVersion: 0df880cce15896ea28d1faefaa07e58541593d10
   DTCoreText: 934a16fe9ffdd169c96261721b39dc312b75713d
   DTFoundation: 46e2b2fafe78d67febfd8d1f85fe9845a093f00e
-  Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
+  Fabric: bf0ceb04e7c924090efc5f8c55e4fbcca189e0a0
+  Firebase: 48179995b561e2262c5d4060ecdffca45fbbff8b
   FirebaseUI: 62f01e067dcfc5c903d8b9cb7d77d03fa163c71a
   hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
