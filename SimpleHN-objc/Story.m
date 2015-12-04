@@ -24,6 +24,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 @end
 
 @implementation Story
+@synthesize subtitleString = _subtitleString;
 @synthesize timeString = _timeString;
 
 - (void)dealloc {
@@ -223,6 +224,22 @@ static NSDateFormatter * _timeDateFormatter = nil;
 }
 
 #pragma mark - Property Override Methods
+- (NSString*)subtitleString {
+    if(_subtitleString) {
+        return _subtitleString;
+    }
+    
+    if(self.url) {
+        _subtitleString = [NSString stringWithFormat:@"%@ · %@ · %@",
+                                        self.url.host, self.author, [self.time timeAgoInWords]];
+    } else {
+        _subtitleString = [NSString stringWithFormat:@"%@ · %@",
+                                        self.author, [self.time timeAgoInWords]];
+    }
+    
+    return _subtitleString;
+}
+
 - (NSString*)timeString {
     
     if(_timeString) {

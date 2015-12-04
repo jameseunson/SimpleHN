@@ -13,23 +13,15 @@
 
 @interface StoryCell ()
 
-@property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreRegularWidthConstraint;
-@property (nonatomic, strong) NSLayoutConstraint * storyCommentsScoreCompactWidthConstraint;
-
-@property (nonatomic, strong) NSLayoutConstraint * actionDrawerHeightConstraint;
-
 @property (nonatomic, strong) UILabel * storyTitleLabel;
 @property (nonatomic, strong) UILabel * storySubtitleLabel;
-@property (nonatomic, strong) UIStackView * storyTitleSubtitleStackView;
 
 @property (nonatomic, strong) StoryCommentsButton * storyCommentsButton;
 @property (nonatomic, strong) UILabel * storyScoreLabel;
-@property (nonatomic, strong) UIStackView * storyCommentsScoreStackView;
 
 @property (nonatomic, strong) UILongPressGestureRecognizer * longPressGestureRecognizer;
 
 @property (nonatomic, strong) ActionDrawerView * actionDrawerView;
-@property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
 
 - (void)didLongPressSelf:(id)sender;
 
@@ -41,98 +33,34 @@
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if(self) {
         
-        _expanded = NO;
-        
         self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(didLongPressSelf:)];
         _longPressGestureRecognizer.minimumPressDuration = 0.6;
         [self addGestureRecognizer:_longPressGestureRecognizer];
         
-        self.storyTitleSubtitleStackView = [[UIStackView alloc] init];
-        
-        _storyTitleSubtitleStackView.axis = UILayoutConstraintAxisVertical;
-        _storyTitleSubtitleStackView.alignment = UIStackViewAlignmentLeading;
-        _storyTitleSubtitleStackView.translatesAutoresizingMaskIntoConstraints = NO;
-        
         self.storyTitleLabel = [LabelHelper labelWithFont:
                                 [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3]];
-        [self.storyTitleSubtitleStackView addArrangedSubview:_storyTitleLabel];
+        [self.contentView addSubview:_storyTitleLabel];
         
         self.storySubtitleLabel = [LabelHelper labelWithFont:
                                    [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
         _storySubtitleLabel.textColor = [UIColor grayColor];
-        
-        [self.storyTitleSubtitleStackView addArrangedSubview:_storySubtitleLabel];
-        [self.contentView addSubview:_storyTitleSubtitleStackView];
-        
-        self.storyCommentsScoreStackView = [[UIStackView alloc] init];
-
-        _storyCommentsScoreStackView.axis = UILayoutConstraintAxisVertical;
-        _storyCommentsScoreStackView.distribution = UIStackViewDistributionFill;
-        _storyCommentsScoreStackView.alignment = UIStackViewAlignmentCenter;
-        _storyCommentsScoreStackView.spacing = 8;
-        _storyCommentsScoreStackView.translatesAutoresizingMaskIntoConstraints = false;
+        [self.contentView addSubview:_storySubtitleLabel];
         
         self.storyCommentsButton = [[StoryCommentsButton alloc] init];
         _storyCommentsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [_storyCommentsScoreStackView addArrangedSubview:_storyCommentsButton];
+        [self.contentView addSubview:_storyCommentsButton];
         
         self.storyScoreLabel = [[UILabel alloc] init];
         _storyScoreLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
         _storyScoreLabel.textColor = [UIColor orangeColor];
-        [_storyCommentsScoreStackView addArrangedSubview:_storyScoreLabel];
-        
-        [self.contentView addSubview:_storyCommentsScoreStackView];
+        _storyScoreLabel.textAlignment = NSTextAlignmentCenter;
+        [self.contentView addSubview:_storyScoreLabel];
 
         self.actionDrawerView = [[ActionDrawerView alloc] init];
-        _actionDrawerView.translatesAutoresizingMaskIntoConstraints = NO;
         _actionDrawerView.delegate = self;
+        _actionDrawerView.hidden = YES;
         [self.contentView addSubview:_actionDrawerView];
-        
-        self.actionDrawerBorderLayer = [CALayer layer];
-        _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
-        _actionDrawerBorderLayer.hidden = YES;
-        [self.contentView.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
-        
-        NSDictionary * bindings = NSDictionaryOfVariableBindings(_storyTitleSubtitleStackView,
-                                                                 _storyCommentsScoreStackView,
-                                                                 _actionDrawerView);
-       
-        NSArray * verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyTitleSubtitleStackView]-[_actionDrawerView(44)]-|" options:0 metrics:nil views:bindings];
-        
-        for(NSLayoutConstraint * constraint in verticalConstraints) {
-            if(constraint.constant == 44) {
-                self.actionDrawerHeightConstraint = constraint;
-            }
-        }
-        [self.contentView addConstraints:verticalConstraints];
-        
-        _actionDrawerHeightConstraint.constant = 0;
-        
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"H:|-[_storyTitleSubtitleStackView]" options:0 metrics:nil views:bindings]];
-        
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[_storyCommentsScoreStackView]"
-                                                                     options:0 metrics:nil views:bindings]];
-
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeadingMargin multiplier:1 constant:0]];
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyTitleSubtitleStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
-        
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[_actionDrawerView]-|"
-                                                                     options:0 metrics:nil views:bindings]];
-        
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailingMargin multiplier:1 constant:0]];
-        
-        self.storyCommentsScoreRegularWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.15 constant:0];
-        
-        self.storyCommentsScoreCompactWidthConstraint = [NSLayoutConstraint constraintWithItem:_storyCommentsScoreStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeWidth multiplier:0.10 constant:0];
-        
-        if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-            [self.contentView addConstraint:_storyCommentsScoreCompactWidthConstraint];
-            
-        } else {
-            [self.contentView addConstraint:_storyCommentsScoreRegularWidthConstraint];
-        }
         
         @weakify(self);
         [self addColorChangedBlock:^{
@@ -160,52 +88,90 @@
     [self setNeedsLayout];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    
-//    if(self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-//        [self removeConstraint:_storyCommentsScoreRegularWidthConstraint];
-//        [self addConstraint:_storyCommentsScoreCompactWidthConstraint];
-//        
-//    } else { // Regular and Unspecified
-//        [self removeConstraint:_storyCommentsScoreCompactWidthConstraint];
-//        [self addConstraint:_storyCommentsScoreRegularWidthConstraint];
-//    }
-    
-    [self setNeedsUpdateConstraints];
-    [self setNeedsLayout];
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    _actionDrawerBorderLayer.frame = CGRectMake(_actionDrawerView.frame.origin.x, _storyTitleSubtitleStackView.frame.origin.y + _storyTitleSubtitleStackView.frame.size.height + 8.0f, _actionDrawerView.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
+    // 20pts padding either side
+    CGFloat horizontalMargin = 20.0f;
+    CGFloat widthConstraintForTitleSubtitle = roundf(self.frame.size.width * 0.75f) - (horizontalMargin * 2);
+    
+    CGRect boundingRectForTitleLabel = [self.storyTitleLabel.text boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: self.storyTitleLabel.font } context:nil];
+    self.storyTitleLabel.frame = CGRectIntegral( CGRectMake(horizontalMargin, 10.0f, widthConstraintForTitleSubtitle, boundingRectForTitleLabel.size.height) );
+    
+    CGRect boundingRectForSubtitleLabel = [self.storySubtitleLabel.text boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: self.storySubtitleLabel.font } context:nil];
+    self.storySubtitleLabel.frame = CGRectIntegral( CGRectMake(horizontalMargin, _storyTitleLabel.frame.origin.y + _storyTitleLabel.frame.size.height, widthConstraintForTitleSubtitle, boundingRectForSubtitleLabel.size.height) );
+    
+    self.storyCommentsButton.frame = CGRectIntegral( CGRectMake(self.frame.size.width - kCommentsButtonWidth - horizontalMargin,
+                                                                10.0f, kCommentsButtonWidth, kCommentsButtonHeight) );
+    
+    CGSize sizeForScoreLabel = [_storyScoreLabel.text sizeWithAttributes:@{ NSFontAttributeName: _storyScoreLabel.font }];
+    self.storyScoreLabel.frame = CGRectIntegral( CGRectMake(_storyCommentsButton.frame.origin.x, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 8.0f, _storyCommentsButton.frame.size.width, sizeForScoreLabel.height) );
+    
+    _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
+    
+    if(_story.sizeStatus == StorySizeStatusExpanded) {
+        _actionDrawerView.hidden = NO;
+        
+    } else if(_story.sizeStatus == StorySizeStatusNormal) {
+        _actionDrawerView.hidden = YES;
+    }
 }
 
 + (void)handleActionForStory:(Story*)story withType:
     (NSNumber*)type inController:(UIViewController*)controller {
     
-    NSLog(@"handleActionForStory: %@ with author: %@", story.title, story.author);
-    
     ActionDrawerViewButtonType actionType = [type intValue];
     
     if(actionType == ActionDrawerViewButtonTypeUser) {
-        NSLog(@"StoryActionDrawerViewButtonTypeUser");
-        
         [controller performSegueWithIdentifier:@"showUser" sender:story.author];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         
         UIAlertController * alertController = [UIAlertController alertControllerWithTitle:story.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        
         [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            NSArray *activityItems = @[ [NSString stringWithFormat:@"%@ - %@", story.title, story.url] ];
+            
+            UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+            activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+            [controller presentViewController:activityVC animated:YES completion:nil];
             
         }]];
         [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
+            [[UIApplication sharedApplication] openURL:story.url];
         }]];
         [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
         [controller presentViewController:alertController animated:YES completion:nil];
     }
+}
+
++ (CGFloat)heightForStoryCellWithStory:(Story*)story width:(CGFloat)width {
+    
+    // 20pts padding either side
+    CGFloat horizontalMargin = 20.0f;
+    CGFloat widthConstraintForTitleSubtitle = roundf(width * 0.75f) - (horizontalMargin * 2);
+    
+    // Calculate title + subtitle height
+    CGRect boundingRectForTitleLabel = [story.title boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3] } context:nil];
+    
+    CGRect boundingRectForSubtitleLabel = [story.subtitleString boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1] } context:nil];
+    
+    CGFloat heightForTitleSubtitle = roundf(10.0f + boundingRectForSubtitleLabel.size.height + boundingRectForTitleLabel.size.height + 10.0f);
+    
+    // Calculate score + comments height
+    CGSize sizeForScoreLabel = [[story.score stringValue] sizeWithAttributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2] }];
+    
+    CGFloat heightForScoreComments = roundf(10.0f + sizeForScoreLabel.height + 8.0f + kCommentsButtonHeight + 10.0f);
+    
+    // Pick whichever one is larger
+    CGFloat contentHeight = MAX(heightForScoreComments, heightForTitleSubtitle);
+    
+    if(story.sizeStatus == StorySizeStatusExpanded) {
+        contentHeight += kActionDrawerViewHeight;
+    }
+    return contentHeight;
 }
 
 #pragma mark - Property Override Methods
@@ -215,13 +181,7 @@
     self.storyTitleLabel.text = story.title;
     [_storyTitleLabel sizeToFit];
     
-    if(story.url) {
-        self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@ · %@",
-                                        story.url.host, story.author, [story.time timeAgoInWords]];
-    } else {
-        self.storySubtitleLabel.text = [NSString stringWithFormat:@"%@ · %@",
-                                        story.author, [story.time timeAgoInWords]];
-    }
+    self.storySubtitleLabel.text = story.subtitleString;
     [_storySubtitleLabel sizeToFit];
     
     self.storyCommentsButton.story = story;
@@ -234,31 +194,13 @@
     [self setNeedsLayout];
 }
 
-- (void)setExpanded:(BOOL)expanded {
-    _expanded = expanded;
-    
-    if(expanded) {
-        self.actionDrawerHeightConstraint.constant = 44;
-        _actionDrawerBorderLayer.hidden = NO;
-        
-    } else {
-        self.actionDrawerHeightConstraint.constant = 0;
-        _actionDrawerBorderLayer.hidden = YES;
-    }
-    
-    [self setNeedsUpdateConstraints];
-    [self setNeedsLayout];
-}
-
 #pragma mark - Private Methods
 - (void)didLongPressSelf:(id)sender {
     NSLog(@"didLongPressSelf:");
-
-    self.expanded = YES;
     
     if (self.longPressGestureRecognizer.state == UIGestureRecognizerStateBegan){
-        if([self.delegate respondsToSelector:@selector(storyCellDidDisplayActionDrawer:)]) {
-            [self.delegate performSelector:@selector(storyCellDidDisplayActionDrawer:) withObject:self];
+        if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidDisplayActionDrawer:)]) {
+            [self.storyCellDelegate performSelector:@selector(storyCellDidDisplayActionDrawer:) withObject:self];
         }
     }
 }
@@ -267,8 +209,8 @@
 - (void)actionDrawerView:(ActionDrawerView*)view
          didTapActionWithType:(NSNumber*)type {
     
-    if([self.delegate respondsToSelector:@selector(storyCell:didTapActionWithType:)]) {
-        [self.delegate performSelector:@selector(storyCell:didTapActionWithType:)
+    if([self.storyCellDelegate respondsToSelector:@selector(storyCell:didTapActionWithType:)]) {
+        [self.storyCellDelegate performSelector:@selector(storyCell:didTapActionWithType:)
                             withObject:self withObject:type];
     }
 }

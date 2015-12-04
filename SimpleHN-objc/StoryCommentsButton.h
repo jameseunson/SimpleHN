@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "Story.h"
 
+#define kCommentsButtonWidth 30.0f
+#define kCommentsButtonHeight 26.0f
+
 @interface StoryCommentsButton : UIButton
 @property (nonatomic, strong) Story * story;
 

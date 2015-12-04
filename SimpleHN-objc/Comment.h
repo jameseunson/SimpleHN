@@ -44,11 +44,8 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, strong) NSMutableArray * childComments;
 @property (nonatomic, strong) Comment * parentComment;
 
-//// Mutually exclusive
-//@property (nonatomic, assign) BOOL expanded;
-//@property (nonatomic, assign) BOOL collapsed;
-
 @property (nonatomic, assign) CommentSizeStatus sizeStatus;
+@property (nonatomic, assign) BOOL collapseOrigin;
 
 @property (nonatomic, assign) CGFloat cachedCommentExpandedTextHeight;
 @property (nonatomic, assign) CGFloat cachedCommentTextHeight;
@@ -56,6 +53,8 @@ typedef void (^CommentBlock)(Comment* comment);
 // Generated properties
 @property (nonatomic, strong, readonly) NSArray <CommentLink *> * links;
 @property (nonatomic, strong, readonly) NSArray <CommentStyle *> * styles;
+
+@property (nonatomic, assign, readonly) NSInteger childCommentCount;
 
 // text property with styles applied. Links are handled by KILabel
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;

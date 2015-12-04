@@ -36,7 +36,7 @@
 
 @property (nonatomic, strong) NSMutableArray < NSNumber * > * visibleItems;
 
-@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
+//@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 
 @property (nonatomic, assign) BOOL shouldDisplayLoadMoreCell;
 

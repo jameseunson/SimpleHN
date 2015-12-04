@@ -24,16 +24,17 @@
 - (void)loadVisibleItems;
 - (void)cancelPendingOperation:(id)sender;
 
-//@property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
+// Used to determine which item is currently 'expanded' (showing action drawer)
+@property (nonatomic, strong) NSMutableArray < Story * > * storiesObjectsList;
+
 @property (nonatomic, strong) NSMutableDictionary * storyDiffLookup; // NYI
 
-// Ignore
+// Ignore all FirebaseArray changes until this is YES
 @property (nonatomic, assign) BOOL initialLoadDone;
 
 @property (nonatomic, assign) BOOL awaitingSecondMoveOperation;
 @property (nonatomic, strong) NSArray * pendingMoveOperation;
 @property (nonatomic, strong) NSTimer * pendingOperationTimer;
-
 
 @end
 
@@ -52,6 +53,8 @@
     
     _initialLoadDone = NO;
     _awaitingSecondMoveOperation = NO;
+    
+    self.storiesObjectsList = [[NSMutableArray alloc] init];
     
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
@@ -206,6 +209,10 @@
                     self.itemsLookup[identifier] = story;
                     self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
                     
+                    if(![_storiesObjectsList containsObject:story]) {
+                        [self.storiesObjectsList addObject:story];
+                    }
+                    
                     story.ranking = @(i + 1);
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -243,8 +250,12 @@
 
 #pragma mark - FirebaseArrayDelegate Methods
 - (void)childAdded:(id)object atIndex:(NSUInteger)index {
-    
-    if([self.storiesList count] == kAPIExpectedItemsCount) {
+
+    // The amount of stories that comes back from the API
+    // is unpredictable. This used to be set at 500, but
+    // it's sometimes much lower. Anything more than
+    // the entire first screen is fine.
+    if([self.storiesList count] > 20) {
         
         _initialLoadDone = YES;
         self.loadingProgress.completedUnitCount++;        
@@ -320,9 +331,6 @@
             
             NSLog(@"%@ -> %@", previousIndexPath, currentIndexPath);
             
-//            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MIN(previousIndex, currentIndex) inSection:0]
-//                                  atScrollPosition:UITableViewScrollPositionTop animated:YES];
-            
             [self.tableView beginUpdates];
             
             [self.visibleItems exchangeObjectAtIndex:currentIndex withObjectAtIndex:previousIndex];
@@ -373,13 +381,14 @@
     }
 }
 
-- (void)childRemoved:(id)object atIndex:(NSUInteger)index {
-    NSLog(@"childRemoved: %lu", index);
-}
-
-- (void)childMoved:(id)object fromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex {
-    NSLog(@"childMoved: %lu, %lu", fromIndex, toIndex);
-}
+// Seemingly not implemented in the HN API
+//- (void)childRemoved:(id)object atIndex:(NSUInteger)index {
+//    NSLog(@"childRemoved: %lu", index);
+//}
+//
+//- (void)childMoved:(id)object fromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex {
+//    NSLog(@"childMoved: %lu, %lu", fromIndex, toIndex);
+//}
 
 - (void)cancelPendingOperation:(id)sender {
     
@@ -395,6 +404,31 @@
     }
     _awaitingSecondMoveOperation = NO;
     _pendingMoveOperation = nil;
+}
+
+- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
+    
+    Story * story = cell.story;
+    NSArray * expandedStoryArray = [_storiesObjectsList filteredArrayUsingPredicate:
+                                      [NSPredicate predicateWithFormat:@"sizeStatus == %lu", StorySizeStatusExpanded]];
+
+    if([expandedStoryArray count] > 0) {
+        Story * expandedStory = [expandedStoryArray firstObject];
+        expandedStory.sizeStatus = CommentSizeStatusNormal;
+        
+        // Job done, don't expand again
+        if(story == expandedStory) {
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+            
+            return;
+        }
+    }
+
+    story.sizeStatus = StorySizeStatusExpanded;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 @end

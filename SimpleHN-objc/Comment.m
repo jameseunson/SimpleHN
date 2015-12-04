@@ -23,6 +23,10 @@ static NSString * _commentCSS = nil;
 + (NSString*)wrapQuotesInBlockQuoteTags:(NSString*)string;
 + (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string;
 
+- (void)commentCollapsedChanged:(NSNotification*)notification;
+
+@property (nonatomic, assign) NSInteger childCommentsChangedUntilComplete;
+
 //+ (NSString*)commentCSS;
 
 @end
@@ -31,6 +35,7 @@ static NSString * _commentCSS = nil;
 @synthesize links = _links;
 @synthesize styles = _styles;
 @synthesize attributedText = _attributedText;
+@synthesize childCommentCount = _childCommentCount;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
@@ -38,6 +43,11 @@ static NSString * _commentCSS = nil;
     
     self.childComments = [[NSMutableArray alloc] init];
     self.indentation = 0;
+    
+    _collapseOrigin = NO;
+    
+    _childCommentCount = -1;
+    _childCommentsChangedUntilComplete = -1;
     
     _cachedCommentTextHeight = -1;
     _cachedCommentExpandedTextHeight = -1;
@@ -127,7 +137,16 @@ static NSString * _commentCSS = nil;
     
     // Propagate collapse/normalize to child comments
     if(sizeStatus == CommentSizeStatusCollapsed || sizeStatus == CommentSizeStatusNormal) {
-        NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
+//        NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
+        
+        if(_collapseOrigin) {
+            NSInteger countForCommentsToModify = self.childCommentCount + 1; // Include self = +1
+//            NSLog(@"countForCommentsToModify: %lu", countForCommentsToModify);
+            
+            self.childCommentsChangedUntilComplete = countForCommentsToModify;
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+                                                         name:kCommentCollapsedChanged object:nil];
+        }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:
             kCommentCollapsedChanged object:self];
@@ -208,6 +227,49 @@ static NSString * _commentCSS = nil;
 - (BOOL)isEqual:(id)object {
     return ([object isKindOfClass:[Comment class]] &&
             [((Comment*)object).commentId isEqual:self.commentId]);
+}
+
+- (NSInteger)childCommentCount {
+    
+    if([self.childComments count] == 0) {
+        return 0;
+    }
+    
+    NSMutableArray *visitedNodes = [[NSMutableArray alloc] init];
+    NSMutableArray *queue = [NSMutableArray arrayWithObject:self];
+    
+    while ([queue count] > 0) {
+        Comment * c = [queue firstObject];
+        [queue removeObject:c];
+        
+        if(![visitedNodes containsObject:c]) {
+            [visitedNodes addObject:c];
+            
+            for(Comment *child in c.childComments) {
+                [queue addObject:child];
+            }
+        }
+    }
+
+    // Should not include self?
+    return [visitedNodes count] - 1;
+}
+
+- (void)commentCollapsedChanged:(NSNotification*)notification {
+    
+    if(self.childCommentsChangedUntilComplete != -1) {
+        self.childCommentsChangedUntilComplete--;
+//        NSLog(@"childCommentsChangedUntilComplete = %lu",
+//              _childCommentsChangedUntilComplete);
+        
+        if(self.childCommentsChangedUntilComplete == 0) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             kCommentCollapsedComplete object:self];
+            
+            _collapseOrigin = NO;
+        }
+    }
 }
 
 #pragma mark - Private Methods

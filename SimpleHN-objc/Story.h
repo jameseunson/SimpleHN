@@ -9,6 +9,11 @@
 #import <Mantle/Mantle.h>
 #import "User.h"
 
+typedef NS_ENUM(NSInteger, StorySizeStatus) {
+    StorySizeStatusNormal,
+    StorySizeStatusExpanded
+};
+
 typedef NS_ENUM(NSInteger, StoryLoadStatus) {
     StoryLoadStatusNotLoaded,
     StoryLoadStatusLoading,
@@ -43,7 +48,10 @@ typedef void (^StoryBlock)(Story* story);
 
 @property (nonatomic, strong) NSDictionary * diff;
 
+@property (nonatomic, assign) StorySizeStatus sizeStatus;
+
 // Generated properties
+@property (nonatomic, strong, readonly) NSString * subtitleString;
 @property (nonatomic, strong, readonly) NSString * timeString;
 
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier

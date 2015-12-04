@@ -50,8 +50,8 @@
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+//    self.tableView.rowHeight = UITableViewAutomaticDimension;
+//    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -188,12 +188,12 @@
                                kStoryCellReuseIdentifier forIndexPath:indexPath];
             cell.story = item;
             
-            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-                cell.expanded = YES;
-                
-            } else {
-                cell.expanded = NO;
-            }
+//            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+//                cell.expanded = YES;
+//                
+//            } else {
+//                cell.expanded = NO;
+//            }
             
             cell.storyCellDelegate = self;
             cell.votingDelegate = self;
@@ -232,6 +232,29 @@
     if(indexPath.row == self.currentVisibleItemMax) {
         _loadMoreStartYPosition = -1;
         _loadMoreCompleteYPosition = -1;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if(indexPath.row == self.currentVisibleItemMax || indexPath.row > self.currentVisibleItemMax) {
+        return 66.0f;
+        
+    } else {
+        
+        @try {
+            id item = [self itemForIndexPath:indexPath];
+            if([item isKindOfClass:[Story class]]) {
+                return [StoryCell heightForStoryCellWithStory:item width:tableView.frame.size.width];
+                
+            } else {
+                return 88.0f;
+            }
+        } @catch(NSException * e) {
+            NSLog(@"heightForRowAtIndexPath: %@, crash", indexPath);
+            return 44.0f;
+        }
+
     }
 }
 
@@ -347,20 +370,6 @@
 }
 
 #pragma mark - StoryCellDelegate Methods
-- (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {
-    NSLog(@"storyCellDidDisplayActionDrawer:");
-    
-    if(_expandedCellIndexPath) {
-        StoryCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                    _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-    
-    self.expandedCellIndexPath = [self.tableView indexPathForCell:cell];
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-}
 - (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type {
     [StoryCell handleActionForStory:cell.story withType:type inController:self];
 }

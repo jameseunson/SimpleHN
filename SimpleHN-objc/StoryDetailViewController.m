@@ -24,14 +24,12 @@
 @property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
 @property (nonatomic, strong) SFSafariViewController * webViewController;
 
-//@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
 
 - (void)commentCreated:(NSNotification*)notification;
-- (void)commentCollapsedChanged:(NSNotification*)notification;
 - (void)commentCollapsedComplete:(NSNotification*)notification;
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
@@ -51,9 +49,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
-                                                 name:kCommentCollapsedChanged object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedComplete:)
                                                  name:kCommentCollapsedComplete object:nil];
 }
 
@@ -101,7 +97,9 @@
 
 - (void)setDetailItem:(id)newDetailItem {
     if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
+        
+        _detailItem = [newDetailItem copy];
+        _detailItem.sizeStatus = StorySizeStatusExpanded;
         
         if(_webViewController) {
             [_webViewController.view removeFromSuperview];
@@ -208,8 +206,6 @@
                            kStoryCellReuseIdentifier forIndexPath:indexPath];
         
         cell.story = self.detailItem;
-        cell.expanded = YES;
-        
         cell.storyCellDelegate = self;
         
         return cell;
@@ -221,12 +217,6 @@
         CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                              forIndexPath:indexPath];
         cell.comment = comment;
-//        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-//            cell.expanded = YES;
-//            
-//        } else {
-//            cell.expanded = NO;
-//        }
         
         cell.commentCellDelegate = self;
         
@@ -252,12 +242,14 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
     if(indexPath.section == 0) {
-        return UITableViewAutomaticDimension;
+        return [StoryCell heightForStoryCellWithStory:self.detailItem
+                                                width:tableView.frame.size.width];
 
     } else {
         
         Comment * comment = _detailItem.flatDisplayComments[indexPath.row];        
-        return [CommentCell heightForCommentCell:comment width:tableView.frame.size.width];
+        return [CommentCell heightForCommentCell:comment
+                                           width:tableView.frame.size.width];
     }
 }
 
@@ -338,14 +330,14 @@
 //          self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
 }
 
-- (void)commentCollapsedChanged:(NSNotification*)notification {
-    
-    NSLog(@"commentCollapsedChanged for comment with id: %@",
-          ((Comment*)notification.object).commentId);
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-}
+//- (void)commentCollapsedChanged:(NSNotification*)notification {
+//    
+//    NSLog(@"commentCollapsedChanged for comment with id: %@",
+//          ((Comment*)notification.object).commentId);
+//    
+//    [self.tableView beginUpdates];
+//    [self.tableView endUpdates];
+//}
 
 - (void)commentCollapsedComplete:(NSNotification*)notification {
     

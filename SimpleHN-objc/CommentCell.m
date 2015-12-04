@@ -20,7 +20,7 @@
 @property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 
 - (void)didTapBackgroundView:(id)sender;
-- (void)commentCollapsedChanged:(NSNotification*)notification;
+//- (void)commentCollapsedChanged:(NSNotification*)notification;
 
 @end
 
@@ -50,8 +50,8 @@
                                                          initWithTarget:self action:@selector(didTapBackgroundView:)];
         [self.headerView addGestureRecognizer:_headerBackgroundViewTapGestureRecognizer];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
-                                                     name:kCommentCollapsedChanged object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+//                                                     name:kCommentCollapsedChanged object:nil];
     }
     return self;
 }
@@ -92,16 +92,26 @@
     if(_comment.sizeStatus == CommentSizeStatusExpanded) {
         _actionDrawerView.hidden = NO;
         _commentLabel.hidden = NO;
+        
         _headerView.collapsed = NO;
+        _headerView.hidden = NO;
         
     } else if(_comment.sizeStatus == CommentSizeStatusNormal) {
         _actionDrawerView.hidden = YES;
         _commentLabel.hidden = NO;
+        
         _headerView.collapsed = NO;
+        _headerView.hidden = NO;
         
     } else if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
         _actionDrawerView.hidden = YES;
         _commentLabel.hidden = YES;
+        
+        if(self.comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+            _headerView.hidden = YES;
+        } else {
+            _headerView.hidden = NO;
+        }
         _headerView.collapsed = YES;
     }
 }
@@ -180,12 +190,19 @@
         }
         
     } else {
+        
         // Collapsed has no comment size
+        if(comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+            return 0;
+            
+        } else {
+            return heightAccumulator;
+        }
     }
 
     // Was not retrieved from cache
     if(sizeForCommentLabel.height > 0) {
-        NSLog(@"Calculated height from scratch: %f", sizeForCommentLabel.height);
+//        NSLog(@"Calculated height from scratch: %f", sizeForCommentLabel.height);
         heightAccumulator += sizeForCommentLabel.height + 20.0f; // 10pts padding top and bottom
     }
     
@@ -213,6 +230,7 @@
 - (void)didTapBackgroundView:(id)sender {
     NSLog(@"CommentCell, didTapBackgroundView:");
     
+    self.comment.collapseOrigin = YES;
     if(self.comment.sizeStatus == CommentSizeStatusCollapsed) {
         self.comment.sizeStatus = CommentSizeStatusNormal;
         
@@ -221,9 +239,9 @@
     }
 }
 
-- (void)commentCollapsedChanged:(NSNotification*)notification {
-    Comment * comment = notification.object;
-}
+//- (void)commentCollapsedChanged:(NSNotification*)notification {
+//    Comment * comment = notification.object;
+//}
 
 #pragma mark - TTTAttributedLabelDelegate Methods
 - (void)attributedLabel:(TTTAttributedLabel *)label
