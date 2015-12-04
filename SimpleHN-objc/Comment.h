@@ -13,8 +13,15 @@
 #import "User.h"
 #import "Firebase.h"
 
+typedef NS_ENUM(NSInteger, CommentSizeStatus) {
+    CommentSizeStatusNormal,
+    CommentSizeStatusExpanded,
+    CommentSizeStatusCollapsed
+};
+
 #define kCommentCreated @"commentCreated"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"
+#define kCommentCollapsedComplete @"commentCollapsedComplete"
 
 @class Comment;
 typedef void (^CommentBlock)(Comment* comment);
@@ -37,7 +44,14 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, strong) NSMutableArray * childComments;
 @property (nonatomic, strong) Comment * parentComment;
 
-@property (nonatomic, assign) BOOL collapsed;
+//// Mutually exclusive
+//@property (nonatomic, assign) BOOL expanded;
+//@property (nonatomic, assign) BOOL collapsed;
+
+@property (nonatomic, assign) CommentSizeStatus sizeStatus;
+
+@property (nonatomic, assign) CGFloat cachedCommentExpandedTextHeight;
+@property (nonatomic, assign) CGFloat cachedCommentTextHeight;
 
 // Generated properties
 @property (nonatomic, strong, readonly) NSArray <CommentLink *> * links;

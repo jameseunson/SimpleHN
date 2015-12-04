@@ -205,12 +205,12 @@
             CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                                  forIndexPath:indexPath];
             cell.comment = item;
-            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-                cell.expanded = YES;
-                
-            } else {
-                cell.expanded = NO;
-            }
+//            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+//                cell.expanded = YES;
+//                
+//            } else {
+//                cell.expanded = NO;
+//            }
             
             cell.commentCellDelegate = self;
             

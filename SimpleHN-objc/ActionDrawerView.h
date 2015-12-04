@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define kActionDrawerViewHeight 65.0f
+
 @protocol ActionDrawerViewDelegate;
 @interface ActionDrawerView : UIView
 

@@ -75,34 +75,34 @@
         
     } else {
         
-        id item = [self itemForIndexPath:indexPath];
-        if([item isKindOfClass:[Story class]]) {
-            [self performSegueWithIdentifier:@"showDetail" sender:nil];
-            
-        } else {
-            
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            if(self.expandedCellIndexPath) {
-                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                              self.expandedCellIndexPath];
-                expandedCell.expanded = NO;
-            }
-            
-            // User has tapped an expanded cell, toggle only
-            if([indexPath isEqual:self.expandedCellIndexPath]) {
-                self.expandedCellIndexPath = nil;
-                
-            } else { // Otherwise, set new expanded cell
-                self.expandedCellIndexPath = indexPath;
-                
-                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                              self.expandedCellIndexPath];
-                expandedCell.expanded = YES;
-            }
-            
-            [self.tableView beginUpdates];
-            [self.tableView endUpdates];
-        }
+//        id item = [self itemForIndexPath:indexPath];
+//        if([item isKindOfClass:[Story class]]) {
+//            [self performSegueWithIdentifier:@"showDetail" sender:nil];
+//            
+//        } else {
+//            
+//            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+//            if(self.expandedCellIndexPath) {
+//                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+//                                              self.expandedCellIndexPath];
+//                expandedCell.expanded = NO;
+//            }
+//            
+//            // User has tapped an expanded cell, toggle only
+//            if([indexPath isEqual:self.expandedCellIndexPath]) {
+//                self.expandedCellIndexPath = nil;
+//                
+//            } else { // Otherwise, set new expanded cell
+//                self.expandedCellIndexPath = indexPath;
+//                
+//                CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
+//                                              self.expandedCellIndexPath];
+//                expandedCell.expanded = YES;
+//            }
+//            
+//            [self.tableView beginUpdates];
+//            [self.tableView endUpdates];
+//        }
     }
 }
 

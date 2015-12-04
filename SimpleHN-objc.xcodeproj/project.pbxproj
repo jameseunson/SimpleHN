@@ -36,6 +36,7 @@
 		984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */; };
 		984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */; };
 		984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */; };
+		985219591C11234700A183A6 /* CommentCellHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 985219581C11234700A183A6 /* CommentCellHeaderView.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
@@ -48,7 +49,6 @@
 		98B841411C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841401C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m */; };
 		98B841441C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841431C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m */; };
 		98B841471C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */; };
-		98CE4BEA1C06BABB009EAE00 /* TopStoriesTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98CE4BE91C06BABB009EAE00 /* TopStoriesTitleView.m */; };
 		98E0C80F1BE73DE4003E3A0A /* CommentLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E0C80E1BE73DE4003E3A0A /* CommentLink.m */; };
 		98E43D8F1C08094B0041CC6F /* NSString+EscapedURLString.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E43D8E1C08094B0041CC6F /* NSString+EscapedURLString.m */; };
 		98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725AF1BF1804A00607CBC /* StoriesViewController.m */; };
@@ -135,6 +135,8 @@
 		984DCC4C1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsBaseViewController.m; sourceTree = "<group>"; };
 		984DCC6A1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsSearchResultsViewController.h; sourceTree = "<group>"; };
 		984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchResultsViewController.m; sourceTree = "<group>"; };
+		985219571C11234700A183A6 /* CommentCellHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentCellHeaderView.h; sourceTree = "<group>"; };
+		985219581C11234700A183A6 /* CommentCellHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentCellHeaderView.m; sourceTree = "<group>"; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
@@ -159,8 +161,6 @@
 		98B841431C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchResultsSectionHeaderView.m; sourceTree = "<group>"; };
 		98B841451C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCommentsSearchFilterViewController.h; sourceTree = "<group>"; };
 		98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCommentsSearchFilterViewController.m; sourceTree = "<group>"; };
-		98CE4BE81C06BABB009EAE00 /* TopStoriesTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopStoriesTitleView.h; sourceTree = "<group>"; };
-		98CE4BE91C06BABB009EAE00 /* TopStoriesTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopStoriesTitleView.m; sourceTree = "<group>"; };
 		98E0C80C1BE734AC003E3A0A /* SimpleHN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleHN.h; sourceTree = "<group>"; };
 		98E0C80D1BE73DE4003E3A0A /* CommentLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentLink.h; sourceTree = "<group>"; };
 		98E0C80E1BE73DE4003E3A0A /* CommentLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentLink.m; sourceTree = "<group>"; };
@@ -342,10 +342,10 @@
 				984DCC451BFAE9E200BA5B86 /* ContentLoadingView.m */,
 				9849D0AA1C059FA000A23212 /* AskShowHeaderView.h */,
 				9849D0AB1C059FA000A23212 /* AskShowHeaderView.m */,
-				98CE4BE81C06BABB009EAE00 /* TopStoriesTitleView.h */,
-				98CE4BE91C06BABB009EAE00 /* TopStoriesTitleView.m */,
 				983A19D51C07F93A00072B40 /* CommentTextView.h */,
 				983A19D61C07F93A00072B40 /* CommentTextView.m */,
+				985219571C11234700A183A6 /* CommentCellHeaderView.h */,
+				985219581C11234700A183A6 /* CommentCellHeaderView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -695,6 +695,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				98E43D8F1C08094B0041CC6F /* NSString+EscapedURLString.m in Sources */,
+				985219591C11234700A183A6 /* CommentCellHeaderView.m in Sources */,
 				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
 				984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
@@ -706,7 +707,6 @@
 				98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
-				98CE4BEA1C06BABB009EAE00 /* TopStoriesTitleView.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
 				98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */,
 				98F5EBDB1BF086A400B1BA08 /* User.m in Sources */,

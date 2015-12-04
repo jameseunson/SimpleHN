@@ -17,7 +17,6 @@
 @property (nonatomic, strong) UIBarButtonItem * timePeriodItem;
 
 @property (nonatomic, strong) NSNumber * selectedTimePeriod;
-@property (nonatomic, strong) TopStoriesTitleView * titleView;
 
 @end
 
@@ -93,11 +92,6 @@
     NSLog(@"storiesTimePeriodSelectViewControllerDidCancelSelect:");
     
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - TopStoriesTitleViewDelegate Methods
-- (void)topStoriesTitleViewDidTapTitleView:(TopStoriesTitleView *)view {
-    [self performSegueWithIdentifier:@"showTimePeriodSelect" sender:nil];    
 }
 
 #pragma mark - Private Methods

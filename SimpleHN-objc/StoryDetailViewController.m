@@ -24,7 +24,7 @@
 @property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
 @property (nonatomic, strong) SFSafariViewController * webViewController;
 
-@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
+//@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
 - (void)reloadContent:(id)sender;
@@ -32,6 +32,7 @@
 
 - (void)commentCreated:(NSNotification*)notification;
 - (void)commentCollapsedChanged:(NSNotification*)notification;
+- (void)commentCollapsedComplete:(NSNotification*)notification;
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
 
@@ -52,6 +53,8 @@
                                                  name:kCommentCreated object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
                                                  name:kCommentCollapsedChanged object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+                                                 name:kCommentCollapsedComplete object:nil];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -86,8 +89,8 @@
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+//    self.tableView.rowHeight = UITableViewAutomaticDimension;
+//    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
     [self.view addSubview:_tableView];
     
@@ -218,12 +221,12 @@
         CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                              forIndexPath:indexPath];
         cell.comment = comment;
-        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-            cell.expanded = YES;
-            
-        } else {
-            cell.expanded = NO;
-        }
+//        if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
+//            cell.expanded = YES;
+//            
+//        } else {
+//            cell.expanded = NO;
+//        }
         
         cell.commentCellDelegate = self;
         
@@ -242,19 +245,19 @@
 //    }
 //}
 
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    return 88.0f;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
     if(indexPath.section == 0) {
-        return UITableViewAutomaticDimension;        
-        
+        return UITableViewAutomaticDimension;
+
     } else {
-        Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-        if(comment.collapsed && comment.parentComment) {
-            return 0;
-            
-        } else {
-            return UITableViewAutomaticDimension;
-        }
+        
+        Comment * comment = _detailItem.flatDisplayComments[indexPath.row];        
+        return [CommentCell heightForCommentCell:comment width:tableView.frame.size.width];
     }
 }
 
@@ -340,7 +343,14 @@
     NSLog(@"commentCollapsedChanged for comment with id: %@",
           ((Comment*)notification.object).commentId);
     
-//    [self.tableView reloadData];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+
+- (void)commentCollapsedComplete:(NSNotification*)notification {
+    
+    NSLog(@"commentCollapsedComplete");
+    
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
 }
@@ -352,28 +362,24 @@
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
     
     Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-    if(comment.collapsed) {
-        comment.collapsed = NO;
-        return;
+    
+    NSArray * expandedCommentArray = [_detailItem.flatDisplayComments filteredArrayUsingPredicate:
+        [NSPredicate predicateWithFormat:@"sizeStatus == %lu", CommentSizeStatusExpanded]];
+    
+    if([expandedCommentArray count] > 0) {
+        Comment * expandedComment = [expandedCommentArray firstObject];
+        expandedComment.sizeStatus = CommentSizeStatusNormal;
+        
+        // Job done, don't expand again
+        if(comment == expandedComment) {
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+            
+            return;
+        }
     }
     
-    if(_expandedCellIndexPath) {
-        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                      _expandedCellIndexPath];
-        expandedCell.expanded = NO;
-    }
-    
-    // User has tapped an expanded cell, toggle only
-    if([indexPath isEqual:_expandedCellIndexPath]) {
-        _expandedCellIndexPath = nil;
-        
-    } else { // Otherwise, set new expanded cell
-        self.expandedCellIndexPath = indexPath;
-        
-        CommentCell * expandedCell = [self.tableView cellForRowAtIndexPath:
-                                      _expandedCellIndexPath];
-        expandedCell.expanded = YES;
-    }
+    comment.sizeStatus = CommentSizeStatusExpanded;
     
     [self.tableView beginUpdates];
     [self.tableView endUpdates];

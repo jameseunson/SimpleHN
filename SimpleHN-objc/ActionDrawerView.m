@@ -20,6 +20,8 @@
 
 @property (nonatomic, strong) NSArray < ActionDrawerButton * > * buttons;
 
+@property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
+
 - (void)didTapActionButton:(id)sender;
 - (ActionDrawerButton*)createButtonWithType:(ActionDrawerViewButtonType)type;
 
@@ -54,13 +56,28 @@
         self.buttons = @[ _actionDrawerUserButton, _actionDrawerFlagButton,
                          _actionDrawerLinkButton, _actionDrawerMoreButton ];
         
+        self.actionDrawerBorderLayer = [CALayer layer];
+        _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
+        [self.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
+        
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_actionDrawerContainerView);
         
         [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                              @"V:|-0-[_actionDrawerContainerView]-0-|;H:|-0-[_actionDrawerContainerView]-0-|"
+                              @"V:|-10-[_actionDrawerContainerView];H:|-0-[_actionDrawerContainerView]-0-|"
                                                                         options:0 metrics:nil views:bindings]];
     }
     return self;
+}
+
+- (CGSize)intrinsicContentSize {
+    return CGSizeMake(UIViewNoIntrinsicMetric, _actionDrawerContainerView
+                        .intrinsicContentSize.height + 20.0f);
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    _actionDrawerBorderLayer.frame = CGRectMake(0, 0, self.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 #pragma mark - Private Methods

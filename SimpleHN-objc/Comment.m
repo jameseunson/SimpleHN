@@ -39,6 +39,9 @@ static NSString * _commentCSS = nil;
     self.childComments = [[NSMutableArray alloc] init];
     self.indentation = 0;
     
+    _cachedCommentTextHeight = -1;
+    _cachedCommentExpandedTextHeight = -1;
+    
     return self;
 }
 
@@ -119,17 +122,20 @@ static NSString * _commentCSS = nil;
 }
 
 #pragma mark - Property Override Methods
-- (void)setCollapsed:(BOOL)collapsed {
-    _collapsed = collapsed;
+- (void)setSizeStatus:(CommentSizeStatus)sizeStatus {
+    _sizeStatus = sizeStatus;
     
-    NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:
-     kCommentCollapsedChanged object:self];
-    
-    // Recursively set collapsed value
-    for(Comment * comment in _childComments) {
-        comment.collapsed = collapsed;
+    // Propagate collapse/normalize to child comments
+    if(sizeStatus == CommentSizeStatusCollapsed || sizeStatus == CommentSizeStatusNormal) {
+        NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:
+            kCommentCollapsedChanged object:self];
+        
+        // Recursively set collapsed value
+        for(Comment * comment in _childComments) {
+            comment.sizeStatus = sizeStatus;
+        }
     }
 }
 
@@ -144,8 +150,6 @@ static NSString * _commentCSS = nil;
 
     [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont* currentFont = value;
-        
-//        NSLog(@"commentText: NSFontAttributeName: %@", value);
         
         if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
             [commentText addAttribute:NSFontAttributeName

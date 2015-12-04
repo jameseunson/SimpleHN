@@ -11,6 +11,7 @@
 #import "ActionDrawerView.h"
 #import "TTTAttributedLabel.h"
 #import "StoryCommentBaseTableViewCell.h"
+#import "CommentCellHeaderView.h"
 
 @protocol CommentCellDelegate;
 @interface CommentCell : StoryCommentBaseTableViewCell <ActionDrawerViewDelegate, UITextViewDelegate, NSLayoutManagerDelegate,
@@ -19,16 +20,9 @@
 @property (nonatomic, strong) Comment * comment;
 @property (nonatomic, strong) TTTAttributedLabel * commentLabel;
 
-@property (nonatomic, strong) UIView * headerView;
-@property (nonatomic, strong) UILabel * authorLabel;
-@property (nonatomic, strong) UILabel * dateLabel;
+@property (nonatomic, strong) CommentCellHeaderView * headerView;
 
-@property (nonatomic, strong) CALayer * headerBorderLayer;
-@property (nonatomic, strong) UIView * headerBackgroundView;
-//@property (nonatomic, strong) UIImageView * headerIconImageView;
-@property (nonatomic, strong) UILabel * headerUpDownLabel;
-
-@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
+//@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 
 @property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> commentCellDelegate;
 
@@ -39,6 +33,10 @@
 // Centralised point where action handling code can be invoked
 + (void)handleActionForComment:(Comment*)comment withType:
     (NSNumber*)type inController:(UIViewController*)controller;
+
+// Pains me to have to resort to such medieval methods of sizing, but whatever
+// This cell has proven too complicated to get working with auto-sizing + constraints
++ (CGFloat)heightForCommentCell:(Comment*)comment width:(CGFloat)width;
 
 @end
 
