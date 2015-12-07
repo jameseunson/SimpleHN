@@ -17,10 +17,14 @@
 #import "NSString+HTML.h"
 #import "Firebase.h"
 
+#import "NSAttributedString+HTML.h"
+#import "DTCoreTextConstants.h"
+
 @implementation User
 @synthesize accountCreatedString = _accountCreatedString;
 @synthesize accountCreatedDate = _accountCreatedDate;
 @synthesize submissionsString = _submissionsString;
+@synthesize attributedAboutText = _attributedAboutText;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
@@ -43,9 +47,16 @@
 + (NSValueTransformer *)aboutJSONTransformer {
     return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
         
-        NSString * about = ((NSString*)value);
-        about = [[[[[about componentsSeparatedByString:@"<p>"] componentsJoinedByString:@"\n\n"] componentsSeparatedByString:@"</p>"] componentsJoinedByString:@"\n\n"] stringByDecodingHTMLEntities];
-        return about;
+        NSString * string = ((NSString*)value);
+        
+        string = [Comment completeParagraphTags:string];
+        if([string containsString:@"<p></p>"]) {
+            string = [string stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""];
+        }
+        string = [Comment wrapQuotesInBlockQuoteTags:string];
+        string = [Comment wrapMultiQuotesInBlockQuoteTags:string];
+        
+        return string;
     }];
 }
 
@@ -68,6 +79,16 @@
 }
 
 #pragma mark - Property Override Methods
+- (NSAttributedString*)attributedAboutText {
+    if(_attributedAboutText) {
+        return _attributedAboutText;
+    }
+    
+    _attributedAboutText = [Comment createAttributedStringFromHTMLString:self.about];
+    
+    return _attributedAboutText;
+}
+
 - (NSDate*)accountCreatedDate {
     if(_accountCreatedDate) {
         return _accountCreatedDate;

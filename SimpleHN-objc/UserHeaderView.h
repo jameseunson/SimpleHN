@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
+#import "TTTAttributedLabel.h"
 
 typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
     UserHeaderViewVisibleDataAll,
@@ -16,7 +17,7 @@ typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
 };
 
 @protocol UserHeaderViewDelegate;
-@interface UserHeaderView : UIView <UITextViewDelegate, UIGestureRecognizerDelegate>
+@interface UserHeaderView : UIView <UITextViewDelegate, UIGestureRecognizerDelegate, TTTAttributedLabelDelegate>
 
 @property (nonatomic, strong) User * user;
 @property (nonatomic, assign) __unsafe_unretained id<UserHeaderViewDelegate> delegate;

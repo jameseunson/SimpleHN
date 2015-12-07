@@ -271,21 +271,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="659-WN-xoX">
-                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="659-WN-xoX" id="6RS-fU-4to">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
-                                </tableViewCellContentView>
-                                <animations/>
-                                <connections>
-                                    <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="JsA-me-gbz"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="rnx-tL-9kg" id="W23-h0-XPJ"/>
                             <outlet property="delegate" destination="rnx-tL-9kg" id="XBx-eO-JOi"/>
@@ -295,6 +280,7 @@
                     <connections>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="HNE-CW-QBG"/>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="vrM-eb-W5I"/>
+                        <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="elz-1I-4gk"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cz7-Ox-PfB" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -310,21 +296,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="iqG-WF-Ehb">
-                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iqG-WF-Ehb" id="htz-M5-A5h">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
-                                </tableViewCellContentView>
-                                <animations/>
-                                <connections>
-                                    <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="woq-Ca-GTI"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="IT6-dw-3qv" id="HGd-SE-Jsf"/>
                             <outlet property="delegate" destination="IT6-dw-3qv" id="9xY-K3-Kcl"/>
@@ -333,11 +304,12 @@
                     <navigationItem key="navigationItem" id="WBq-Vl-sCB"/>
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="NuV-e3-WeM"/>
+                        <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="hoo-Tj-FIl"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Led-ww-ny2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="384" y="-2766"/>
+            <point key="canvasLocation" x="376" y="-2758"/>
         </scene>
         <!--ShowHN View Controller-->
         <scene sceneID="9kV-9B-9Ud">
@@ -348,18 +320,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="dOR-PQ-bf7">
-                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dOR-PQ-bf7" id="s5x-q3-Yog">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
-                                </tableViewCellContentView>
-                                <animations/>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="iSc-jL-tgD" id="wu6-TX-nnR"/>
                             <outlet property="delegate" destination="iSc-jL-tgD" id="ltx-R7-FRd"/>
@@ -384,18 +344,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="UWQ-ES-gmL">
-                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="UWQ-ES-gmL" id="vrE-bC-XTk">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
-                                </tableViewCellContentView>
-                                <animations/>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="HGb-zr-BM5" id="LOB-Ld-q4f"/>
                             <outlet property="delegate" destination="HGb-zr-BM5" id="rey-4y-dr3"/>
@@ -423,7 +371,7 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="bbp-NZ-Hdx"/>
-        <segue reference="FAD-lY-ulH"/>
+        <segue reference="NuV-e3-WeM"/>
+        <segue reference="hoo-Tj-FIl"/>
     </inferredMetricsTieBreakers>
 </document>

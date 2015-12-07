@@ -25,7 +25,6 @@
 // Used to determine which item is currently 'expanded' (showing action drawer)
 @property (nonatomic, strong) NSMutableArray < Story * > * storiesObjectsList;
 
-// Ignore all FirebaseArray changes until this is YES
 @property (nonatomic, assign) BOOL initialLoadDone;
 
 @property (nonatomic, assign) BOOL awaitingSecondMoveOperation;
@@ -246,20 +245,25 @@
                 
                 [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
                     
-                    self.itemsLookup[identifier] = story;
-                    self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
-                    
-                    if(![_storiesObjectsList containsObject:story]) {
-                        [self.storiesObjectsList addObject:story];
-                    }
-                    
-                    story.ranking = @(i + 1);
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
+                    if(story == nil) {
                         self.loadingProgress.completedUnitCount++;
-                        [self.baseTableView reloadData];
-                    });
+                        
+                    } else {
+                        self.itemsLookup[identifier] = story;
+                        self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
+                        
+                        if(![_storiesObjectsList containsObject:story]) {
+                            [self.storiesObjectsList addObject:story];
+                        }
+                        
+                        story.ranking = @(i + 1);
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            self.loadingProgress.completedUnitCount++;
+                            [self.baseTableView reloadData];
+                        });
+                    }
                 }];
             }
         }

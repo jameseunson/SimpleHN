@@ -18,10 +18,6 @@
 static NSString * _commentCSS = nil;
 
 @interface Comment ()
-+ (NSString*)completeParagraphTags:(NSString*)string;
-
-+ (NSString*)wrapQuotesInBlockQuoteTags:(NSString*)string;
-+ (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string;
 
 - (void)commentCollapsedChanged:(NSNotification*)notification;
 
@@ -163,63 +159,7 @@ static NSString * _commentCSS = nil;
         return _attributedText;
     }
     
-    NSMutableAttributedString *commentText = [[[NSAttributedString alloc] initWithHTMLData:[self.text dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
-    NSRange range = (NSRange){0, [commentText length]};
-
-
-    [commentText enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
-        UIFont* currentFont = value;
-        
-        if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-            [commentText addAttribute:NSFontAttributeName
-                                value:[LabelHelper adjustedBoldBodyFont] range:range];
-            
-        } else if ([currentFont.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch].location != NSNotFound) {
-            [commentText addAttribute:NSFontAttributeName
-                                value:[LabelHelper adjustedItalicBodyFont] range:range];
-        } else {
-            [commentText addAttribute:NSFontAttributeName
-                                value:[LabelHelper adjustedBodyFont] range:range];
-        }
-    }];
-    [commentText enumerateAttributesInRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        
-        // Detect block quotes and apply custom paragraph style with indent
-        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
-            
-            if([attrs[NSForegroundColorAttributeName] isEqual:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]]) {
-//                NSLog(@"Block quote");
-                
-                if([[attrs allKeys] containsObject:NSParagraphStyleAttributeName]) {
-                    NSMutableParagraphStyle * style = [attrs[NSParagraphStyleAttributeName] mutableCopy];
-                    
-//                    style.firstLineHeadIndent = 100.0f;
-//                    style.headIndent = 100.0f;
-                    
-//                    style.tailIndent = -style.headIndent;
-                    
-                    // TODO, not sure what to do here, tailIndent behaves unpredictably
-                    
-                    [commentText removeAttribute:NSParagraphStyleAttributeName range:range];
-                    [commentText addAttribute:NSParagraphStyleAttributeName value:style range:range];
-                }
-            }
-        }
-        
-        // Detect links and remove any link metadata created by DTCoreText
-        // As appreciated as it is, it screws with our label class, which is also
-        // trying to detect links and does not function with pre-detected links
-        if([[attrs allKeys] containsObject:NSLinkAttributeName]) {
-            [commentText removeAttribute:NSLinkAttributeName range:range];
-            [commentText removeAttribute:@"CTForegroundColorFromContext" range:range];
-            [commentText removeAttribute:@"DTGUID" range:range];
-            [commentText removeAttribute:@"DTLinkHighlightColor" range:range];
-            [commentText removeAttribute:NSUnderlineStyleAttributeName range:range];
-            [commentText removeAttribute:NSParagraphStyleAttributeName range:range];
-        }
-    }];
-    
-    _attributedText = commentText;
+    _attributedText = [[self class] createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
 }
@@ -419,6 +359,67 @@ static NSString * _commentCSS = nil;
     }
     
     return string;
+}
+
++ (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string {
+    
+    NSMutableAttributedString *text = [[[NSAttributedString alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
+    NSRange range = (NSRange){0, [text length]};
+    
+    
+    [text enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
+        UIFont* currentFont = value;
+        
+        if ([currentFont.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [text addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedBoldBodyFont] range:range];
+            
+        } else if ([currentFont.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [text addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedItalicBodyFont] range:range];
+        } else {
+            [text addAttribute:NSFontAttributeName
+                                value:[LabelHelper adjustedBodyFont] range:range];
+        }
+    }];
+    [text enumerateAttributesInRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        
+        // Detect block quotes and apply custom paragraph style with indent
+        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
+            
+            if([attrs[NSForegroundColorAttributeName] isEqual:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]]) {
+                //                NSLog(@"Block quote");
+                
+                if([[attrs allKeys] containsObject:NSParagraphStyleAttributeName]) {
+                    NSMutableParagraphStyle * style = [attrs[NSParagraphStyleAttributeName] mutableCopy];
+                    
+                    //                    style.firstLineHeadIndent = 100.0f;
+                    //                    style.headIndent = 100.0f;
+                    
+                    //                    style.tailIndent = -style.headIndent;
+                    
+                    // TODO, not sure what to do here, tailIndent behaves unpredictably
+                    
+                    [text removeAttribute:NSParagraphStyleAttributeName range:range];
+                    [text addAttribute:NSParagraphStyleAttributeName value:style range:range];
+                }
+            }
+        }
+        
+        // Detect links and remove any link metadata created by DTCoreText
+        // As appreciated as it is, it screws with our label class, which is also
+        // trying to detect links and does not function with pre-detected links
+        if([[attrs allKeys] containsObject:NSLinkAttributeName]) {
+            [text removeAttribute:NSLinkAttributeName range:range];
+            [text removeAttribute:@"CTForegroundColorFromContext" range:range];
+            [text removeAttribute:@"DTGUID" range:range];
+            [text removeAttribute:@"DTLinkHighlightColor" range:range];
+            [text removeAttribute:NSUnderlineStyleAttributeName range:range];
+            [text removeAttribute:NSParagraphStyleAttributeName range:range];
+        }
+    }];
+    
+    return text;
 }
 
 @end

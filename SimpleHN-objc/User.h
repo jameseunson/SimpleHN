@@ -33,4 +33,6 @@ typedef void (^UserBlock)(User* user);
 @property (nonatomic, copy, readonly) NSString * accountCreatedString;
 @property (nonatomic, copy, readonly) NSString * submissionsString;
 
+@property (nonatomic, strong, readonly) NSAttributedString * attributedAboutText;
+
 @end

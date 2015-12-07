@@ -99,7 +99,7 @@
     // so we can add arbitrary views over the top (for instance _loadingView)
     UITableView * baseTableView = (UITableView*)self.view;
     
-    self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.view = [[UIView alloc] initWithFrame:baseTableView.bounds];
     self.view.backgroundColor = [UIColor whiteColor];
     self.view.autoresizingMask = baseTableView.autoresizingMask;
     
@@ -237,6 +237,9 @@
             id item = [self itemForIndexPath:indexPath];
             if([item isKindOfClass:[Story class]]) {
                 return [StoryCell heightForStoryCellWithStory:item width:tableView.frame.size.width];
+                
+            } else if([item isKindOfClass:[Comment class]]) {
+                return [CommentCell heightForCommentCell:item width:tableView.frame.size.width];
                 
             } else {
                 return 88.0f;

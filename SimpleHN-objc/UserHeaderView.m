@@ -23,7 +23,8 @@
 
 @property (nonatomic, strong) UIStackView * karmaStackView;
 
-@property (nonatomic, strong) UITextView * aboutTextView;
+//@property (nonatomic, strong) UITextView * aboutTextView;
+@property (nonatomic, strong) TTTAttributedLabel * aboutLabel;
 
 @property (nonatomic, strong) UIToolbar * toolbar;
 @property (nonatomic, strong) UISegmentedControl * sectionSegmentedControl;
@@ -32,7 +33,6 @@
 // view depends
 @property (nonatomic, strong) NSArray * heightDependentViews;
 
-- (void)tappedTextView:(id)sender;
 - (void)didChangeSegment:(id)sender;
 
 @end
@@ -90,33 +90,10 @@
         
         [self addSubview:_karmaStackView];
         
-        self.aboutTextView = [[CommentTextView alloc] init];
-        _aboutTextView.translatesAutoresizingMaskIntoConstraints = NO;
-        _aboutTextView.scrollEnabled = NO;
-        _aboutTextView.editable = NO;
-        _aboutTextView.dataDetectorTypes = UIDataDetectorTypeLink;
-        _aboutTextView.selectable = YES;
-        _aboutTextView.delegate = self;
-        _aboutTextView.font = [LabelHelper adjustedBodyFont];
-        
-        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                        action:@selector(tappedTextView:)];
-        tapRecognizer.delegate = self;
-        
-        [_aboutTextView addGestureRecognizer:tapRecognizer];
-        
-        [self addSubview:_aboutTextView];
-        
-//        self.aboutLabel = [LabelHelper kiLabelWithFont:[LabelHelper adjustedBodyFont]];
-//        self.aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        
-        __block UserHeaderView * blockSelf = self;
-//        self.aboutLabel.urlLinkTapHandler = ^(KILabel *label, NSString *string, NSRange range) {
-//            
-
-//        };
-        
-//        [self addSubview:_aboutLabel];
+        self.aboutLabel = [LabelHelper tttLabelWithFont:[LabelHelper adjustedBodyFont]];
+        _aboutLabel.delegate = self;
+        _aboutLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_aboutLabel];
         
         self.toolbar = [[UIToolbar alloc] init];
         _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
@@ -134,16 +111,16 @@
         
         [self addSubview:_toolbar];
         
-        self.heightDependentViews = @[ _nameLabel, _accountCreatedLabel, _submissionsLabel, _aboutTextView ];
+        self.heightDependentViews = @[ _nameLabel, _accountCreatedLabel, _submissionsLabel, _aboutLabel ];
         
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_mainStackView, _karmaStackView,
-                                                                 _toolbar, _sectionSegmentedControl, _aboutTextView);
+                                                                 _toolbar, _sectionSegmentedControl, _aboutLabel);
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                              @"V:|-12-[_mainStackView]-12-[_aboutTextView]-12-[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
+                              @"V:|-12-[_mainStackView]-12-[_aboutLabel]-12-[_toolbar(44)]-0-|" options:0 metrics:nil views:bindings]];
         
         [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                              @"H:|-12-[_mainStackView];H:|-0-[_toolbar]-0-|;H:|-12-[_aboutTextView]-|"
+                              @"H:|-12-[_mainStackView];H:|-0-[_toolbar]-0-|;H:|-12-[_aboutLabel]-|"
                                                                         options:0 metrics:nil views:bindings]];
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
@@ -172,7 +149,7 @@
     
     [_heightDependentViews makeObjectsPerformSelector:@selector(sizeToFit)];
     
-    CGFloat heightForContent = roundf(12.0f + _nameLabel.frame.size.height + _accountCreatedLabel.frame.size.height + _submissionsLabel.frame.size.height + 12.0f + _aboutTextView.frame.size.height + 12.0f + 44.0f);
+    CGFloat heightForContent = roundf(12.0f + _nameLabel.frame.size.height + _accountCreatedLabel.frame.size.height + _submissionsLabel.frame.size.height + 12.0f + _aboutLabel.frame.size.height + 12.0f + 44.0f);
     return CGSizeMake(UIViewNoIntrinsicMetric, heightForContent);
 }
 
@@ -187,7 +164,7 @@
     self.karmaLabel.text = [_user.karma stringValue];
     
     if(_user.about) {
-        self.aboutTextView.text = _user.about;
+        self.aboutLabel.text = _user.attributedAboutText;
     }
     
     [self invalidateIntrinsicContentSize];
@@ -205,40 +182,19 @@
     }
 }
 
-#pragma mark - Private Methods
-- (void)tappedTextView:(id)sender {
-    
-    UITapGestureRecognizer * recognizer = sender;
-    UITextView *textView = (UITextView *)recognizer.view;
-    CGPoint tapLocation = [recognizer locationInView:textView];
-    
-    UITextPosition *textPosition = [textView closestPositionToPoint:tapLocation];
-    NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
-    
-    if([[attributes allKeys] containsObject:NSLinkAttributeName]) {
-        
-        NSURL *url = attributes[NSLinkAttributeName];
-        
-        if([self.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
-            [self.delegate performSelector:@selector(userHeaderView:didTapLink:)
-                                withObject:self withObject:url];
-        }
-    }
-}
-
 #pragma mark - UIGestureRecognizerDelegate Methods
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
 
-#pragma mark - UITextViewDelegate Methods
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
+#pragma mark - TTTAttributedLabelDelegate Methods
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url {
+    
     if([self.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
         [self.delegate performSelector:@selector(userHeaderView:didTapLink:)
-                            withObject:self withObject:URL];
+                            withObject:self withObject:url];
     }
-    
-    return NO;
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "StoryCommentsButton.h"
 #import "ActionDrawerButton.h"
 #import "TimeAgoInWords-Swift.h"
+#import "TTTAttributedLabel.h"
 
 @interface StoryCell ()
 
@@ -18,6 +19,9 @@
 
 @property (nonatomic, strong) StoryCommentsButton * storyCommentsButton;
 @property (nonatomic, strong) UILabel * storyScoreLabel;
+
+// Used for Ask HN and Show HN posts
+@property (nonatomic, strong) TTTAttributedLabel * storyAboutLabel;
 
 @property (nonatomic, strong) UILongPressGestureRecognizer * longPressGestureRecognizer;
 
@@ -56,6 +60,12 @@
         _storyScoreLabel.textColor = [UIColor orangeColor];
         _storyScoreLabel.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:_storyScoreLabel];
+        
+        self.storyAboutLabel = [LabelHelper tttLabelWithFont:
+                                [UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+        _storyAboutLabel.hidden = YES;
+        _storyAboutLabel.delegate = self;
+        [self.contentView addSubview:_storyAboutLabel];
 
         self.actionDrawerView = [[ActionDrawerView alloc] init];
         _actionDrawerView.delegate = self;
@@ -84,6 +94,8 @@
     _storyCommentsButton.story = nil;
     _storyScoreLabel.text = nil;
     
+    _storyAboutLabel.text = nil;
+    
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
 }
@@ -107,14 +119,26 @@
     CGSize sizeForScoreLabel = [_storyScoreLabel.text sizeWithAttributes:@{ NSFontAttributeName: _storyScoreLabel.font }];
     self.storyScoreLabel.frame = CGRectIntegral( CGRectMake(_storyCommentsButton.frame.origin.x, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 8.0f, _storyCommentsButton.frame.size.width, sizeForScoreLabel.height) );
     
-    _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
-    
     if(_story.sizeStatus == StorySizeStatusExpanded) {
         _actionDrawerView.hidden = NO;
+        
+        if(_story.text) {
+            
+            CGFloat heightForTitleSubtitle = roundf(10.0f + boundingRectForSubtitleLabel.size.height + boundingRectForTitleLabel.size.height + 20.0f);
+            CGFloat heightForScoreComments = roundf(10.0f + sizeForScoreLabel.height + 8.0f + kCommentsButtonHeight + 10.0f);
+            
+            CGFloat startPointForAboutLabel = MAX(heightForScoreComments, heightForTitleSubtitle);
+            
+            CGSize sizeForAboutLabel = [TTTAttributedLabel sizeThatFitsAttributedString:self.story.attributedText withConstraints:
+                                                CGSizeMake((self.frame.size.width - (horizontalMargin * 2)), CGFLOAT_MAX) limitedToNumberOfLines:0];
+            self.storyAboutLabel.frame = CGRectIntegral( CGRectMake(horizontalMargin, startPointForAboutLabel, self.frame.size.width - (horizontalMargin * 2), sizeForAboutLabel.height) );
+        }
         
     } else if(_story.sizeStatus == StorySizeStatusNormal) {
         _actionDrawerView.hidden = YES;
     }
+    
+    _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
 }
 
 + (void)handleActionForStory:(Story*)story withType:
@@ -169,6 +193,13 @@
     CGFloat contentHeight = MAX(heightForScoreComments, heightForTitleSubtitle);
     
     if(story.sizeStatus == StorySizeStatusExpanded) {
+        
+        if(story.text) {
+            CGSize sizeForAboutLabel = [TTTAttributedLabel sizeThatFitsAttributedString:story.attributedText withConstraints:
+                                        CGSizeMake((width - (horizontalMargin * 2)), CGFLOAT_MAX) limitedToNumberOfLines:0];
+            contentHeight += roundf(sizeForAboutLabel.height + 10.0f + 20.0f); // 10pts top, 20pts bottom
+        }
+        
         contentHeight += kActionDrawerViewHeight;
     }
     return contentHeight;
@@ -188,6 +219,14 @@
     
     _storyScoreLabel.text = [story.score stringValue];
     [_storyScoreLabel sizeToFit];
+    
+    if(story.text) {
+        _storyAboutLabel.text = story.attributedText;
+        _storyAboutLabel.hidden = NO;
+        
+    } else {
+        _storyAboutLabel.hidden = YES;
+    }
 
     [self setNeedsUpdateConstraints];
     [self invalidateIntrinsicContentSize];
@@ -202,6 +241,16 @@
         if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidDisplayActionDrawer:)]) {
             [self.storyCellDelegate performSelector:@selector(storyCellDidDisplayActionDrawer:) withObject:self];
         }
+    }
+}
+
+#pragma mark - TTTAttributedLabelDelegate Methods
+- (void)attributedLabel:(TTTAttributedLabel *)label
+   didSelectLinkWithURL:(NSURL *)url {
+    
+    if([self.storyCellDelegate respondsToSelector:@selector(storyCell:didTapLink:)]) {
+        [self.storyCellDelegate performSelector:@selector(storyCell:didTapLink:)
+                                     withObject:self withObject:url];
     }
 }
 

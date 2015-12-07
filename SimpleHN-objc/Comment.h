@@ -14,9 +14,9 @@
 #import "Firebase.h"
 
 typedef NS_ENUM(NSInteger, CommentSizeStatus) {
-    CommentSizeStatusNormal,
-    CommentSizeStatusExpanded,
-    CommentSizeStatusCollapsed
+    CommentSizeStatusNormal = 0,
+    CommentSizeStatusExpanded = 1,
+    CommentSizeStatusCollapsed = 2
 };
 
 #define kCommentCreated @"commentCreated"
@@ -56,7 +56,7 @@ typedef void (^CommentBlock)(Comment* comment);
 
 @property (nonatomic, assign, readonly) NSInteger childCommentCount;
 
-// text property with styles applied. Links are handled by KILabel
+// text property with styles applied. Links are handled by TTTAttributedLabel
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
@@ -64,4 +64,11 @@ typedef void (^CommentBlock)(Comment* comment);
 + (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
                              completion:(CommentBlock)completion;
 - (void)loadUserForComment:(UserBlock)completion;
+
+// HTML processing utility methods, also being used in User model
++ (NSString*)completeParagraphTags:(NSString*)string;
++ (NSString*)wrapQuotesInBlockQuoteTags:(NSString*)string;
++ (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string;
++ (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string;
+
 @end

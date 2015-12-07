@@ -11,9 +11,10 @@
 #import "ActionDrawerView.h"
 #import "MCSwipeTableViewCell.h"
 #import "StoryCommentBaseTableViewCell.h"
+#import "TTTAttributedLabel.h"
 
 @protocol StoryCellDelegate;
-@interface StoryCell : StoryCommentBaseTableViewCell <ActionDrawerViewDelegate>
+@interface StoryCell : StoryCommentBaseTableViewCell <ActionDrawerViewDelegate, TTTAttributedLabelDelegate>
 
 @property (nonatomic, strong) Story * story;
 @property (nonatomic, assign) __unsafe_unretained id<StoryCellDelegate> storyCellDelegate;
@@ -29,4 +30,5 @@
 @protocol StoryCellDelegate <NSObject>
 - (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell;
 - (void)storyCell:(StoryCell*)cell didTapActionWithType:(NSNumber*)type;
+- (void)storyCell:(StoryCell*)cell didTapLink:(NSURL*)link; // Show HN/ Ask HN
 @end

@@ -10,8 +10,8 @@
 #import "User.h"
 
 typedef NS_ENUM(NSInteger, StorySizeStatus) {
-    StorySizeStatusNormal,
-    StorySizeStatusExpanded
+    StorySizeStatusNormal = 0,
+    StorySizeStatusExpanded = 1
 };
 
 typedef NS_ENUM(NSInteger, StoryLoadStatus) {
@@ -38,6 +38,8 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, copy, readonly) NSString * title;
 @property (nonatomic, copy, readonly) NSURL * url;
 
+@property (nonatomic, copy, readonly) NSString * text;
+
 @property (nonatomic, copy, readonly) NSNumber * totalCommentCount;
 
 // Custom properties
@@ -52,6 +54,8 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, strong, readonly) NSString * subtitleString;
 @property (nonatomic, strong, readonly) NSString * timeString;
 
+@property (nonatomic, strong, readonly) NSAttributedString * attributedText;
+
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                            completion:(StoryBlock)completion;
 
@@ -62,7 +66,5 @@ typedef void (^StoryBlock)(Story* story);
 
 - (void)loadCommentsForStory;
 - (void)loadUserForStory:(UserBlock)completion;
-
-- (NSDictionary*)diffOtherStory:(Story*)otherStory;
 
 @end

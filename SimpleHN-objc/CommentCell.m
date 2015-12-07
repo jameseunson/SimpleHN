@@ -157,6 +157,7 @@
     CGSize sizeForCommentLabel = CGSizeZero;
     CGFloat commentRightMargin = 20.f;
     CGFloat commentLeftMargin = 20.f;
+    CGFloat commentPadding = 35.0f; // 10.0f top, 25.0f bottom
     
     // Expanded has a flat 20.0f margin, unaffected by indentation
     if(comment.sizeStatus == CommentSizeStatusExpanded) {
@@ -170,7 +171,7 @@
             comment.cachedCommentExpandedTextHeight = sizeForCommentLabel.height;
             
         } else {
-            heightAccumulator += comment.cachedCommentExpandedTextHeight + 20.0f;
+            heightAccumulator += comment.cachedCommentExpandedTextHeight + commentPadding;
         }
         
         
@@ -186,7 +187,7 @@
             comment.cachedCommentTextHeight = sizeForCommentLabel.height;
             
         } else {
-            heightAccumulator += comment.cachedCommentTextHeight + 20.0f;
+            heightAccumulator += comment.cachedCommentTextHeight + commentPadding;
         }
         
     } else {
@@ -202,8 +203,7 @@
 
     // Was not retrieved from cache
     if(sizeForCommentLabel.height > 0) {
-//        NSLog(@"Calculated height from scratch: %f", sizeForCommentLabel.height);
-        heightAccumulator += sizeForCommentLabel.height + 20.0f; // 10pts padding top and bottom
+        heightAccumulator += sizeForCommentLabel.height + commentPadding;
     }
     
     if(comment.sizeStatus == CommentSizeStatusExpanded) {

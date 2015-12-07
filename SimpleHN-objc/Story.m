@@ -26,6 +26,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 @implementation Story
 @synthesize subtitleString = _subtitleString;
 @synthesize timeString = _timeString;
+@synthesize attributedText = _attributedText;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -52,6 +53,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
              @"url":               @"url",
              @"score":             @"score",
              @"time":              @"time",
+             @"text":              @"text",
              @"kids":              @"kids",
              @"totalCommentCount": @"descendants"
              };
@@ -70,6 +72,22 @@ static NSDateFormatter * _timeDateFormatter = nil;
 }
 + (NSValueTransformer *)urlJSONTransformer {
     return [NSValueTransformer valueTransformerForName:MTLURLValueTransformerName];
+}
+
++ (NSValueTransformer *)textJSONTransformer {
+    return [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError *__autoreleasing *error) {
+        
+        NSString * string = ((NSString*)value);
+        
+        string = [Comment completeParagraphTags:string];
+        if([string containsString:@"<p></p>"]) {
+            string = [string stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""];
+        }
+        string = [Comment wrapQuotesInBlockQuoteTags:string];
+        string = [Comment wrapMultiQuotesInBlockQuoteTags:string];
+        
+        return string;
+    }];
 }
 
 - (void)loadCommentsForStory {
@@ -152,6 +170,11 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     NSLog(@"createStoryFromSnapshot");
     NSError * error = nil;
+    
+    if([snapshot.value isKindOfClass:[NSNull class]]) {
+        completion(nil); return;
+    }
+    
     Story * obj = [MTLJSONAdapter modelOfClass:Story.class
                             fromJSONDictionary:snapshot.value error:&error];
     
@@ -232,6 +255,16 @@ static NSDateFormatter * _timeDateFormatter = nil;
                       timeDateString, [self.time timeAgoInWords]];
     }
     return _timeString;
+}
+
+- (NSAttributedString*)attributedText {
+    if(_attributedText) {
+        return _attributedText;
+    }
+    
+    _attributedText = [Comment createAttributedStringFromHTMLString:self.text];
+    
+    return _attributedText;
 }
 
 + (NSDateFormatter*)timeDateFormatter {
