@@ -158,7 +158,7 @@
     
     CGRect boundingRectForSubtitleLabel = [story.subtitleString boundingRectWithSize:CGSizeMake(widthConstraintForTitleSubtitle, CGFLOAT_MAX) options:NSLineBreakByWordWrapping|NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1] } context:nil];
     
-    CGFloat heightForTitleSubtitle = roundf(10.0f + boundingRectForSubtitleLabel.size.height + boundingRectForTitleLabel.size.height + 10.0f);
+    CGFloat heightForTitleSubtitle = roundf(10.0f + boundingRectForSubtitleLabel.size.height + boundingRectForTitleLabel.size.height + 20.0f);
     
     // Calculate score + comments height
     CGSize sizeForScoreLabel = [[story.score stringValue] sizeWithAttributes:@{ NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2] }];
