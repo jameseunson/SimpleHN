@@ -36,7 +36,7 @@
         _upvoteImageView.backgroundColor = [UIColor orangeColor];
         _upvoteImageView.contentMode = UIViewContentModeCenter;
         
-        self.upvoteConfirmedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-upvote-confirmed-icon"]];
+        self.upvoteConfirmedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-tick-icon"]];
         _upvoteConfirmedImageView.backgroundColor = [UIColor orangeColor];
         _upvoteConfirmedImageView.contentMode = UIViewContentModeCenter;
         
@@ -44,7 +44,7 @@
         _downvoteImageView.backgroundColor = RGBCOLOR(88, 86, 214);
         _downvoteImageView.contentMode = UIViewContentModeCenter;
         
-        self.downvoteConfirmedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-downvote-confirmed-icon"]];
+        self.downvoteConfirmedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-tick-icon"]];
         _downvoteConfirmedImageView.backgroundColor = RGBCOLOR(88, 86, 214);
         _downvoteConfirmedImageView.contentMode = UIViewContentModeCenter;
     

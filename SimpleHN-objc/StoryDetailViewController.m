@@ -404,16 +404,6 @@
     }
 }
 
-- (void)commentCell:(CommentCell *)cell didTapTextView:(UITextView *)textView {
-    
-    NSInteger indexOfRow = [_detailItem.flatDisplayComments indexOfObject:cell.comment];
-    if(indexOfRow != NSNotFound) {
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:indexOfRow inSection:1];
-        [self expandCollapseCommentForRow:indexPath];
-    }
-}
-
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
     ActionDrawerViewButtonType actionType = [type intValue];
 

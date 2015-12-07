@@ -141,6 +141,7 @@
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
 		988C10241BF1E53300FA36B9 /* SuProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuProgress.m; sourceTree = "<group>"; };
+		9892BA531C12A362008AE64B /* StoryCommentUserVote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentUserVote.h; sourceTree = "<group>"; };
 		9899FAB21BF1BE490097530C /* SimpleHNSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNSplitViewController.h; sourceTree = "<group>"; };
 		9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNSplitViewController.m; sourceTree = "<group>"; };
 		98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
@@ -363,6 +364,7 @@
 				98F5EBDA1BF086A400B1BA08 /* User.m */,
 				983401361C031EE800A85638 /* CommentStyle.h */,
 				983401371C031EE800A85638 /* CommentStyle.m */,
+				9892BA531C12A362008AE64B /* StoryCommentUserVote.h */,
 			);
 			name = Models;
 			sourceTree = "<group>";

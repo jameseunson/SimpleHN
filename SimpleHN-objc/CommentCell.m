@@ -247,8 +247,8 @@
 - (void)attributedLabel:(TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
     
-    if([self.delegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
-        [self.delegate performSelector:@selector(commentCell:didTapLink:)
+    if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
+        [self.commentCellDelegate performSelector:@selector(commentCell:didTapLink:)
                             withObject:self withObject:url];
     }
 }
@@ -257,8 +257,8 @@
 - (void)actionDrawerView:(ActionDrawerView*)view
     didTapActionWithType:(NSNumber*)type {
     
-    if([self.delegate respondsToSelector:@selector(commentCell:didTapActionWithType:)]) {
-        [self.delegate performSelector:@selector(commentCell:didTapActionWithType:)
+    if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didTapActionWithType:)]) {
+        [self.commentCellDelegate performSelector:@selector(commentCell:didTapActionWithType:)
                             withObject:self withObject:type];
     }
 }
