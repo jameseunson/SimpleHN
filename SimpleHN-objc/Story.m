@@ -74,6 +74,13 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (void)loadCommentsForStory {
     
+    if([self.flatDisplayComments count] > 0) {
+        [self.flatDisplayComments removeAllObjects];
+    }
+    if([self.comments count] > 0) {
+        [self.comments removeAllObjects];
+    }
+    
     NSLog(@"Story, -loadCommentsForStory");
     
     NSString * storyURL = [NSString stringWithFormat:
@@ -124,12 +131,15 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                              completion:(StoryBlock)completion {
+    
+    NSLog(@"createStoryFromItemIdentifier: %@", identifier);
     // Get comment for identification number
     NSString * storyURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];
     __block Firebase * storyDetailRef = [[Firebase alloc] initWithUrl:storyURL];
     
     [storyDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        NSLog(@"createStoryFromItemIdentifier, RESULT: %@", identifier);        
         
         [[self class] createStoryFromSnapshot:snapshot completion:completion];
         [storyDetailRef removeAllObservers];
@@ -140,6 +150,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 + (void)createStoryFromSnapshot:(FDataSnapshot*)snapshot
                      completion:(StoryBlock)completion {
     
+    NSLog(@"createStoryFromSnapshot");
     NSError * error = nil;
     Story * obj = [MTLJSONAdapter modelOfClass:Story.class
                             fromJSONDictionary:snapshot.value error:&error];
@@ -191,38 +202,6 @@ static NSDateFormatter * _timeDateFormatter = nil;
     return obj;
 }
 
-- (NSDictionary*)diffOtherStory:(Story*)otherStory {
-    
-    NSMutableDictionary * diff = [[NSMutableDictionary alloc] init];    
-    NSDictionary * storyDict = [self dictionaryValue];
-    NSDictionary * otherStoryDict = [otherStory dictionaryValue];
-    
-    for(NSString * key in [storyDict allKeys]) {
-        
-        if([key isEqualToString:@"diff"] || [key isEqualToString:@"description"]) {
-            continue;
-        }
-        
-        id value = storyDict[key];
-        if(!value) {
-            value = [NSNull null];
-        }
-
-        id otherValue = otherStoryDict[key];
-        if(!otherValue) {
-            otherValue = [NSNull null];
-        }
-        if([value isKindOfClass:[NSNull class]] && [otherValue isKindOfClass:[NSNull class]]) {
-            continue;
-        }
-        if(![value isEqual:otherValue]) {
-            diff[key] = @[ value, otherValue ];
-        }
-    }
-    
-    return diff;
-}
-
 #pragma mark - Property Override Methods
 - (NSString*)subtitleString {
     if(_subtitleString) {
@@ -262,10 +241,6 @@ static NSDateFormatter * _timeDateFormatter = nil;
         _timeDateFormatter.dateFormat = @"hh:mm aaa, dd MMM";
     }
     return _timeDateFormatter;
-}
-
-- (void)setDiff:(NSDictionary *)diff {
-    _diff = diff;
 }
 
 @end

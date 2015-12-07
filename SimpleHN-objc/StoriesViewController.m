@@ -17,8 +17,6 @@
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
 
-#define kAPIExpectedItemsCount 500
-
 @interface StoriesViewController ()
 
 - (void)loadVisibleItems;
@@ -26,8 +24,6 @@
 
 // Used to determine which item is currently 'expanded' (showing action drawer)
 @property (nonatomic, strong) NSMutableArray < Story * > * storiesObjectsList;
-
-@property (nonatomic, strong) NSMutableDictionary * storyDiffLookup; // NYI
 
 // Ignore all FirebaseArray changes until this is YES
 @property (nonatomic, assign) BOOL initialLoadDone;
@@ -58,9 +54,7 @@
     
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
-    self.storyDiffLookup = [[NSMutableDictionary alloc] init];
-    
-//    self.storiesList = [[NSMutableArray alloc] init];
+    self.storiesList = [[NSMutableArray alloc] init];
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
@@ -80,8 +74,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
+    self.baseTableView.tableHeaderView = self.searchController.searchBar;
+    [self.baseTableView setContentOffset:CGPointMake(0, 44.0f)];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings-icon"] style:
+                                             UIBarButtonItemStylePlain target:self action:@selector(didTapSettingsIcon:)];
     
     self.detailViewController = ((SimpleHNSplitViewController*)
                                  self.splitViewController).storyDetailViewController;
@@ -98,7 +95,7 @@
             
         } else { // Everything else
             story = [self itemForIndexPath:
-                     [self.tableView indexPathForSelectedRow]];
+                     [self.baseTableView indexPathForSelectedRow]];
         }
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
@@ -112,7 +109,7 @@
     } else if([[segue identifier] isEqualToString:@"showUser"]) {
         NSLog(@"prepareForSegue, showUser");
         
-        Story * story = [self itemForIndexPath:[self.tableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath:[self.baseTableView indexPathForSelectedRow]];
         
         __block UserViewController *controller = (UserViewController *)
             [[segue destinationViewController] topViewController];
@@ -148,14 +145,55 @@
 //    });
 }
 
-#pragma mark - Private Methods
-- (void)loadStoryIdentifiersWithRef:(Firebase *)ref {
+#pragma mark - IASKSettingsDelegate Methods
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
-    self.storiesList = [[FirebaseArray alloc] initWithRef:ref];
-    _storiesList.delegate = self;
+#pragma mark - Private Methods
+- (void)didTapSettingsIcon:(id)sender {
+    
+    IASKAppSettingsViewController * controller = [[IASKAppSettingsViewController alloc] init];
+    controller.delegate = self;
+    controller.showCreditsFooter = NO;
+    controller.settingsStore = [AppConfig sharedConfig];
+    
+    UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navController animated:YES completion:nil];
+}
+
+- (void)loadContent:(id)sender {
+    [super loadContent:nil];
+    
+    if([self.storiesList count] > 0) {
+        
+        [self.itemsLookup removeAllObjects];
+        [self.itemsLoadStatus removeAllObjects];
+        [self.storiesList removeAllObjects];
+        [self.storiesObjectsList removeAllObjects];
+        [self.visibleItems removeAllObjects];
+        
+        [self.baseTableView reloadData];
+    }
+    
+    [self.ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        
+        [self.storiesList addObjectsFromArray:snapshot.value];
+        
+        _initialLoadDone = YES;
+        self.loadingProgress.completedUnitCount++;
+        
+        [self loadVisibleItems];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //            [self.refreshControl endRefreshing];
+            [self.baseTableView reloadData];
+        });
+    }];
 }
 
 - (void)loadVisibleItems {
+    NSLog(@"loadVisibleItems");
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
@@ -183,8 +221,8 @@
     
     NSInteger currentMax = MIN(self.currentVisibleItemMax, [self.storiesList count]);
     for(NSInteger i = 0; i < currentMax; i++) {
-        FDataSnapshot * snap = [self.storiesList objectAtIndex:i];
-        [loadedItems addObject:snap.value];
+        NSNumber * storyIdentifier = [self.storiesList objectAtIndex:i];
+        [loadedItems addObject:storyIdentifier];
     }
     
     [self.visibleItems addObjectsFromArray:loadedItems];
@@ -202,6 +240,8 @@
             
             if(i < self.currentVisibleItemMax) {
                 
+                NSLog(@"loading: %@", identifier);
+                
                 self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoading);
                 
                 [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
@@ -218,7 +258,7 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         self.loadingProgress.completedUnitCount++;
-                        [self.tableView reloadData];
+                        [self.baseTableView reloadData];
                     });
                 }];
             }
@@ -248,148 +288,6 @@
     }
 }
 
-#pragma mark - FirebaseArrayDelegate Methods
-- (void)childAdded:(id)object atIndex:(NSUInteger)index {
-
-    // The amount of stories that comes back from the API
-    // is unpredictable. This used to be set at 500, but
-    // it's sometimes much lower. Anything more than
-    // the entire first screen is fine.
-    if([self.storiesList count] > 20) {
-        
-        _initialLoadDone = YES;
-        self.loadingProgress.completedUnitCount++;        
-        
-        [self loadVisibleItems];
-    }
-}
-
-- (void)childChanged:(id)object atIndex:(NSUInteger)index {
-    
-    if(!_initialLoadDone) {
-        NSLog(@"change before initial load, ignoring");
-        return;
-    }
-    
-    FDataSnapshot * snap = [self.storiesList objectAtIndex:index];
-    NSNumber * identifier = snap.value;
-    
-    if(index >= self.currentVisibleItemMax) {
-        return;
-    }
-    
-    NSNumber * previousIdentifier = self.visibleItems[index];
-    
-    if([identifier isEqual:previousIdentifier]) { // Item update
-        
-        __block Story * previousStory = self.itemsLookup[identifier];
-        [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
-
-            NSDictionary * diff = [previousStory diffOtherStory:story];
-
-            self.itemsLookup[identifier] = story;
-            self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
-
-            NSLog(@"diff: %@", diff);
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"updating tableview for story with identifier: %@", identifier);
-
-                NSInteger indexOfStory = [self.visibleItems indexOfObject:identifier];
-                if(indexOfStory != NSNotFound) {
-                    
-                    NSIndexPath * reloadIndexPath = [NSIndexPath indexPathForRow:indexOfStory inSection:0];
-                    if(reloadIndexPath) {
-                        
-                        [self.tableView beginUpdates];
-                        [self.tableView reloadRowsAtIndexPaths:@[ reloadIndexPath ]
-                                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                        [self.tableView endUpdates];
-                        NSLog(@"done updating tableview for story at index: %lu", indexOfStory);
-                    }
-                }
-            });
-        }];
-        
-        
-    } else { // Item position move
-        
-        if(_awaitingSecondMoveOperation) {
-            _awaitingSecondMoveOperation = NO;
-            NSLog(@"Detected second of a two part move operation");
-            
-            if(!_pendingMoveOperation) {
-                [self cancelPendingOperation:nil];
-                return;
-            }
-            
-            NSInteger previousIndex = [[_pendingMoveOperation lastObject] integerValue];
-            NSInteger currentIndex = index;
-            
-            NSIndexPath * previousIndexPath = [NSIndexPath indexPathForRow:previousIndex inSection:0];
-            NSIndexPath * currentIndexPath = [NSIndexPath indexPathForRow:currentIndex inSection:0];
-            
-            NSLog(@"%@ -> %@", previousIndexPath, currentIndexPath);
-            
-            [self.tableView beginUpdates];
-            
-            [self.visibleItems exchangeObjectAtIndex:currentIndex withObjectAtIndex:previousIndex];
-            
-            [self.tableView moveRowAtIndexPath:previousIndexPath toIndexPath:currentIndexPath];
-            [self.tableView moveRowAtIndexPath:currentIndexPath toIndexPath:previousIndexPath];
-            
-            [self.tableView endUpdates];
-            
-            [self cancelPendingOperation:nil];
-            
-            for(NSNumber * index in @[ @(previousIndex), @(currentIndex) ]) {
-                
-                NSNumber * identifier = self.visibleItems[[index integerValue]];
-                self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoading);
-                
-                __block Story * previousStory = self.itemsLookup[identifier];
-                
-                [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
-                    
-                    self.itemsLookup[identifier] = story;
-                    self.itemsLoadStatus[identifier] = @(StoryLoadStatusLoaded);
-                    
-                    story.ranking = index;
-                    
-                    story.diff = [story diffOtherStory:previousStory];
-                    NSLog(@"diff: %@", story.diff);
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.tableView reloadRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:[index integerValue] inSection:0] ]
-                                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                    });
-                }];
-            }
-            
-        } else {
-            
-            [self cancelPendingOperation:nil];
-            
-            NSLog(@"Detected first of a two part move operation at index: %lu", index);
-            _awaitingSecondMoveOperation = YES;
-            
-            _pendingMoveOperation = @[ identifier, previousIdentifier, @(index) ];
-
-            self.pendingOperationTimer = [NSTimer scheduledTimerWithTimeInterval:[[NSDate date] timeIntervalSinceNow] + 1.5
-                                                                          target:self selector:@selector(cancelPendingOperation:) userInfo:nil repeats:NO];
-        }
-    }
-}
-
-// Seemingly not implemented in the HN API
-//- (void)childRemoved:(id)object atIndex:(NSUInteger)index {
-//    NSLog(@"childRemoved: %lu", index);
-//}
-//
-//- (void)childMoved:(id)object fromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex {
-//    NSLog(@"childMoved: %lu, %lu", fromIndex, toIndex);
-//}
-
 - (void)cancelPendingOperation:(id)sender {
     
     if(sender) {
@@ -418,8 +316,8 @@
         
         // Job done, don't expand again
         if(story == expandedStory) {
-            [self.tableView beginUpdates];
-            [self.tableView endUpdates];
+            [self.baseTableView beginUpdates];
+            [self.baseTableView endUpdates];
             
             return;
         }
@@ -427,8 +325,8 @@
 
     story.sizeStatus = StorySizeStatusExpanded;
     
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
+    [self.baseTableView beginUpdates];
+    [self.baseTableView endUpdates];
 }
 
 @end

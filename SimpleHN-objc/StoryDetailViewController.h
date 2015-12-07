@@ -15,9 +15,8 @@
 
 @import SafariServices;
 
-@interface StoryDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
+@interface StoryDetailViewController : UITableViewController <CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
 
-@property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) Story * detailItem;
 
 @end

@@ -15,7 +15,6 @@ pod 'TTTAttributedLabel'
 pod 'InAppSettingsKit'
 pod 'DKNightVersion', '~> 0.9.1'
 pod 'MCSwipeTableViewCell', '~> 2.1.4'
-pod 'FirebaseUI/Core', '~> 0.3'
 pod 'Fabric'
 pod 'Crashlytics'
 

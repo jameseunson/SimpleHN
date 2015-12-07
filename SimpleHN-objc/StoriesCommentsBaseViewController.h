@@ -22,11 +22,11 @@
 @class StoriesCommentsSearchResultsViewController;
 @protocol StoriesCommentsSearchResultsViewControllerDelegate;
 
-@interface StoriesCommentsBaseViewController : UIViewController <UITableViewDataSource, UITableViewDelegate,
-    StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate,
-    StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
+@interface StoriesCommentsBaseViewController : UITableViewController <StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
 
-@property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
+@property (nonatomic, strong) UITableView * baseTableView;
+
 @property (nonatomic, strong) ContentLoadingView * loadingView;
 
 @property (nonatomic, assign) NSInteger currentVisibleItemMax;
@@ -57,6 +57,8 @@
 @property (nonatomic, strong) NSString * activeQuery;
 
 - (id)itemForIndexPath:(NSIndexPath *)indexPath;
+
+- (void)loadContent:(id)sender;
 - (void)loadMoreItems;
 
 - (void)query:(NSString*)query;

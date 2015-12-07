@@ -26,6 +26,10 @@
 
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
+@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
+@property (nonatomic, strong) UITableView * baseTableView;
+
+- (void)loadContent;
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
 
@@ -71,13 +75,6 @@
 
 - (void)loadView {
     [super loadView];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero
-                                                  style:UITableViewStylePlain];
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
-    
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self.tableView registerClass:[StoryCell class]
            forCellReuseIdentifier:kStoryCellReuseIdentifier];
@@ -85,14 +82,15 @@
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     
-//    self.tableView.rowHeight = UITableViewAutomaticDimension;
-//    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.backgroundColor = [UIColor whiteColor];
+    self.refreshControl.tintColor = [UIColor grayColor];
+    [self.refreshControl addTarget:self
+                            action:@selector(reloadContent:)
+                  forControlEvents:UIControlEventValueChanged];
     
-    [self.view addSubview:_tableView];
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"V:|[_tableView]|;H:|[_tableView]|" options:0 metrics:nil views:bindings]];
+    self.baseRefreshControl = self.refreshControl;
+    self.baseTableView = self.tableView;
 }
 
 - (void)setDetailItem:(id)newDetailItem {
@@ -123,26 +121,13 @@
 }
 - (void)configureView {
     
-    // Update the user interface for the detail item.
     if (self.detailItem) {
         
         Story * detailStory = (Story*)_detailItem;
         self.title = detailStory.title;
         
         if([detailStory.flatDisplayComments count] == 0) {
-            [detailStory loadCommentsForStory];
-            
-            self.loadingProgress = [NSProgress progressWithTotalUnitCount:
-                                    [detailStory.totalCommentCount intValue]];
-            
-            NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
-                                                           delegate]).masterProgress;
-            
-            masterProgress.completedUnitCount = 0;
-            masterProgress.totalUnitCount = [detailStory.totalCommentCount intValue];
-            
-            [masterProgress addChild:self.loadingProgress withPendingUnitCount:
-                [detailStory.totalCommentCount intValue]];
+            [self loadContent];
         }
         
         if(!detailStory.url) {
@@ -223,17 +208,6 @@
         return cell;
     }
 }
-
-//- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-//    
-//    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-//    if(comment.collapsed && comment.parentComment) {
-//        return 0;
-//        
-//    } else {
-//        return UITableViewAutomaticDimension;
-//    }
-//}
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     return 88.0f;
@@ -325,19 +299,7 @@
     if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
         self.loadingProgress.completedUnitCount++;
     }
-    
-//    NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-//          self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
 }
-
-//- (void)commentCollapsedChanged:(NSNotification*)notification {
-//    
-//    NSLog(@"commentCollapsedChanged for comment with id: %@",
-//          ((Comment*)notification.object).commentId);
-//    
-//    [self.tableView beginUpdates];
-//    [self.tableView endUpdates];
-//}
 
 - (void)commentCollapsedComplete:(NSNotification*)notification {
     
@@ -347,8 +309,34 @@
     [self.tableView endUpdates];
 }
 
+- (void)loadContent {
+    
+    if(!_detailItem) {
+        return;
+    }
+    
+    Story * detailStory = (Story*)_detailItem;
+    [detailStory loadCommentsForStory];
+    
+    self.loadingProgress = [NSProgress progressWithTotalUnitCount:
+                            [detailStory.totalCommentCount intValue]];
+    [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+                              options:NSKeyValueObservingOptionNew context:NULL];
+    
+    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+                                                   delegate]).masterProgress;
+    
+    masterProgress.completedUnitCount = 0;
+    masterProgress.totalUnitCount = [detailStory.totalCommentCount intValue];
+    
+    [masterProgress addChild:self.loadingProgress withPendingUnitCount:
+     [detailStory.totalCommentCount intValue]];
+}
+
 - (void)reloadContent:(id)sender {
     NSLog(@"reloadContent:");
+    
+    [self loadContent];
 }
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
@@ -426,6 +414,18 @@
         }]];
         [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
         [self presentViewController:controller animated:YES completion:nil];
+    }
+}
+
+#pragma mark - KVO Callback Methods
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
+    
+    NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    if([fractionCompleted floatValue] == 1.0f) {
+        [self.baseRefreshControl endRefreshing];
+        [self.loadingProgress removeObserver:self
+                                  forKeyPath:@"fractionCompleted"];
     }
 }
 

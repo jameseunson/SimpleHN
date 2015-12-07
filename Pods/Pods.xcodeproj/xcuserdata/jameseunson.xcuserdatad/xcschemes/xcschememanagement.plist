@@ -29,11 +29,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>FirebaseUI.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>InAppSettingsKit-InAppSettingsKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -97,12 +92,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>284EDF57C05A61464C9A2FA3F6A605C9</key>
+		<key>02125EE52DBDF610F8CBD3B109AD32C7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>325FCB3AA44A44E4B8B7FD9B98138709</key>
+		<key>05DB05C275DA837D5C41F026C9D740CF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -113,6 +108,11 @@
 			<true/>
 		</dict>
 		<key>4C93B3DD29CD744DCE1D77503147D791</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5E87662C126925353EF5AA2A0D10A35E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -132,16 +132,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>84FAC9B7C7C42104287C0115C087B8DC</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>9155EFD2B0119F5DF2B9D1627EBAB952</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>AA73AC63B71544008C7BD900564A8A4C</key>
 		<dict>
 			<key>primary</key>
@@ -157,12 +147,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DAE300BFCB196ED7F72727FFA274790D</key>
+		<key>C58B4A88BA7D5B38D0A06DD722B40EF7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F25A39724C1F236915EF8279D2B63339</key>
+		<key>DAE300BFCB196ED7F72727FFA274790D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

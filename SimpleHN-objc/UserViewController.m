@@ -115,7 +115,7 @@
 //    self.loadingProgress.totalUnitCount = 20;
     
     self.currentVisibleItemMax += 20;
-    [self loadVisibleItems];
+    [self loadContent:nil];
 }
 
 #pragma mark - Property Override Methods
@@ -131,7 +131,7 @@
     CGSize headerContentSize = _headerView.intrinsicContentSize;
     _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width,
                                    MAX( headerContentSize.height, 132.0f ) );
-    [self.tableView setTableHeaderView:_headerView];
+    [self.baseTableView setTableHeaderView:_headerView];
     
     if([self.user.submitted count] > self.currentVisibleItemMax) {
         self.shouldDisplayLoadMoreCell = YES;
@@ -139,10 +139,20 @@
         self.shouldDisplayLoadMoreCell = NO;
     }
     
-    [self loadVisibleItems];
+    [self loadContent:nil];
 }
 
-- (void)loadVisibleItems {
+- (void)loadContent:(id)sender {
+    [super loadContent:nil];
+    
+    if([[self.itemsLookup allKeys] count] > 0) {
+        
+        [self.itemsLookup removeAllObjects];
+        [self.itemsLoadStatus removeAllObjects];
+        [self.visibleItems removeAllObjects];
+        
+        [self.baseTableView reloadData];
+    }
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
@@ -212,8 +222,8 @@
                                     self.loadingProgress.completedUnitCount++;
                                 }
                                 
-//                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-//                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
                                 
                                 [self applyFiltering];
                             });
@@ -223,7 +233,6 @@
                     [itemRef removeAllObservers];
                 }];
                 
-                //                NSLog(@"%@", itemUrl);
                 i++;
             }
         }
@@ -265,7 +274,7 @@
         }]];
         [self.visibleItems addObjectsFromArray:filteredCommentItems];
     }
-    [self.tableView reloadData];
+    [self.baseTableView reloadData];
 }
 
 #pragma mark - UserHeaderViewDelegate Methods
@@ -291,6 +300,8 @@
         if(!self.loadingView.hidden) {
             self.loadingView.hidden = YES;
         }
+        
+        [self.baseRefreshControl endRefreshing];
     }
 }
 

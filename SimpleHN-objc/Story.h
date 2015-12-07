@@ -46,8 +46,6 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
 
-@property (nonatomic, strong) NSDictionary * diff;
-
 @property (nonatomic, assign) StorySizeStatus sizeStatus;
 
 // Generated properties

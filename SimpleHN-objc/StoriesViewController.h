@@ -10,17 +10,19 @@
 #import "Firebase.h"
 #import "StoryCell.h"
 #import "StoriesCommentsBaseViewController.h"
+#import "IASKAppSettingsViewController.h"
 
 @class StoryDetailViewController;
 
-@interface StoriesViewController : StoriesCommentsBaseViewController <FirebaseArrayDelegate>
+@interface StoriesViewController : StoriesCommentsBaseViewController <IASKSettingsDelegate>
 
 @property (nonatomic, strong) Firebase * ref;
-@property (nonatomic, strong) FirebaseArray * storiesList;
+@property (nonatomic, strong) NSMutableArray * storiesList;
 
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
 
-- (void)loadStoryIdentifiersWithRef:(Firebase *)ref;
+//- (void)loadStoryIdentifiersWithRef:(Firebase *)ref;
+- (void)didTapSettingsIcon:(id)sender;
 
 @end
 

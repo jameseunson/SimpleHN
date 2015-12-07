@@ -9,13 +9,10 @@
 #import "TopStoriesViewController.h"
 
 @interface TopStoriesViewController ()
-//- (UIFont*)extractDefaultNavigationBarFont;
 
-- (void)didTapSettingsIcon:(id)sender;
 - (void)didTapTimePeriodItem:(id)sender;
 
 @property (nonatomic, strong) UIBarButtonItem * timePeriodItem;
-
 @property (nonatomic, strong) NSNumber * selectedTimePeriod;
 
 @end
@@ -33,25 +30,14 @@
     
     self.title = @"Top";
     
-//    self.titleView = [[TopStoriesTitleView alloc] init];
-//    
-//    _titleView.frame = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width / 4,
-//                                  self.navigationController.navigationBar.frame.size.height);
-//    _titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-//    _titleView.delegate = self;
-    
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings-icon"] style:
-                                                UIBarButtonItemStylePlain target:self action:@selector(didTapSettingsIcon:)];
-    
     self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
                            UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
     self.navigationItem.rightBarButtonItem = _timePeriodItem;
     
-//    self.navigationItem.titleView = _titleView;
-    
     self.ref = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/topstories"];
-    [self loadStoryIdentifiersWithRef:self.ref];
+    
+    [self loadContent:nil];
     
     @weakify(self);
     [self addColorChangedBlock:^{
@@ -75,8 +61,6 @@
     }
 }
 
-
-
 #pragma mark - StoriesTimePeriodSelectViewController Methods
 - (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
                   didChangeSelectedTimePeriod:(NSNumber*)period {
@@ -95,48 +79,10 @@
 }
 
 #pragma mark - Private Methods
-//- (void)didTapNavigationBar:(id)sender {
-//    NSLog(@"didTapNavigationBar:");
-//    
-//    [self performSegueWithIdentifier:@"showTimePeriodSelect" sender:nil];
-//}
 
-//- (UIFont*)extractDefaultNavigationBarFont {
-//    
-//    // Jump through some hoops to get the titleLabel font (semibold SF)
-//    UIFont * titleFont = [UIFont boldSystemFontOfSize:17.0f];
-//    
-//    for(UIView * subview in self.navigationController.navigationBar.subviews) {
-//        if([NSStringFromClass([subview class]) isEqualToString:@"UINavigationItemView"]) {
-//            for(UIView * view in subview.subviews) {
-//                if([view isKindOfClass:[UILabel class]]) {
-//                    titleFont = ((UILabel*)view).font;
-//                }
-//            }
-//        }
-//    }
-//    
-//    return titleFont;
-//}
-
-- (void)didTapSettingsIcon:(id)sender {
-    
-    IASKAppSettingsViewController * controller = [[IASKAppSettingsViewController alloc] init];
-    controller.delegate = self;
-    controller.showCreditsFooter = NO;
-    controller.settingsStore = [AppConfig sharedConfig];
-    
-    UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [self presentViewController:navController animated:YES completion:nil];
-}
 
 - (void)didTapTimePeriodItem:(id)sender {
     [self performSegueWithIdentifier:@"showTimePeriodSelect" sender:nil];
-}
-
-#pragma mark - IASKSettingsDelegate Methods
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -42,6 +42,5 @@
 
 @protocol CommentCellDelegate <NSObject>
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link;
-- (void)commentCell:(CommentCell*)cell didTapTextView:(UITextView*)textView;
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type;
 @end

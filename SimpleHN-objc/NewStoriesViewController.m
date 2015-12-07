@@ -16,7 +16,8 @@
     self.title = @"New";
     self.ref = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/newstories"];
-    [self loadStoryIdentifiersWithRef:self.ref];
+//    [self loadStoryIdentifiersWithRef:self.ref];
+    [self loadContent:nil];
 }
 
 

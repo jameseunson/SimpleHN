@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "StoriesViewController.h"
 #import "StoriesTimePeriodSelectViewController.h"
-#import "IASKAppSettingsViewController.h"
 
-@interface TopStoriesViewController : StoriesViewController <StoriesTimePeriodSelectViewController,
-    IASKSettingsDelegate>
+@interface TopStoriesViewController : StoriesViewController <StoriesTimePeriodSelectViewController>
 
 @end

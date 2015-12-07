@@ -14,6 +14,9 @@
 
 @interface StoriesCommentsBaseViewController ()
 - (void)didToggleNightMode:(id)sender;
+
+@property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
+
 @end
 
 @implementation StoriesCommentsBaseViewController
@@ -32,13 +35,15 @@
     
     self.itemsLoadStatus = [[NSMutableDictionary alloc] init];
     self.itemsLookup = [[NSMutableDictionary alloc] init];
+    
+    self.refreshDateFormatter = [[NSDateFormatter alloc] init];
+    [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
+    NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    _refreshDateFormatter.locale = locale;
 }
 
 - (void)loadView {
     [super loadView];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:
-                      CGRectZero style:UITableViewStylePlain];
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -50,22 +55,18 @@
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     
-//    self.tableView.rowHeight = UITableViewAutomaticDimension;
-//    self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.backgroundColor = [UIColor whiteColor];
+    self.refreshControl.tintColor = [UIColor grayColor];
+    [self.refreshControl addTarget:self
+                            action:@selector(loadContent:)
+                  forControlEvents:UIControlEventValueChanged];
     
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    // Disable content inset on simulator, where it doesn't work
-    // for some unknown reason
-//    self.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-//                                                   [UIApplication sharedApplication].statusBarFrame.size.height, 0,
-//                                                   self.tabBarController.tabBar.frame.size.height, 0);
-    
-    [self.view addSubview:_tableView];
+    self.baseRefreshControl = self.refreshControl;
+    self.baseTableView = self.tableView;
     
     self.loadingView = [[ContentLoadingView alloc] init];
     _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_loadingView];
     
     self.searchResultsController = [[StoriesCommentsSearchResultsViewController alloc] init];
     _searchResultsController.delegate = self;
@@ -76,18 +77,9 @@
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-//    self.searchController.searchBar.barTintColor = [UIColor whiteColor];
-//    self.searchController.searchBar.tintColor = RGBCOLOR(243, 243, 243);
-    
     self.searchController.delegate = self;
     self.searchController.dimsBackgroundDuringPresentation = NO; // default is YES
     self.searchController.searchBar.delegate = self; // so we can monitor text changes + others
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView, _tableView);
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
     
     UITapGestureRecognizer * nightModeTapGestureRecognizer = [[UITapGestureRecognizer alloc]
                                                            initWithTarget:self action:@selector(didToggleNightMode:)];
@@ -102,6 +94,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // Disgusting hack so we can have both refreshControl from UITableViewController,
+    // and tableview as a subview of self.view, instead of tableview == self.view,
+    // so we can add arbitrary views over the top (for instance _loadingView)
+    UITableView * baseTableView = (UITableView*)self.view;
+    
+    self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.autoresizingMask = baseTableView.autoresizingMask;
+    
+    [self.view addSubview:baseTableView];
+    
+    [self.view addSubview:_loadingView];
+    
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView); // _tableView
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
+    
     [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
                                                  delegate]).masterProgress];
 }
@@ -111,7 +120,7 @@
     NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
     
     // Reset to original state
-    StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
+    StoryLoadMoreCell * loadMoreCell = [self.baseTableView cellForRowAtIndexPath:
                                         [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
     loadMoreCell.state = StoryLoadMoreCellStateNormal;
 }
@@ -157,16 +166,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    //    NSInteger itemsCount = MIN(_currentVisibleStoryMax, [self.user.submitted count]);
-    //    if(itemsCount > 0) {
-    //        itemsCount = itemsCount + 1;
-    //    }
-    //    return itemsCount;
-    
     NSInteger itemsCount = [_visibleItems count];
     if(itemsCount > 0 && _shouldDisplayLoadMoreCell) {
         itemsCount = itemsCount + 1;
     }
+    NSLog(@"numberOfRowsInSection: %lu, itemsCount: %lu", section, itemsCount);
     return itemsCount;
 }
 
@@ -188,13 +192,6 @@
                                kStoryCellReuseIdentifier forIndexPath:indexPath];
             cell.story = item;
             
-//            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-//                cell.expanded = YES;
-//                
-//            } else {
-//                cell.expanded = NO;
-//            }
-            
             cell.storyCellDelegate = self;
             cell.votingDelegate = self;
             
@@ -205,12 +202,6 @@
             CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                                  forIndexPath:indexPath];
             cell.comment = item;
-//            if(_expandedCellIndexPath && [indexPath isEqual:_expandedCellIndexPath]) {
-//                cell.expanded = YES;
-//                
-//            } else {
-//                cell.expanded = NO;
-//            }
             
             cell.commentCellDelegate = self;
             
@@ -260,7 +251,7 @@
 
 #pragma mark - UIScrollViewDelegate Methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if(scrollView == self.tableView) {
+    if(scrollView == self.baseTableView) {
         
         // If there isn't more content to display, no reason to run any of this
         if(!_shouldDisplayLoadMoreCell) {
@@ -279,14 +270,14 @@
         // contentOffset.y adjusted to match cell.frame.origin.y, taking into
         // account screen height and inset from navigation bar b/c of translucency
         CGFloat adjustedYPosition = (scrollView.contentOffset.y + scrollView.frame.size.height) -
-        44.0f - self.tableView.contentInset.top;
+        44.0f - self.baseTableView.contentInset.top;
         
         BOOL scrollingDown = NO;
         if(adjustedYPosition > _lastContentOffset) {
             scrollingDown = YES;
         }
         
-        StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
+        StoryLoadMoreCell * loadMoreCell = [self.baseTableView cellForRowAtIndexPath:
                                             [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
         
         // Ensure that transition starts only when contentOffset is
@@ -350,7 +341,7 @@
     
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        Story * story = [self itemForIndexPath: [self.tableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath: [self.baseTableView indexPathForSelectedRow]];
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
         [[segue destinationViewController] topViewController];
@@ -366,7 +357,7 @@
 - (void)setShouldDisplayLoadMoreCell:(BOOL)shouldDisplayLoadMoreCell {
     _shouldDisplayLoadMoreCell = shouldDisplayLoadMoreCell;
     
-    [self.tableView reloadData];
+    [self.baseTableView reloadData];
 }
 
 #pragma mark - StoryCellDelegate Methods
@@ -424,6 +415,18 @@
 #pragma mark - Private Methods
 - (void)didToggleNightMode:(id)sender {
     NSLog(@"didToggleNightMode:");
+}
+
+- (void)loadContent:(id)sender {
+    NSLog(@"loadContent:");
+    
+    if(self.baseRefreshControl) {
+        
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [_refreshDateFormatter stringFromDate:[NSDate date]]];
+        self.baseRefreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                                   @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        [self.baseRefreshControl endRefreshing];
+    }
 }
 
 #pragma mark - StoryCommentVotingTableViewCellDelegate Methods

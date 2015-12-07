@@ -45,8 +45,6 @@ PODS:
     - DTFoundation/Core
   - Fabric (1.6.1)
   - Firebase (2.4.3)
-  - FirebaseUI/Core (0.3.1):
-    - Firebase (~> 2.2)
   - hpple (0.3.0)
   - InAppSettingsKit (2.6)
   - JBNSLayoutConstraint (1.0.0)
@@ -65,7 +63,6 @@ DEPENDENCIES:
   - DTCoreText (~> 1.6.16)
   - Fabric
   - Firebase (~> 2.4.0)
-  - FirebaseUI/Core (~> 0.3)
   - hpple (from `https://github.com/topfunky/hpple.git`)
   - InAppSettingsKit
   - JBNSLayoutConstraint (~> 1.0.0)
@@ -92,7 +89,6 @@ SPEC CHECKSUMS:
   DTFoundation: 46e2b2fafe78d67febfd8d1f85fe9845a093f00e
   Fabric: bf0ceb04e7c924090efc5f8c55e4fbcca189e0a0
   Firebase: 48179995b561e2262c5d4060ecdffca45fbbff8b
-  FirebaseUI: 62f01e067dcfc5c903d8b9cb7d77d03fa163c71a
   hpple: 7a5d0f10f5bd0d9382382110fc1be54bb7b86e4e
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006

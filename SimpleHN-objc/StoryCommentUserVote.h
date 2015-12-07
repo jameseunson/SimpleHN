@@ -10,4 +10,5 @@
 #define StoryCommentUserVote_h
 
 
+
 #endif /* StoryCommentUserVote_h */
