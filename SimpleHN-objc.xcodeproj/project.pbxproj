@@ -39,6 +39,8 @@
 		989E97F11C1683F8009A4400 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
 		989E97F21C1683FE009A4400 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
 		989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 989E97F51C16863D009A4400 /* NSURL+HNInternalURL.m */; };
+		989E97FC1C16AC30009A4400 /* CommentStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 989E97FB1C16AC30009A4400 /* CommentStyle.m */; };
+		989E97FF1C16AD3B009A4400 /* HNItemHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 989E97FE1C16AD3B009A4400 /* HNItemHelper.m */; };
 		98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; };
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */; };
@@ -142,6 +144,10 @@
 		9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNSplitViewController.m; sourceTree = "<group>"; };
 		989E97F41C16863D009A4400 /* NSURL+HNInternalURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+HNInternalURL.h"; sourceTree = "<group>"; };
 		989E97F51C16863D009A4400 /* NSURL+HNInternalURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+HNInternalURL.m"; sourceTree = "<group>"; };
+		989E97FA1C16AC30009A4400 /* CommentStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentStyle.h; sourceTree = "<group>"; };
+		989E97FB1C16AC30009A4400 /* CommentStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentStyle.m; sourceTree = "<group>"; };
+		989E97FD1C16AD3B009A4400 /* HNItemHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNItemHelper.h; sourceTree = "<group>"; };
+		989E97FE1C16AD3B009A4400 /* HNItemHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNItemHelper.m; sourceTree = "<group>"; };
 		98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
 		98B0FB7F1BE4BAE40059E5F2 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTML.h"; sourceTree = "<group>"; };
 		98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSString+HTML.m"; sourceTree = "<group>"; };
@@ -365,6 +371,8 @@
 				98F5EBD91BF086A400B1BA08 /* User.h */,
 				98F5EBDA1BF086A400B1BA08 /* User.m */,
 				9892BA531C12A362008AE64B /* StoryCommentUserVote.h */,
+				989E97FA1C16AC30009A4400 /* CommentStyle.h */,
+				989E97FB1C16AC30009A4400 /* CommentStyle.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -456,6 +464,8 @@
 				98B841381C0EDC9200FC80F6 /* AppConfig.m */,
 				98B8413C1C0EE01600FC80F6 /* AppConfigBase.h */,
 				98B8413D1C0EE01600FC80F6 /* AppConfigBase.m */,
+				989E97FD1C16AD3B009A4400 /* HNItemHelper.h */,
+				989E97FE1C16AD3B009A4400 /* HNItemHelper.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -733,6 +743,7 @@
 				98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
+				989E97FC1C16AC30009A4400 /* CommentStyle.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
 				98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */,
 				98C22D5B1C15698400809299 /* StoryCommentsNoCommentsCell.m in Sources */,
@@ -747,6 +758,7 @@
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
 				984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
+				989E97FF1C16AD3B009A4400 /* HNItemHelper.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,

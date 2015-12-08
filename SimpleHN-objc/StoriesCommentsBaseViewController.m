@@ -350,12 +350,25 @@
         // Support for linking to item identifiers from comment cells
         if(sender && [sender isKindOfClass:[NSNumber class]]) {
             
-            NSNumber * storyIdentifier = (NSNumber*)sender;
+            NSNumber * identifier = (NSNumber*)sender;
             
             // Check if item is a comment or story
-            
-            [Story createStoryFromItemIdentifier:storyIdentifier completion:^(Story *story) {
-                controller.detailItem = story;
+            [HNItemHelper identifyHNItemWithNumber:identifier completion:^(HNItemHelperIdentificationResult identification) {
+                
+                if(identification == HNItemHelperIdentificationResultComment) {
+                    
+                    [Comment createCommentFromItemIdentifier:identifier completion:^(Comment *comment) {
+                        controller.detailComment = comment;
+                    }];
+                    
+                } else if(identification == HNItemHelperIdentificationResultStory ||
+                          identification == HNItemHelperIdentificationResultUnknown) {
+               
+                    [Story createStoryFromItemIdentifier:identifier completion:^(Story *story) {
+                        controller.detailItem = story;
+                    }];
+                }
+                
             }];
             
         } else {

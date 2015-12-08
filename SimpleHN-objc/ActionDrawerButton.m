@@ -73,6 +73,10 @@
     } else if(drawerButtonType == ActionDrawerViewButtonTypeMore) {
         [self setImage:[UIImage imageNamed:@"story-action-more-icon"]
               forState:UIControlStateNormal];
+        
+    } else if(drawerButtonType == ActionDrawerViewButtonTypeContext) {
+        [self setImage:[UIImage imageNamed:@"story-action-context-icon"]
+              forState:UIControlStateNormal];
     }
 }
 

@@ -27,7 +27,17 @@
         _votingEnabled = YES;
         
         self.firstTrigger = 0.15;
-        self.secondTrigger = 0.5;
+        self.secondTrigger = 0.4;
+        
+        self.upvoteCornerImageView = [[UIImageView alloc] initWithImage:
+                                      [UIImage imageNamed:@"story-comment-cell-upvote-corner"]];
+        _upvoteCornerImageView.hidden = YES;
+        [self.contentView addSubview:_upvoteCornerImageView];
+        
+        self.downvoteCornerImageView = [[UIImageView alloc] initWithImage:
+                                        [UIImage imageNamed:@"story-comment-cell-downvote-corner"]];
+        _downvoteCornerImageView.hidden = YES;
+        [self.contentView addSubview:_downvoteCornerImageView];
         
         self.contentView.backgroundColor = [UIColor whiteColor];
         
@@ -53,17 +63,33 @@
         // Adding gestures per state basis.
         [self setSwipeGestureWithView:_downvoteImageView color:RGBCOLOR(88, 86, 214) mode:MCSwipeTableViewCellModeSwitch state:MCSwipeTableViewCellState1 completionBlock:nil];
         
+        __block StoryCommentBaseTableViewCell * blockSelf = self;
+        
         [self setSwipeGestureWithView:_downvoteConfirmedImageView color:RGBCOLOR(88, 86, 214) mode:MCSwipeTableViewCellModeSwitch state:MCSwipeTableViewCellState2 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode) {
-            NSLog(@"Did swipe \"Downvote\" cell");
+            
+            if([blockSelf.votingDelegate respondsToSelector:@selector(storyCommentCellDidVote:voteType:)]) {
+                [blockSelf.votingDelegate performSelector:@selector(storyCommentCellDidVote:voteType:) withObject:blockSelf withObject:@(StoryCommentUserVoteDownvote)];
+            }
+            
+            [blockSelf didVoteWithType:StoryCommentUserVoteDownvote];
         }];
         
         [self setSwipeGestureWithView:_upvoteImageView color:[UIColor orangeColor] mode:MCSwipeTableViewCellModeSwitch state:MCSwipeTableViewCellState3 completionBlock:nil];
         
         [self setSwipeGestureWithView:_upvoteConfirmedImageView color:[UIColor orangeColor] mode:MCSwipeTableViewCellModeSwitch state:MCSwipeTableViewCellState4 completionBlock:^(MCSwipeTableViewCell *cell, MCSwipeTableViewCellState state, MCSwipeTableViewCellMode mode) {
-            NSLog(@"Did swipe \"Upvote\" cell");
+            
+            if([blockSelf.votingDelegate respondsToSelector:@selector(storyCommentCellDidVote:voteType:)]) {
+                [blockSelf.votingDelegate performSelector:@selector(storyCommentCellDidVote:voteType:) withObject:blockSelf withObject:@(StoryCommentUserVoteUpvote)];
+            }
+            
+            [blockSelf didVoteWithType:StoryCommentUserVoteUpvote];
         }];
     }
     return self;
+}
+
+- (void)didVoteWithType:(StoryCommentUserVote)voteType {
+    // Stub to be overriden in subclasses
 }
 
 - (void)layoutSubviews {
@@ -71,6 +97,9 @@
     
     _upvoteImageView.frame = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
     _downvoteImageView.frame = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
+    
+    _upvoteCornerImageView.frame = CGRectMake(self.frame.size.width - _upvoteCornerImageView.frame.size.width, 0, _upvoteCornerImageView.frame.size.width, _upvoteCornerImageView.frame.size.height);
+    _downvoteCornerImageView.frame = CGRectMake(self.frame.size.width - _downvoteCornerImageView.frame.size.width, 0, _downvoteCornerImageView.frame.size.width, _downvoteCornerImageView.frame.size.height);
 }
 
 - (void)setVotingEnabled:(BOOL)votingEnabled {

@@ -11,6 +11,7 @@
 #import "SuProgress.h"
 #import "ContentLoadingView.h"
 #import "StoryCommentsNoCommentsCell.h"
+#import "ActionDrawerButton.h"
 
 @import SafariServices;
 
@@ -341,8 +342,10 @@
             CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                                  forIndexPath:indexPath];
             cell.comment = item;
-            
             cell.commentCellDelegate = self;
+            
+            cell.actionDrawerView.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeFlag), @(ActionDrawerViewButtonTypeLink),
+                                                         @(ActionDrawerViewButtonTypeContext), @(ActionDrawerViewButtonTypeMore)];
             
             return cell;
         }

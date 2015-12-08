@@ -17,12 +17,8 @@
 
 @property (nonatomic, strong) UITapGestureRecognizer * headerBackgroundViewTapGestureRecognizer;
 
-@property (nonatomic, strong) ActionDrawerView * actionDrawerView;
-
 - (void)didTapBackgroundView:(id)sender;
 //- (void)commentCollapsedChanged:(NSNotification*)notification;
-
-+ (void)createShareActionSheetInController:(UIViewController*)controller title:(NSString*)title url:(NSURL*)url text:(NSString*)text;
 
 @end
 
@@ -89,7 +85,7 @@
     
     _commentLabel.frame = CGRectMake(commentLeftMargin, _headerView.frame.origin.y + _headerView.frame.size.height + 10.0f, (self.frame.size.width - commentRightMargin - commentLeftMargin), sizeForCommentLabel.height);
     
-    _actionDrawerView.frame = CGRectMake(0, _commentLabel.frame.origin.y + _commentLabel.frame.size.height + 10.0f, self.frame.size.width, _actionDrawerView.intrinsicContentSize.height);
+    _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
     
     if(_comment.sizeStatus == CommentSizeStatusExpanded) {
         _actionDrawerView.hidden = NO;
@@ -116,12 +112,29 @@
         }
         _headerView.collapsed = YES;
     }
+    
+    if(self.comment.voteStatus == StoryCommentUserVoteUpvote) {
+        self.upvoteCornerImageView.hidden = NO;
+        self.downvoteCornerImageView.hidden = YES;
+        
+    } else if(self.comment.voteStatus == StoryCommentUserVoteDownvote) {
+        self.downvoteCornerImageView.hidden = NO;
+        self.upvoteCornerImageView.hidden = YES;
+    }
 }
 
 - (void)prepareForReuse {
 
     self.commentLabel.text = nil;
     self.headerView.comment = nil;
+    
+    self.upvoteCornerImageView.hidden = YES;
+    self.downvoteCornerImageView.hidden = YES;
+}
+
+- (void)didVoteWithType:(StoryCommentUserVote)voteType {
+    self.comment.voteStatus = voteType;
+    [self setNeedsLayout];
 }
 
 + (void)handleActionForComment:(Comment *)comment withType:(NSNumber *)type inController:(UIViewController *)controller {
@@ -134,13 +147,14 @@
             [controller performSegueWithIdentifier:@"showUser" sender:user];
         }];
         
+    } else if(actionType == ActionDrawerViewButtonTypeContext) {
+        [controller performSegueWithIdentifier:@"showDetail" sender:comment.commentId];
+        
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         NSLog(@"ActionDrawerViewButtonTypeMore");
         
-        NSString * title = [NSString stringWithFormat:@"Comment from %@", comment.author];
-        
         [[self class] createShareActionSheetInController:controller title:
-            title url:comment.hnPublicLink text:nil];
+            comment.shareTitle url:comment.hnPublicLink text:nil];
     }
 }
 

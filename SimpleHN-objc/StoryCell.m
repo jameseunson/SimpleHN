@@ -138,6 +138,15 @@
         _actionDrawerView.hidden = YES;
     }
     
+    if(self.story.voteStatus == StoryCommentUserVoteUpvote) {
+        self.upvoteCornerImageView.hidden = NO;
+        self.downvoteCornerImageView.hidden = YES;
+        
+    } else if(self.story.voteStatus == StoryCommentUserVoteDownvote) {
+        self.downvoteCornerImageView.hidden = NO;
+        self.upvoteCornerImageView.hidden = YES;
+    }
+    
     _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
 }
 
@@ -203,6 +212,11 @@
         contentHeight += kActionDrawerViewHeight;
     }
     return contentHeight;
+}
+
+- (void)didVoteWithType:(StoryCommentUserVote)voteType {
+    self.story.voteStatus = voteType;
+    [self setNeedsLayout];
 }
 
 #pragma mark - Property Override Methods

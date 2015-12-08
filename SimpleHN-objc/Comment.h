@@ -11,6 +11,7 @@
 #import "User.h"
 #import "Firebase.h"
 #import "Story.h"
+#import "StoryCommentUserVote.h"
 
 typedef NS_ENUM(NSInteger, CommentSizeStatus) {
     CommentSizeStatusNormal = 0,
@@ -46,6 +47,8 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, strong) NSMutableArray * childComments;
 @property (nonatomic, strong) Comment * parentComment;
 
+@property (nonatomic, assign) StoryCommentUserVote voteStatus;
+
 @property (nonatomic, assign) CommentSizeStatus sizeStatus;
 @property (nonatomic, assign) BOOL collapseOrigin;
 
@@ -55,6 +58,7 @@ typedef void (^CommentBlock)(Comment* comment);
 // Generated properties
 @property (nonatomic, assign, readonly) NSInteger childCommentCount;
 
+@property (nonatomic, strong, readonly) NSString * shareTitle;
 @property (nonatomic, strong, readonly) NSURL * hnPublicLink;
 
 // text property with styles applied. Links are handled by TTTAttributedLabel
@@ -71,6 +75,7 @@ typedef void (^CommentBlock)(Comment* comment);
                        completion:(CommentBlock)completion;
 
 - (void)loadUserForComment:(UserBlock)completion;
+- (void)findStoryForComment:(StoryBlock)completion;
 
 // HTML processing utility methods, also being used in User model
 + (NSString*)completeParagraphTags:(NSString*)string;

@@ -7,6 +7,7 @@
 //
 
 #import "Comment.h"
+#import "CommentStyle.h"
 #import "NSString+HTML.h"
 #import "LabelHelper.h"
 #import "RegexKitLite.h"
@@ -23,13 +24,9 @@ static NSString * _commentCSS = nil;
 
 @property (nonatomic, assign) NSInteger childCommentsChangedUntilComplete;
 
-//+ (NSString*)commentCSS;
-
 @end
 
 @implementation Comment
-//@synthesize links = _links;
-//@synthesize styles = _styles;
 @synthesize attributedText = _attributedText;
 @synthesize childCommentCount = _childCommentCount;
 
@@ -41,6 +38,8 @@ static NSString * _commentCSS = nil;
     self.indentation = 0;
     
     _collapseOrigin = NO;
+    
+    _voteStatus = StoryCommentUserVoteNoVote;
     
     _childCommentCount = -1;
     _childCommentsChangedUntilComplete = -1;
@@ -142,6 +141,40 @@ static NSString * _commentCSS = nil;
     [User createUserFromItemIdentifier:self.author completion:completion];
 }
 
+- (void)findStoryForComment:(StoryBlock)completion {
+    
+    if(self.parent) {
+        // Create comment from parent
+        NSLog(@"findStoryForComment, loading %@", self.parent);
+        
+        NSString * itemURL = [NSString stringWithFormat:
+                                 @"https://hacker-news.firebaseio.com/v0/item/%@", self.parent];
+        __block Firebase * itemRef = [[Firebase alloc] initWithUrl:itemURL];
+        [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+            
+            HNItemHelperIdentificationResult result = [HNItemHelper identifyHNItemWithSnapshotDictionary:
+                                                       snapshot.value];
+            if(result == HNItemHelperIdentificationResultComment) {
+                
+                [[self class] createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
+                    [comment findStoryForComment:completion];
+                }];
+                
+            } else if(result == HNItemHelperIdentificationResultStory) {
+                [Story createStoryFromSnapshot:snapshot completion:completion];
+                
+            } else {
+                completion(nil); return;
+            }
+            
+            [itemRef removeAllObservers];
+        }];
+        
+    } else {
+        completion(nil);
+    }
+}
+
 #pragma mark - Property Override Methods
 - (void)setSizeStatus:(CommentSizeStatus)sizeStatus {
     _sizeStatus = sizeStatus;
@@ -177,6 +210,10 @@ static NSString * _commentCSS = nil;
     _attributedText = [[self class] createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSString*)shareTitle {
+    return [NSString stringWithFormat:@"Comment from %@", self.author];
 }
 
 - (NSURL*)hnPublicLink {

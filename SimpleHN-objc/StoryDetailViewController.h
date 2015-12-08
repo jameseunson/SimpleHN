@@ -17,6 +17,11 @@
 
 @import SafariServices;
 
+typedef NS_ENUM(NSInteger, StoryDetailViewControllerDisplayMode) {
+    StoryDetailViewControllerDisplayModeStory = 0,
+    StoryDetailViewControllerDisplayModeCommentContext = 1
+};
+
 @interface StoryDetailViewController : UITableViewController <CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
 
 @property (nonatomic, strong) Story * detailItem;

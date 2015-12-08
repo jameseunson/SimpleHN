@@ -17,8 +17,10 @@
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerFlagButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerLinkButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerMoreButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerContextButton;
 
 @property (nonatomic, strong) NSArray < ActionDrawerButton * > * buttons;
+@property (nonatomic, strong) NSDictionary < NSNumber *, ActionDrawerButton * > * buttonsLookup;
 
 @property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
 
@@ -39,22 +41,29 @@
         _actionDrawerContainerView.distribution = UIStackViewDistributionFillEqually;
         _actionDrawerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
         
+        NSMutableDictionary * buttonsLookupMutable = [@{} mutableCopy];
+        
         self.actionDrawerUserButton = [self createButtonWithType:ActionDrawerViewButtonTypeUser];
-        [_actionDrawerContainerView addArrangedSubview:_actionDrawerUserButton];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeUser)] = _actionDrawerUserButton;
         
         self.actionDrawerFlagButton = [self createButtonWithType:ActionDrawerViewButtonTypeFlag];
-        [_actionDrawerContainerView addArrangedSubview:_actionDrawerFlagButton];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeFlag)] = _actionDrawerFlagButton;
         
         self.actionDrawerLinkButton = [self createButtonWithType:ActionDrawerViewButtonTypeLink];
-        [_actionDrawerContainerView addArrangedSubview:_actionDrawerLinkButton];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeLink)] = _actionDrawerLinkButton;
         
         self.actionDrawerMoreButton = [self createButtonWithType:ActionDrawerViewButtonTypeMore];
-        [_actionDrawerContainerView addArrangedSubview:_actionDrawerMoreButton];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeMore)] = _actionDrawerMoreButton;
+        
+        self.actionDrawerContextButton = [self createButtonWithType:ActionDrawerViewButtonTypeContext];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeContext)] = _actionDrawerContextButton;
         
         [self addSubview:_actionDrawerContainerView];
         
-        self.buttons = @[ _actionDrawerUserButton, _actionDrawerFlagButton,
-                         _actionDrawerLinkButton, _actionDrawerMoreButton ];
+        self.buttonsLookup = [buttonsLookupMutable copy];
+        
+        self.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeUser), @(ActionDrawerViewButtonTypeFlag),
+                                    @(ActionDrawerViewButtonTypeLink), @(ActionDrawerViewButtonTypeMore)];
         
         self.actionDrawerBorderLayer = [CALayer layer];
         _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
@@ -69,15 +78,27 @@
     return self;
 }
 
-- (CGSize)intrinsicContentSize {
-    return CGSizeMake(UIViewNoIntrinsicMetric, _actionDrawerContainerView
-                        .intrinsicContentSize.height + 20.0f);
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     
     _actionDrawerBorderLayer.frame = CGRectMake(0, 0, self.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
+}
+
+#pragma mark - Property Override Methods
+- (void)setActiveButtonTypes:(NSArray<NSNumber *> *)activeButtonTypes {
+    _activeButtonTypes = activeButtonTypes;
+    
+    NSArray * arrangedViews = [_actionDrawerContainerView.arrangedSubviews copy];
+    for(ActionDrawerButton * button in arrangedViews) {
+        [_actionDrawerContainerView removeArrangedSubview:button];
+    }
+    
+    for(NSNumber * typeObj in activeButtonTypes) {
+        ActionDrawerButton * button = _buttonsLookup[typeObj];
+        [_actionDrawerContainerView addArrangedSubview:button];
+    }
+
+    [self setNeedsLayout];
 }
 
 #pragma mark - Private Methods

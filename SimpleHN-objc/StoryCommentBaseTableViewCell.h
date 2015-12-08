@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MCSwipeTableViewCell.h"
+#import "StoryCommentUserVote.h"
 
 @protocol StoryCommentVotingTableViewCellDelegate;
 @interface StoryCommentBaseTableViewCell : MCSwipeTableViewCell
@@ -16,10 +17,16 @@
 
 @property (nonatomic, assign, getter=isVotingEnabled) BOOL votingEnabled;
 
+@property (nonatomic, strong) UIImageView * upvoteCornerImageView;
+@property (nonatomic, strong) UIImageView * downvoteCornerImageView;
+
+// To be overriden in subclasses
+- (void)didVoteWithType:(StoryCommentUserVote)voteType;
+
 @end
 
 @protocol StoryCommentVotingTableViewCellDelegate <NSObject>
 @required
-- (void)storyCommentCellDidUpvote:(StoryCommentBaseTableViewCell*)cell;
-- (void)storyCommentCellDidDownvote:(StoryCommentBaseTableViewCell*)cell;
+- (void)storyCommentCellDidVote:(StoryCommentBaseTableViewCell*)cell
+                       voteType:(NSNumber*)voteType;
 @end

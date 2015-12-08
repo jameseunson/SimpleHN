@@ -31,8 +31,10 @@
 @property (nonatomic, strong) UITableView * baseTableView;
 
 @property (nonatomic, assign) BOOL initialLoadDone;
+@property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
 
 - (void)loadContent;
+
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
 
@@ -62,6 +64,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedComplete:)
                                                  name:kCommentCollapsedComplete object:nil];
     
+    _displayMode = StoryDetailViewControllerDisplayModeStory;
     _initialLoadDone = NO;
 }
 
@@ -113,6 +116,8 @@
             _webViewController = nil;
         }
         
+        _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
+        
         [self.tableView reloadData];
         [self configureViewForComment];
     }
@@ -131,8 +136,10 @@
     
     self.title = _detailItem.title;
     
-    if([_detailItem.flatDisplayComments count] == 0) {
-        [self loadContent];
+    if(_displayMode == StoryDetailViewControllerDisplayModeStory) {
+        if([_detailItem.flatDisplayComments count] == 0) {
+            [self loadContent];
+        }
     }
     
     if(!_detailItem.url) {
@@ -163,6 +170,17 @@
 
 - (void)configureViewForComment {
     NSLog(@"configureViewForComment stub");
+    
+    // Find root comment by traversing upwards
+    [self.detailComment findStoryForComment:^(Story *story) {
+        NSLog(@"root: %@", story);
+        
+        self.detailItem = story;
+        [self.detailItem loadSpecificCommentForStory:
+            self.detailComment.parent];
+    }];
+    
+    // Find and instantiate immediate parent comment
 }
 
 - (void)viewDidLoad {
@@ -433,7 +451,6 @@
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
-    NSLog(@"commentCell:didLongPressLink:");
     [CommentCell handleLongPressForLink:link inComment:cell.comment inController:self];
 }
 
@@ -441,24 +458,14 @@
     ActionDrawerViewButtonType actionType = [type intValue];
 
     if(actionType == ActionDrawerViewButtonTypeUser) {
-        NSLog(@"ActionDrawerViewButtonTypeUser");
         
         [self performSegueWithIdentifier:@"showUser"
                                   sender:cell.comment.author];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         
-        NSString * title = [NSString stringWithFormat:@"Comment from %@", cell.comment.author];
-        
-        UIAlertController * controller = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-        [self presentViewController:controller animated:YES completion:nil];
+        [[self class] createShareActionSheetInController:self title:
+         cell.comment.shareTitle url:cell.comment.hnPublicLink text:nil];
     }
 }
 

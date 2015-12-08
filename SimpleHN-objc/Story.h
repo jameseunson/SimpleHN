@@ -8,6 +8,7 @@
 
 #import <Mantle/Mantle.h>
 #import "User.h"
+#import "StoryCommentUserVote.h"
 
 typedef NS_ENUM(NSInteger, StorySizeStatus) {
     StorySizeStatusNormal = 0,
@@ -48,6 +49,8 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
 
+@property (nonatomic, assign) StoryCommentUserVote voteStatus;
+
 @property (nonatomic, assign) StorySizeStatus sizeStatus;
 
 // Generated properties
@@ -67,6 +70,8 @@ typedef void (^StoryBlock)(Story* story);
 + (Story*)createStoryFromAlgoliaResult:(NSDictionary*)result;
 
 - (void)loadCommentsForStory;
+- (void)loadSpecificCommentForStory:(NSNumber*)identifier;
+
 - (void)finishLoadingCommentsForStory;
 
 - (void)loadUserForStory:(UserBlock)completion;

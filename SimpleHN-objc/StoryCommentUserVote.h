@@ -9,6 +9,10 @@
 #ifndef StoryCommentUserVote_h
 #define StoryCommentUserVote_h
 
-
+typedef NS_ENUM(NSInteger, StoryCommentUserVote) {
+    StoryCommentUserVoteNoVote,
+    StoryCommentUserVoteUpvote,
+    StoryCommentUserVoteDownvote
+};
 
 #endif /* StoryCommentUserVote_h */

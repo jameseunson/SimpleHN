@@ -118,6 +118,32 @@ static NSDateFormatter * _timeDateFormatter = nil;
     }];
 }
 
+- (void)loadSpecificCommentForStory:(NSNumber*)identifier {
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
+                                                 name:kCommentCreated object:nil];
+    
+    if([self.flatDisplayComments count] > 0) {
+        [self.flatDisplayComments removeAllObjects];
+    }
+    if([self.comments count] > 0) {
+        [self.comments removeAllObjects];
+    }
+    NSLog(@"Story, -loadSpecificCommentForStory");
+    
+    NSString * commentURL = [NSString stringWithFormat:
+                           @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];
+    
+    __block Firebase * commentsRef = [[Firebase alloc] initWithUrl:commentURL];
+    __block Story * blockSelf = self;
+    
+    [commentsRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        [Comment createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
+            [blockSelf.comments addObject:comment];
+        }];
+    }];
+}
+
 - (void)finishLoadingCommentsForStory {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -132,7 +158,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
         NSDictionary * userInfo = notification.userInfo;
         if([[userInfo allKeys] containsObject:kCommentCreatedStoryIdentifier]) {
             if(![self.storyId isEqual:userInfo[kCommentCreatedStoryIdentifier]]) {
-                NSLog(@"comment was NOT intended for this story.");
+                NSLog(@"ERROR: comment was NOT intended for this story.");
                 return;
             }
         }

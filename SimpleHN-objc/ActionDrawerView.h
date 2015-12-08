@@ -13,9 +13,10 @@
 @protocol ActionDrawerViewDelegate;
 @interface ActionDrawerView : UIView
 
-//@property (nonatomic, strong) NSArray < NSNumber * > * buttonTypes;
 @property (nonatomic, assign) __unsafe_unretained
     id<ActionDrawerViewDelegate> delegate;
+
+@property (nonatomic, strong) NSArray < NSNumber * > * activeButtonTypes;
 
 @end
 

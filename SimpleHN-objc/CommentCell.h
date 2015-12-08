@@ -21,14 +21,11 @@
 @property (nonatomic, strong) TTTAttributedLabel * commentLabel;
 
 @property (nonatomic, strong) CommentCellHeaderView * headerView;
+@property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 
 //@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 
 @property (nonatomic, assign) __unsafe_unretained id<CommentCellDelegate> commentCellDelegate;
-
-// Assigned to cell when story is updated, value is only retained
-// for 1 second or so, while an update animation plays
-@property (nonatomic, strong) NSDictionary * storyDiffDict;
 
 // Centralised point where action handling code can be invoked
 + (void)handleActionForComment:(Comment*)comment withType:
@@ -40,6 +37,8 @@
 // Pains me to have to resort to such medieval methods of sizing, but whatever
 // This cell has proven too complicated to get working with auto-sizing + constraints
 + (CGFloat)heightForCommentCell:(Comment*)comment width:(CGFloat)width;
+
++ (void)createShareActionSheetInController:(UIViewController*)controller title:(NSString*)title url:(NSURL*)url text:(NSString*)text;
 
 @end
 
