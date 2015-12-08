@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 #import "Firebase.h"
+
+#import "Comment.h"
 #import "CommentCell.h"
 #import "Story.h"
 #import "StoryCell.h"
@@ -18,6 +20,10 @@
 @interface StoryDetailViewController : UITableViewController <CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
 
 @property (nonatomic, strong) Story * detailItem;
+
+// Alternative 'comment context' mode, show comment, immediate parent
+// comment, and story context
+@property (nonatomic, strong) Comment * detailComment;
 
 @end
 

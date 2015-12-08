@@ -34,6 +34,9 @@
 + (void)handleActionForComment:(Comment*)comment withType:
     (NSNumber*)type inController:(UIViewController*)controller;
 
++ (void)handleLongPressForLink:(NSURL*)link inComment:(Comment*)comment
+                    inController:(UIViewController*)controller;
+
 // Pains me to have to resort to such medieval methods of sizing, but whatever
 // This cell has proven too complicated to get working with auto-sizing + constraints
 + (CGFloat)heightForCommentCell:(Comment*)comment width:(CGFloat)width;
@@ -41,6 +44,8 @@
 @end
 
 @protocol CommentCellDelegate <NSObject>
+@required
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link;
+- (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL*)link;
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type;
 @end

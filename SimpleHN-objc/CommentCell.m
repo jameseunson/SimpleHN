@@ -22,6 +22,8 @@
 - (void)didTapBackgroundView:(id)sender;
 //- (void)commentCollapsedChanged:(NSNotification*)notification;
 
++ (void)createShareActionSheetInController:(UIViewController*)controller title:(NSString*)title url:(NSURL*)url text:(NSString*)text;
+
 @end
 
 @implementation CommentCell
@@ -137,17 +139,16 @@
         
         NSString * title = [NSString stringWithFormat:@"Comment from %@", comment.author];
         
-        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-        
-        [controller presentViewController:alertController animated:YES completion:nil];
+        [[self class] createShareActionSheetInController:controller title:
+            title url:comment.hnPublicLink text:nil];
     }
+}
+
++ (void)handleLongPressForLink:(NSURL*)link inComment:(Comment*)comment
+                  inController:(UIViewController*)controller {
+    
+    [[self class] createShareActionSheetInController:controller title:
+        link.absoluteString url:link text:nil];
 }
 
 + (CGFloat)heightForCommentCell:(Comment*)comment width:(CGFloat)width {
@@ -242,6 +243,32 @@
 //- (void)commentCollapsedChanged:(NSNotification*)notification {
 //    Comment * comment = notification.object;
 //}
++ (void)createShareActionSheetInController:(UIViewController*)controller title:(NSString*)title url:(NSURL*)url text:(NSString*)text {
+    
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        // Don't double up if the contents are the same
+        NSArray *activityItems = nil;
+        if([title isEqualToString:url.absoluteString]) {
+            activityItems = @[ url ];
+            
+        } else {
+            activityItems = @[ [NSString stringWithFormat:@"%@ - %@", title, url] ];
+        }
+        
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+        [controller presentViewController:activityVC animated:YES completion:nil];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        [[UIApplication sharedApplication] openURL:url];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    
+    [controller presentViewController:alertController animated:YES completion:nil];
+}
 
 #pragma mark - TTTAttributedLabelDelegate Methods
 - (void)attributedLabel:(TTTAttributedLabel *)label
@@ -250,6 +277,15 @@
     if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
         [self.commentCellDelegate performSelector:@selector(commentCell:didTapLink:)
                             withObject:self withObject:url];
+    }
+}
+
+- (void)attributedLabel:(TTTAttributedLabel *)label
+    didLongPressLinkWithURL:(NSURL *)url
+                atPoint:(CGPoint)point {
+    if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didLongPressLink:)]) {
+        [self.commentCellDelegate performSelector:@selector(commentCell:didLongPressLink:)
+                                       withObject:self withObject:url];
     }
 }
 

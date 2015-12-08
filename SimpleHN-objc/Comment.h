@@ -8,10 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Mantle/Mantle.h>
-#import "CommentLink.h"
-#import "CommentStyle.h"
 #import "User.h"
 #import "Firebase.h"
+#import "Story.h"
 
 typedef NS_ENUM(NSInteger, CommentSizeStatus) {
     CommentSizeStatusNormal = 0,
@@ -22,6 +21,9 @@ typedef NS_ENUM(NSInteger, CommentSizeStatus) {
 #define kCommentCreated @"commentCreated"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"
 #define kCommentCollapsedComplete @"commentCollapsedComplete"
+
+// Key for userInfo dict sent back with kCommentCreated notification
+#define kCommentCreatedStoryIdentifier @"commentCreatedStoryIdentifier"
 
 @class Comment;
 typedef void (^CommentBlock)(Comment* comment);
@@ -51,18 +53,23 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, assign) CGFloat cachedCommentTextHeight;
 
 // Generated properties
-@property (nonatomic, strong, readonly) NSArray <CommentLink *> * links;
-@property (nonatomic, strong, readonly) NSArray <CommentStyle *> * styles;
-
 @property (nonatomic, assign, readonly) NSInteger childCommentCount;
+
+@property (nonatomic, strong, readonly) NSURL * hnPublicLink;
 
 // text property with styles applied. Links are handled by TTTAttributedLabel
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;
++ (void)createCommentFromItemIdentifier:(NSNumber*)identifier story:(Story*)story
+                             completion:(CommentBlock)completion;
+
 + (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
                              completion:(CommentBlock)completion;
++ (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot story:(Story*)story
+                       completion:(CommentBlock)completion;
+
 - (void)loadUserForComment:(UserBlock)completion;
 
 // HTML processing utility methods, also being used in User model

@@ -17,7 +17,7 @@
         self.emptyView = [[StoryCommentsEmptyView alloc] init];
         _emptyView.translatesAutoresizingMaskIntoConstraints = NO;
         _emptyView.titleLabel.text = @"No comments to display";
-        _emptyView.subtitleLabel.text = @"No comments on this article yet.";
+//        _emptyView.subtitleLabel.text = @"No comments on this article yet.";
         
         [self.contentView addSubview:_emptyView];
         

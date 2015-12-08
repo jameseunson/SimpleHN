@@ -170,7 +170,7 @@
     if(itemsCount > 0 && _shouldDisplayLoadMoreCell) {
         itemsCount = itemsCount + 1;
     }
-    NSLog(@"numberOfRowsInSection: %lu, itemsCount: %lu", section, itemsCount);
+//    NSLog(@"numberOfRowsInSection: %lu, itemsCount: %lu", section, itemsCount);
     return itemsCount;
 }
 
@@ -344,14 +344,28 @@
     
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        Story * story = [self itemForIndexPath: [self.baseTableView indexPathForSelectedRow]];
-        
         StoryDetailViewController *controller = (StoryDetailViewController *)
         [[segue destinationViewController] topViewController];
-        [controller setDetailItem:story];
+        
+        // Support for linking to item identifiers from comment cells
+        if(sender && [sender isKindOfClass:[NSNumber class]]) {
+            
+            NSNumber * storyIdentifier = (NSNumber*)sender;
+            
+            // Check if item is a comment or story
+            
+            [Story createStoryFromItemIdentifier:storyIdentifier completion:^(Story *story) {
+                controller.detailItem = story;
+            }];
+            
+        } else {
+            
+            Story * story = [self itemForIndexPath: [self.baseTableView indexPathForSelectedRow]];
+            [controller setDetailItem:story];
+        }
         
         controller.navigationItem.leftBarButtonItem =
-        self.splitViewController.displayModeButtonItem;
+            self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
@@ -370,10 +384,24 @@
 
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
+    
+    if([link isHNInternalLink]) {
+        NSNumber * identifier = [link identifierForHNInternalLink];
+        if(identifier) {
+            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        }
+    } // Catches two else cases implicitly
+    
     SFSafariViewController * controller = [[SFSafariViewController alloc]
                                            initWithURL:link];
     [self.navigationController pushViewController:controller animated:YES];
 }
+
+- (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
+    NSLog(@"commentCell:didLongPressLink:");
+    [CommentCell handleLongPressForLink:link inComment:cell.comment inController:self];    
+}
+
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
     [CommentCell handleActionForComment:cell.comment withType:type inController:self];
 }

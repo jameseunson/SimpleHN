@@ -18,7 +18,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 + (NSDateFormatter*)timeDateFormatter;
 
-- (void)commentCreated:(Comment*)comment;
+- (void)commentCreated:(NSNotification*)notification;
 - (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation;
 
 @end
@@ -38,9 +38,6 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     self.comments = [[NSMutableArray alloc] init];
     self.flatDisplayComments = [[NSMutableArray alloc] init];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
-                                                 name:kCommentCreated object:nil];
     
     return self;
 }
@@ -92,6 +89,9 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (void)loadCommentsForStory {
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
+                                                 name:kCommentCreated object:nil];
+    
     if([self.flatDisplayComments count] > 0) {
         [self.flatDisplayComments removeAllObjects];
     }
@@ -104,23 +104,39 @@ static NSDateFormatter * _timeDateFormatter = nil;
     NSString * storyURL = [NSString stringWithFormat:
                            @"https://hacker-news.firebaseio.com/v0/item/%@/kids",
                            self.storyId];
+    
     __block Firebase * commentsRef = [[Firebase alloc] initWithUrl:storyURL];
+    __block Story * blockSelf = self;
     
     [commentsRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         for(FDataSnapshot * child in snapshot.children) {
             
-            [Comment createCommentFromItemIdentifier:child.value completion:^(Comment *comment) {
-                [self.comments addObject:comment];
+            [Comment createCommentFromItemIdentifier:child.value story:self completion:^(Comment *comment) {
+                [blockSelf.comments addObject:comment];
             }];
         }
     }];
+}
+
+- (void)finishLoadingCommentsForStory {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)loadUserForStory:(UserBlock)completion {
     [User createUserFromItemIdentifier:self.author completion:completion];
 }
 
-- (void)commentCreated:(Comment*)comment {
+- (void)commentCreated:(NSNotification*)notification {
+    
+    if(notification.userInfo) {
+        NSDictionary * userInfo = notification.userInfo;
+        if([[userInfo allKeys] containsObject:kCommentCreatedStoryIdentifier]) {
+            if(![self.storyId isEqual:userInfo[kCommentCreatedStoryIdentifier]]) {
+                NSLog(@"comment was NOT intended for this story.");
+                return;
+            }
+        }
+    }
     
     // Create flat representation of comments
     [_flatDisplayComments removeAllObjects];
@@ -265,6 +281,10 @@ static NSDateFormatter * _timeDateFormatter = nil;
     _attributedText = [Comment createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSURL*)hnPublicLink {
+    return [NSURL URLWithString: [NSString stringWithFormat:@"https://news.ycombinator.com/item?id=%@", self.storyId]];
 }
 
 + (NSDateFormatter*)timeDateFormatter {

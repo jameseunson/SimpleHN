@@ -68,15 +68,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if(self.author) {
-        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
-            self.user = user;
-        }];
-    }
+//    if(self.author) {
+//        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
+//            self.user = user;
+//        }];
+//    }
     
 //    [User createUserFromItemIdentifier:@"markmassie" completion:^(User *user) {
 //        self.user = user;
 //    }];
+    
+    [User createUserFromItemIdentifier:@"ColinWright" completion:^(User *user) {
+        self.user = user;
+    }];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -353,6 +357,13 @@
 
 - (void)userHeaderView:(UserHeaderView *)view didTapLink:(NSURL *)link {
     NSLog(@"UserViewController, userHeaderView, didTapLink");
+    
+    if([link isHNInternalLink]) {
+        NSNumber * identifier = [link identifierForHNInternalLink];
+        if(identifier) {
+            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        }
+    } // Catches two else cases implicitly
     
     SFSafariViewController * controller = [[SFSafariViewController alloc]
                                            initWithURL:link];

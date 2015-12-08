@@ -56,6 +56,8 @@ typedef void (^StoryBlock)(Story* story);
 
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
 
+@property (nonatomic, strong, readonly) NSURL * hnPublicLink;
+
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                            completion:(StoryBlock)completion;
 
@@ -65,6 +67,8 @@ typedef void (^StoryBlock)(Story* story);
 + (Story*)createStoryFromAlgoliaResult:(NSDictionary*)result;
 
 - (void)loadCommentsForStory;
+- (void)finishLoadingCommentsForStory;
+
 - (void)loadUserForStory:(UserBlock)completion;
 
 @end

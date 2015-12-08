@@ -8,7 +8,6 @@
 
 #import "StoryDetailViewController.h"
 #import "Story.h"
-#import "Comment.h"
 #import "UserViewController.h"
 #import "SuProgress.h"
 #import "ActionDrawerButton.h"
@@ -41,6 +40,9 @@
 - (void)commentCollapsedComplete:(NSNotification*)notification;
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
+
+- (void)configureViewForStory;
+- (void)configureViewForComment;
 
 @end
 
@@ -86,7 +88,7 @@
     self.baseTableView = self.tableView;
 }
 
-- (void)setDetailItem:(id)newDetailItem {
+- (void)setDetailItem:(Story*)newDetailItem {
     if (_detailItem != newDetailItem) {
         
         _detailItem = [newDetailItem copy];
@@ -98,9 +100,21 @@
         }
         
         [self.tableView reloadData];
+        [self configureViewForStory];
+    }
+}
+
+- (void)setDetailComment:(Comment *)newDetailComment {
+    if (_detailComment != newDetailComment) {
         
-        // Update the view.
-        [self configureView];
+        _detailComment = [newDetailComment copy];
+        if(_webViewController) {
+            [_webViewController.view removeFromSuperview];
+            _webViewController = nil;
+        }
+        
+        [self.tableView reloadData];
+        [self configureViewForComment];
     }
 }
 
@@ -112,41 +126,43 @@
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
-- (void)configureView {
+
+- (void)configureViewForStory {
     
-    if (self.detailItem) {
-        
-        Story * detailStory = (Story*)_detailItem;
-        self.title = detailStory.title;
-        
-        if([detailStory.flatDisplayComments count] == 0) {
-            [self loadContent];
-        }
-        
-        if(!detailStory.url) {
-            self.navigationItem.rightBarButtonItem = nil;
-            
-        } else {
-            UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
-            self.navigationItem.rightBarButtonItem = item;
-        }
-        
-        if(self.detailItem.url) {
-            BOOL enterReaderModeAutomatically = [[AppConfig sharedConfig] storyAutomaticallyShowReader];
-            
-            self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url
-                                                         entersReaderIfAvailable:enterReaderModeAutomatically];
-            _webViewController.delegate = self;
-            [self addChildViewController:_webViewController];
-            
-            UIView * webView = self.webViewController.view;
-            webView.frame = CGRectMake(0,
-                                       self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height,
-                                       self.view.frame.size.width,
-                                       self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
-            webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-        }
+    self.title = _detailItem.title;
+    
+    if([_detailItem.flatDisplayComments count] == 0) {
+        [self loadContent];
     }
+    
+    if(!_detailItem.url) {
+        self.navigationItem.rightBarButtonItem = nil;
+        
+    } else {
+        UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
+        self.navigationItem.rightBarButtonItem = item;
+    }
+    
+    if(self.detailItem.url) {
+        BOOL enterReaderModeAutomatically = [[AppConfig sharedConfig] storyAutomaticallyShowReader];
+        
+        self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url
+                                                     entersReaderIfAvailable:enterReaderModeAutomatically];
+        _webViewController.delegate = self;
+        [self addChildViewController:_webViewController];
+        
+        UIView * webView = self.webViewController.view;
+        
+        webView.frame = CGRectMake(0, 0,
+                                   self.view.frame.size.width,
+                                   self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
+        
+        webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    }
+}
+
+- (void)configureViewForComment {
+    NSLog(@"configureViewForComment stub");
 }
 
 - (void)viewDidLoad {
@@ -404,28 +420,21 @@
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
-    NSString * internalLinkRegex = @"https?:\\/\\/news.ycombinator.com\\/item\\?id=([0-9]+)";
-    
-    NSError * error = nil;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:internalLinkRegex options:NSRegularExpressionCaseInsensitive error:&error];
-    
-    NSArray* matches = [regex matchesInString:[link absoluteString] options:0 range:NSMakeRange(0, [[link absoluteString] length])];
-    if([matches count] > 0) {
-        
-        @try {
-            NSNumber * identifier = @([[[[link absoluteString] componentsSeparatedByString:@"?id="] lastObject] intValue]);
-            [self performSegueWithIdentifier:@"showDetail" sender:identifier];
+    if([link isHNInternalLink]) {
+        NSNumber * identifier = [link identifierForHNInternalLink];
+        if(identifier) {
+            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
         }
-        @catch (NSException *exception) {
-            NSLog(@"ERROR: Could not extract identifier from %@", [link absoluteString]);
-        }
-        
-    } else {
-        
-        SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                               initWithURL:link];
-        [self.navigationController pushViewController:controller animated:YES];
-    }
+    } // Catches two else cases implicitly
+    
+    SFSafariViewController * controller = [[SFSafariViewController alloc]
+                                           initWithURL:link];
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
+    NSLog(@"commentCell:didLongPressLink:");
+    [CommentCell handleLongPressForLink:link inComment:cell.comment inController:self];
 }
 
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
@@ -459,9 +468,13 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {
+        
         [self.baseRefreshControl endRefreshing];
         [self.loadingProgress removeObserver:self
                                   forKeyPath:@"fractionCompleted"];
+        
+        Story * detailStory = (Story*)_detailItem;
+        [detailStory finishLoadingCommentsForStory];
         
         _initialLoadDone = YES;
     }
@@ -485,7 +498,12 @@
 }
 - (void)storyCell:(StoryCell*)cell didTapLink:(NSURL*)link {
     
-    // TODO: CHECK FOR INTERNAL LINKS
+    if([link isHNInternalLink]) {
+        NSNumber * identifier = [link identifierForHNInternalLink];
+        if(identifier) {
+            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        }
+    } // Catches two else cases implicitly
     
     SFSafariViewController * controller = [[SFSafariViewController alloc]
                                            initWithURL:link];

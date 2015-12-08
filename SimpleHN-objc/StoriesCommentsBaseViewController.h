@@ -56,6 +56,9 @@
 @property (nonatomic, strong) NSString * pendingSearchQuery;
 @property (nonatomic, strong) NSString * activeQuery;
 
+//@property (nonatomic, strong) NSTimer * retryTimer;
+//@property (nonatomic, strong)
+
 - (id)itemForIndexPath:(NSIndexPath *)indexPath;
 
 - (void)loadContent:(id)sender;

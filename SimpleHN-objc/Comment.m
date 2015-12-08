@@ -28,8 +28,8 @@ static NSString * _commentCSS = nil;
 @end
 
 @implementation Comment
-@synthesize links = _links;
-@synthesize styles = _styles;
+//@synthesize links = _links;
+//@synthesize styles = _styles;
 @synthesize attributedText = _attributedText;
 @synthesize childCommentCount = _childCommentCount;
 
@@ -88,6 +88,11 @@ static NSString * _commentCSS = nil;
 // number of the comment item, but the data must be loaded
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                              completion:(CommentBlock)completion {
+    [[self class] createCommentFromItemIdentifier:identifier story:nil completion:completion];
+}
+
++ (void)createCommentFromItemIdentifier:(NSNumber*)identifier story:(Story*)story
+                             completion:(CommentBlock)completion {
     
     // Get comment for identification number
     NSString * commentURL = [NSString stringWithFormat:
@@ -96,7 +101,7 @@ static NSString * _commentCSS = nil;
     
     [commentDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
-        [[self class] createCommentFromSnapshot:snapshot completion:completion];
+        [[self class] createCommentFromSnapshot:snapshot story:story completion:completion];
         [commentDetailRef removeAllObservers];
     }];
 }
@@ -104,14 +109,24 @@ static NSString * _commentCSS = nil;
 // The 'from snapshot' method is when we've already loaded the data
 + (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot
                        completion:(CommentBlock)completion {
+    [[self class] createCommentFromSnapshot:snapshot story:nil completion:completion];
+}
+
++ (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot story:(Story*)story
+                       completion:(CommentBlock)completion {
     
     NSError * error = nil;
     Comment * obj = [MTLJSONAdapter modelOfClass:Comment.class
                               fromJSONDictionary:snapshot.value error:&error];
     completion(obj);
     
+    NSDictionary * userInfo = @{};
+    if(story) {
+        userInfo = @{ kCommentCreatedStoryIdentifier: story.storyId };
+    }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCreated
-                                                        object:obj];
+                                                        object:obj userInfo:userInfo];
     // load child comments into comment
     for(NSNumber * child in obj.kids) {
         
@@ -162,6 +177,10 @@ static NSString * _commentCSS = nil;
     _attributedText = [[self class] createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSURL*)hnPublicLink {
+    return [NSURL URLWithString: [NSString stringWithFormat:@"https://news.ycombinator.com/item?id=%@", self.commentId]];
 }
 
 - (BOOL)isEqual:(id)object {
