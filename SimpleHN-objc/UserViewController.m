@@ -62,26 +62,34 @@
     _headerView.delegate = self;
     _headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    [self.baseTableView registerClass:[StoryCommentsNoCommentsCell class]
+    [self.tableView registerClass:[StoryCommentsNoCommentsCell class]
            forCellReuseIdentifier:kNoItemsReuseIdentifier];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    if(self.author) {
-//        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
-//            self.user = user;
-//        }];
-//    }
+    if(self.author) {
+        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
+            self.user = user;
+        }];
+    }
     
 //    [User createUserFromItemIdentifier:@"markmassie" completion:^(User *user) {
 //        self.user = user;
 //    }];
     
-    [User createUserFromItemIdentifier:@"ColinWright" completion:^(User *user) {
-        self.user = user;
-    }];
+//    [User createUserFromItemIdentifier:@"ColinWright" completion:^(User *user) {
+//        self.user = user;
+//    }];
+    
+//    [User createUserFromItemIdentifier:@"perlpimp" completion:^(User *user) {
+//        self.user = user;
+//    }];
+    
+//    [User createUserFromItemIdentifier:@"graue" completion:^(User *user) {
+//        self.user = user;
+//    }];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -121,8 +129,8 @@
         
         // Job done, don't expand again        
         if(item == expandedItem) {
-            [self.baseTableView beginUpdates];
-            [self.baseTableView endUpdates];
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
 
             return;
         }
@@ -137,8 +145,8 @@
         story.sizeStatus = StorySizeStatusExpanded;
     }
 
-    [self.baseTableView beginUpdates];
-    [self.baseTableView endUpdates];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 - (void)loadMoreItems {
@@ -165,7 +173,7 @@
     CGSize headerContentSize = _headerView.intrinsicContentSize;
     _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width,
                                    MAX( headerContentSize.height, 132.0f ) );
-    [self.baseTableView setTableHeaderView:_headerView];
+    [self.tableView setTableHeaderView:_headerView];
     
     if([self.user.submitted count] > self.currentVisibleItemMax) {
         self.shouldDisplayLoadMoreCell = YES;
@@ -186,7 +194,7 @@
         [self.visibleItems removeAllObjects];
         [self.flatObjectsList removeAllObjects];
         
-        [self.baseTableView reloadData];
+        [self.tableView reloadData];
     }
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
@@ -311,7 +319,7 @@
         }]];
         [self.visibleItems addObjectsFromArray:filteredCommentItems];
     }
-    [self.baseTableView reloadData];
+    [self.tableView reloadData];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -362,9 +370,18 @@
     NSLog(@"UserViewController, userHeaderView, didTapLink");
     
     if([link isHNInternalLink]) {
-        NSNumber * identifier = [link identifierForHNInternalLink];
-        if(identifier) {
-            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        
+        if([link isHNInternalItemLink]) {
+            NSNumber * identifier = [link identifierForHNInternalItemLink];
+            if(identifier) {
+                [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+            }
+            
+        } else if([link isHNInternalUserLink]) {
+            NSString * username = [link usernameForHNInternalUserLink];
+            if(username) {
+                [self performSegueWithIdentifier:@"showUser" sender:username]; return;
+            }
         }
     } // Catches two else cases implicitly
     
@@ -379,11 +396,11 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {
-        if(!self.loadingView.hidden) {
-            self.loadingView.hidden = YES;
-        }
+//        if(!self.loadingView.hidden) {
+//            self.loadingView.hidden = YES;
+//        }
         
-        [self.baseRefreshControl endRefreshing];
+        [self.refreshControl endRefreshing];
     }
 }
 

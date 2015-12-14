@@ -25,8 +25,6 @@
 // Used to determine which item is currently 'expanded' (showing action drawer)
 @property (nonatomic, strong) NSMutableArray < Story * > * storiesObjectsList;
 
-@property (nonatomic, assign) BOOL initialLoadDone;
-
 @property (nonatomic, assign) BOOL awaitingSecondMoveOperation;
 @property (nonatomic, strong) NSArray * pendingMoveOperation;
 @property (nonatomic, strong) NSTimer * pendingOperationTimer;
@@ -46,7 +44,6 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    _initialLoadDone = NO;
     _awaitingSecondMoveOperation = NO;
     
     self.storiesObjectsList = [[NSMutableArray alloc] init];
@@ -73,8 +70,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.baseTableView.tableHeaderView = self.searchController.searchBar;
-    [self.baseTableView setContentOffset:CGPointMake(0, 44.0f)];
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings-icon"] style:
                                              UIBarButtonItemStylePlain target:self action:@selector(didTapSettingsIcon:)];
@@ -94,7 +91,7 @@
             
         } else { // Everything else
             story = [self itemForIndexPath:
-                     [self.baseTableView indexPathForSelectedRow]];
+                     [self.tableView indexPathForSelectedRow]];
         }
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
@@ -108,7 +105,7 @@
     } else if([[segue identifier] isEqualToString:@"showUser"]) {
         NSLog(@"prepareForSegue, showUser");
         
-        Story * story = [self itemForIndexPath:[self.baseTableView indexPathForSelectedRow]];
+        Story * story = [self itemForIndexPath:[self.tableView indexPathForSelectedRow]];
         
         __block UserViewController *controller = (UserViewController *)
             [[segue destinationViewController] topViewController];
@@ -172,21 +169,23 @@
         [self.storiesObjectsList removeAllObjects];
         [self.visibleItems removeAllObjects];
         
-        [self.baseTableView reloadData];
+        [self.tableView reloadData];
     }
     
     [self.ref observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
         [self.storiesList addObjectsFromArray:snapshot.value];
         
-        _initialLoadDone = YES;
+        self.initialLoadDone = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+        
         self.loadingProgress.completedUnitCount++;
         
         [self loadVisibleItems];
-        
         dispatch_async(dispatch_get_main_queue(), ^{
-            //            [self.refreshControl endRefreshing];
-            [self.baseTableView reloadData];
+            [self.tableView reloadData];
         });
     }];
 }
@@ -261,7 +260,7 @@
                         dispatch_async(dispatch_get_main_queue(), ^{
                             
                             self.loadingProgress.completedUnitCount++;
-                            [self.baseTableView reloadData];
+                            [self.tableView reloadData];
                         });
                     }
                 }];
@@ -284,11 +283,11 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     if([fractionCompleted floatValue] == 1.0f) {
-        if(!self.loadingView.hidden) {
-            self.loadingView.hidden = YES;
-            
-            _initialLoadDone = YES;
-        }
+        
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
+        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                               @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        [self.refreshControl endRefreshing];
     }
 }
 
@@ -320,8 +319,8 @@
         
         // Job done, don't expand again
         if(story == expandedStory) {
-            [self.baseTableView beginUpdates];
-            [self.baseTableView endUpdates];
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
             
             return;
         }
@@ -329,8 +328,8 @@
 
     story.sizeStatus = StorySizeStatusExpanded;
     
-    [self.baseTableView beginUpdates];
-    [self.baseTableView endUpdates];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 @end

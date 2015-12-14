@@ -17,6 +17,7 @@
 #import "DTCoreTextConstants.h"
 
 static NSString * _commentCSS = nil;
+static NSRegularExpression * _leadingTrailingRegex = nil;
 
 @interface Comment ()
 
@@ -33,6 +34,15 @@ static NSString * _commentCSS = nil;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
     if (self == nil) return nil;
+    
+    if(!_leadingTrailingRegex) {
+        NSError * error = nil;
+        _leadingTrailingRegex = [NSRegularExpression regularExpressionWithPattern:
+                                      @"^\n+|\n+$" options:NSRegularExpressionCaseInsensitive error:&error];
+        if(error) {
+            NSLog(@"ERROR: Could not initialize _leadingTrailingRegex: %@", error);
+        }
+    }
     
     self.childComments = [[NSMutableArray alloc] init];
     self.indentation = 0;
@@ -346,6 +356,7 @@ static NSString * _commentCSS = nil;
         }
         commentRaw = [NSString stringWithFormat:@"%@%@",
                       @"<style>blockquote{ color: #999999; margin: 0; padding: 0; } p {margin-bottom: 10px;}</style>", commentRaw];
+        
         return commentRaw;
     }
     return string;
@@ -419,9 +430,36 @@ static NSString * _commentCSS = nil;
 
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string {
     
-    NSMutableAttributedString *text = [[[NSAttributedString alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
-    NSRange range = (NSRange){0, [text length]};
+    if([string containsString:@"were going with blocking at the router"]) {
+        NSLog(@"target");
+    }
     
+    NSMutableAttributedString *text = [[[NSAttributedString alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
+    
+    // Fix stupid issue with DTCoreText turning <p><blockquote> into \n\n
+    if(text) {
+        NSMutableString * mutableText = [text mutableString];
+        while([mutableText rangeOfString:@"\n\n"].location != NSNotFound) {
+            NSRange rangeOfDoubleNewline = [mutableText rangeOfString:@"\n\n"];
+            [mutableText deleteCharactersInRange:rangeOfDoubleNewline];
+            [mutableText insertString:@"\n" atIndex:rangeOfDoubleNewline.location];
+        }
+        
+        // Fix leading and trailing space issues
+        @try {
+            NSArray* matches = [_leadingTrailingRegex matchesInString:mutableText options:0
+                                                range:NSMakeRange(0, [mutableText length])];
+            matches = [[matches reverseObjectEnumerator] allObjects];
+            
+            for(NSTextCheckingResult * match in matches) {
+                [mutableText deleteCharactersInRange:match.range];
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"CRASH: when removing leading/trailing whitespace on comment");
+        }
+    }
+    NSRange range = (NSRange){0, [text length]};
     
     [text enumerateAttribute:NSFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
         UIFont* currentFont = value;
@@ -438,29 +476,8 @@ static NSString * _commentCSS = nil;
                                 value:[LabelHelper adjustedBodyFont] range:range];
         }
     }];
+    
     [text enumerateAttributesInRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        
-        // Detect block quotes and apply custom paragraph style with indent
-        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
-            
-            if([attrs[NSForegroundColorAttributeName] isEqual:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]]) {
-                //                NSLog(@"Block quote");
-                
-                if([[attrs allKeys] containsObject:NSParagraphStyleAttributeName]) {
-                    NSMutableParagraphStyle * style = [attrs[NSParagraphStyleAttributeName] mutableCopy];
-                    
-                    //                    style.firstLineHeadIndent = 100.0f;
-                    //                    style.headIndent = 100.0f;
-                    
-                    //                    style.tailIndent = -style.headIndent;
-                    
-                    // TODO, not sure what to do here, tailIndent behaves unpredictably
-                    
-                    [text removeAttribute:NSParagraphStyleAttributeName range:range];
-                    [text addAttribute:NSParagraphStyleAttributeName value:style range:range];
-                }
-            }
-        }
         
         // Detect links and remove any link metadata created by DTCoreText
         // As appreciated as it is, it screws with our label class, which is also

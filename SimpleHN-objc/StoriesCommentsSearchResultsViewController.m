@@ -85,9 +85,9 @@
     }
     [self.tableView reloadData];
     
-    if(!self.loadingView.hidden) {
-        self.loadingView.hidden = YES;
-    }
+//    if(!self.loadingView.hidden) {
+//        self.loadingView.hidden = YES;
+//    }
     
     [self updateSectionHeaderViewContent];
 }

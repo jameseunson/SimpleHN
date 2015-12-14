@@ -11,10 +11,12 @@
 #import "StoryLoadMoreCell.h"
 #import "StoryCell.h"
 #import "CommentCell.h"
+#import "StoryCommentsContentLoadingCell.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
-#define kCommentCellReuseIdentifier @"kCommentCellReuseIdentifier"
+#define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
+#define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
 
 // Enables sharing of login for pull-to-load more functionality
 // between all controllers that use it
@@ -24,10 +26,13 @@
 
 @interface StoriesCommentsBaseViewController : UITableViewController <StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
 
-@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
-@property (nonatomic, strong) UITableView * baseTableView;
+//@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
+//@property (nonatomic, strong) UITableView * baseTableView;
 
-@property (nonatomic, strong) ContentLoadingView * loadingView;
+//@property (nonatomic, strong) ContentLoadingView * loadingView;
+
+@property (nonatomic, assign) BOOL initialLoadDone;
+@property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
 
 @property (nonatomic, assign) NSInteger currentVisibleItemMax;
 

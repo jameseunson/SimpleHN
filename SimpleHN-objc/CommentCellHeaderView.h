@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Comment.h"
 
-#define kCommentCellHeaderViewHeight 25.0f
+#define kCommentCellHeaderViewHeight 30.0f
 
 @interface CommentCellHeaderView : UIView
 

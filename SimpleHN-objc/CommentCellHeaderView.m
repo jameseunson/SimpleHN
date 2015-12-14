@@ -21,6 +21,8 @@
 @property (nonatomic, strong) UIView * headerBackgroundView;
 @property (nonatomic, strong) UILabel * headerUpDownLabel;
 
+- (void)didTouchDown:(id)sender;
+
 @property (nonatomic, strong) NSLayoutConstraint * headerStackHorizontalInsetConstraint;
 
 @end
@@ -67,6 +69,10 @@
             }
         }
         [self addConstraints:headerConstraints];
+        
+        UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                         initWithTarget:self action:@selector(didTouchDown:)];
+        [self addGestureRecognizer:tapGestureRecognizer];
     }
     return self;
 }
@@ -81,7 +87,7 @@
 }
 
 - (CGSize)intrinsicContentSize {
-    return CGSizeMake(UIViewNoIntrinsicMetric, 25.0f);
+    return CGSizeMake(UIViewNoIntrinsicMetric, 30.0f);
 }
 
 #pragma mark - Property Override Methods
@@ -101,13 +107,19 @@
         self.headerUpDownLabel.text = kHeaderDownIcon;
         self.headerUpDownLabel.textColor = [UIColor grayColor];
         self.authorLabel.textColor = [UIColor grayColor];
+        self.headerBorderLayer.hidden = YES;
         
     } else {
         
         self.headerUpDownLabel.text = kHeaderUpIcon;
         self.headerUpDownLabel.textColor = [UIColor orangeColor];
         self.authorLabel.textColor = [UIColor orangeColor];
+        self.headerBorderLayer.hidden = NO;
     }
+}
+
+- (void)didTouchDown:(id)sender {
+    NSLog(@"didTouchDown");
 }
 
 @end

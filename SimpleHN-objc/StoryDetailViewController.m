@@ -13,10 +13,12 @@
 #import "ActionDrawerButton.h"
 #import "RegexKitLite.h"
 #import "StoryCommentsNoCommentsCell.h"
+#import "StoryCommentsContentLoadingCell.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
 #define kNoCommentsReuseIdentifier @"noCommentsReuseIdentifier"
+#define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
 
 @import WebKit;
 
@@ -27,11 +29,12 @@
 
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
-@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
-@property (nonatomic, strong) UITableView * baseTableView;
-
 @property (nonatomic, assign) BOOL initialLoadDone;
 @property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
+
+//@property (nonatomic, strong) ContentLoadingView * loadingView;
+
+@property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
 
 - (void)loadContent;
 
@@ -66,6 +69,11 @@
     
     _displayMode = StoryDetailViewControllerDisplayModeStory;
     _initialLoadDone = NO;
+    
+    self.refreshDateFormatter = [[NSDateFormatter alloc] init];
+    [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
+    NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    _refreshDateFormatter.locale = locale;
 }
 
 - (void)loadView {
@@ -79,6 +87,9 @@
     
     [self.tableView registerClass:[StoryCommentsNoCommentsCell class]
            forCellReuseIdentifier:kNoCommentsReuseIdentifier];
+
+    [self.tableView registerClass:[StoryCommentsContentLoadingCell class]
+           forCellReuseIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor whiteColor];
@@ -86,9 +97,6 @@
     [self.refreshControl addTarget:self
                             action:@selector(reloadContent:)
                   forControlEvents:UIControlEventValueChanged];
-    
-    self.baseRefreshControl = self.refreshControl;
-    self.baseTableView = self.tableView;
 }
 
 - (void)setDetailItem:(Story*)newDetailItem {
@@ -115,6 +123,8 @@
             [_webViewController.view removeFromSuperview];
             _webViewController = nil;
         }
+        
+        self.initialLoadDone = YES;
         
         _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
         
@@ -175,6 +185,17 @@
     [self.detailComment findStoryForComment:^(Story *story) {
         NSLog(@"root: %@", story);
         
+//        self.loadingProgress = [NSProgress progressWithTotalUnitCount:1];
+//        [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
+//                                  options:NSKeyValueObservingOptionNew context:NULL];
+//        
+//        NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+//                                                       delegate]).masterProgress;
+//        masterProgress.completedUnitCount = 0;
+//        masterProgress.totalUnitCount = 1;
+//        
+//        [masterProgress addChild:self.loadingProgress withPendingUnitCount:1];
+        
         self.detailItem = story;
         [self.detailItem loadSpecificCommentForStory:
             self.detailComment.parent];
@@ -196,61 +217,80 @@
     
     UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
     self.navigationItem.rightBarButtonItem = item;
+    
+    self.initialLoadDone = NO;
 }
 
 #pragma mark - UITableViewDataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if(section == 0) {
-        return 1;
-        
-    } else {
-        
-        NSInteger commentCount = [_detailItem.flatDisplayComments count];
-        if(commentCount == 0 && _initialLoadDone) {
+    if(_initialLoadDone) {
+        if(section == 0) {
             return 1;
             
         } else {
-            return commentCount;
+            
+            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            if(commentCount == 0 && _initialLoadDone) {
+                return 1;
+                
+            } else {
+                return commentCount;
+            }
         }
+    } else {
+        return 1;
     }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    if(_initialLoadDone) {
+        return 2;
+    } else {
+        return 1;
+    }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    if(indexPath.section == 0) {
-        StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                           kStoryCellReuseIdentifier forIndexPath:indexPath];
-        
-        cell.story = self.detailItem;
-        cell.storyCellDelegate = self;
-        
-        return cell;
-        
-    } else {
-        
-        NSInteger commentCount = [_detailItem.flatDisplayComments count];
-        
-        if(commentCount == 0 && _initialLoadDone) {
-            StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
+    if(_initialLoadDone) {
+    
+        if(indexPath.section == 0) {
+            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                               kStoryCellReuseIdentifier forIndexPath:indexPath];
+            
+            cell.story = self.detailItem;
+            cell.storyCellDelegate = self;
+            
             return cell;
             
         } else {
             
-            Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+            NSInteger commentCount = [_detailItem.flatDisplayComments count];
             
-            CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
-                                                                 forIndexPath:indexPath];
-            cell.comment = comment;
-            
-            cell.commentCellDelegate = self;
-            
-            return cell;
+            if(commentCount == 0 && _initialLoadDone) {
+                StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
+                return cell;
+                
+            } else {
+                
+                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+                
+                CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                                     forIndexPath:indexPath];
+                cell.comment = comment;
+                cell.commentCellDelegate = self;
+                
+                return cell;
+            }
         }
+    
+    
+    } else {
+        
+        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+        
+        return cell;
     }
 }
 
@@ -260,24 +300,29 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
-    if(indexPath.section == 0) {
-        return [StoryCell heightForStoryCellWithStory:self.detailItem
-                                                width:tableView.frame.size.width];
-
-    } else {
-        
-        NSInteger commentCount = [_detailItem.flatDisplayComments count];
-        if(commentCount == 0 && _initialLoadDone) {
-            
-            CGFloat headerHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
-                                                                    width:tableView.frame.size.width];
-            return self.tableView.frame.size.height - headerHeight - self.tabBarController.tabBar.frame.size.height - self.navigationController.navigationBar.frame.size.height;
+    if(_initialLoadDone) {
+        if(indexPath.section == 0) {
+            return [StoryCell heightForStoryCellWithStory:self.detailItem
+                                                    width:tableView.frame.size.width];
             
         } else {
-            Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-            return [CommentCell heightForCommentCell:comment
-                                               width:tableView.frame.size.width];
+            
+            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            if(commentCount == 0 && _initialLoadDone) {
+                
+                CGFloat headerHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
+                                                                        width:tableView.frame.size.width];
+                return self.tableView.frame.size.height - headerHeight - self.tabBarController.tabBar.frame.size.height - self.navigationController.navigationBar.frame.size.height;
+                
+            } else {
+                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+                return [CommentCell heightForCommentCell:comment
+                                                   width:tableView.frame.size.width];
+            }
         }
+        
+    } else {
+        return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom;
     }
 }
 
@@ -285,14 +330,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if(indexPath.section == 0 && indexPath.row == 0) {
-        self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
-        [self didSelectContentSegment:self.contentSelectSegmentedControl];
-        
-    } else {
-        NSInteger commentCount = [_detailItem.flatDisplayComments count];
-        if(commentCount > 0) {
-            [self expandCollapseCommentForRow:indexPath];
+    if(self.initialLoadDone) {
+        if(indexPath.section == 0 && indexPath.row == 0) {
+            self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
+            [self didSelectContentSegment:self.contentSelectSegmentedControl];
+            
+        } else {
+            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            if(commentCount > 0) {
+                [self expandCollapseCommentForRow:indexPath];
+            }
         }
     }
 }
@@ -319,13 +366,32 @@
         
     } else if([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        NSNumber * storyIdentifier = (NSNumber*)sender;
+        NSNumber * itemIdentifier = (NSNumber*)sender;
         
         StoryDetailViewController *controller = (StoryDetailViewController *)
             [[segue destinationViewController] topViewController];
         
-        [Story createStoryFromItemIdentifier:storyIdentifier completion:^(Story *story) {
-            controller.detailItem = story;
+        NSString * itemURL = [NSString stringWithFormat:
+                              @"https://hacker-news.firebaseio.com/v0/item/%@", itemIdentifier];
+        __block Firebase * itemRef = [[Firebase alloc] initWithUrl:itemURL];
+        [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+            
+            HNItemHelperIdentificationResult result = [HNItemHelper identifyHNItemWithSnapshotDictionary:
+                                                       snapshot.value];
+            if(result == HNItemHelperIdentificationResultComment) {
+                [[Comment class] createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
+                    controller.detailComment = comment;
+                }];
+                
+            } else if(result == HNItemHelperIdentificationResultStory) {
+                [Story createStoryFromSnapshot:snapshot completion:^(Story *story) {
+                    controller.detailItem = story;
+                }];
+                
+            } else {
+                NSLog(@"ERROR: Unrecognized or unsupported item type.");
+            }
+            [itemRef removeAllObservers];
         }];
         
         controller.navigationItem.leftBarButtonItem =
@@ -351,7 +417,7 @@
 }
 
 - (void)commentCreated:(NSNotification*)notification {
-    [self.baseTableView reloadData];
+    [self.tableView reloadData];
     
     if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
         self.loadingProgress.completedUnitCount++;
@@ -362,8 +428,8 @@
     
     NSLog(@"commentCollapsedComplete");
     
-    [self.baseTableView beginUpdates];
-    [self.baseTableView endUpdates];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 - (void)loadContent {
@@ -375,7 +441,7 @@
     Story * detailStory = (Story*)_detailItem;
     if(!detailStory.kids || [detailStory.kids count] == 0) {
         
-        _initialLoadDone = YES;
+        self.initialLoadDone = YES;
         
         self.tableView.scrollEnabled = NO;
         [self.tableView reloadData]; // Display no comments cell
@@ -384,7 +450,6 @@
 
         self.tableView.scrollEnabled = YES;
         
-        _initialLoadDone = NO;
         [detailStory loadCommentsForStory];
         
         self.loadingProgress = [NSProgress progressWithTotalUnitCount:
@@ -422,8 +487,8 @@
         
         // Job done, don't expand again
         if(comment == expandedComment) {
-            [self.baseTableView beginUpdates];
-            [self.baseTableView endUpdates];
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
             
             return;
         }
@@ -431,17 +496,38 @@
     
     comment.sizeStatus = CommentSizeStatusExpanded;
     
-    [self.baseTableView beginUpdates];
-    [self.baseTableView endUpdates];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+
+#pragma mark - Property Override Methods
+- (void)setInitialLoadDone:(BOOL)initialLoadDone {
+    _initialLoadDone = initialLoadDone;
+    
+    if(_initialLoadDone) {
+        self.tableView.scrollEnabled = YES;
+        
+    } else {
+        self.tableView.scrollEnabled = NO;
+    }
 }
 
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
     if([link isHNInternalLink]) {
-        NSNumber * identifier = [link identifierForHNInternalLink];
-        if(identifier) {
-            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        
+        if([link isHNInternalItemLink]) {
+            NSNumber * identifier = [link identifierForHNInternalItemLink];
+            if(identifier) {
+                [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+            }
+            
+        } else if([link isHNInternalUserLink]) {
+            NSString * username = [link usernameForHNInternalUserLink];
+            if(username) {
+                [self performSegueWithIdentifier:@"showUser" sender:username]; return;
+            }
         }
     } // Catches two else cases implicitly
     
@@ -474,16 +560,22 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    if([fractionCompleted floatValue] > 0.0f && !_initialLoadDone) {
+        self.initialLoadDone = YES;
+    }
+    
     if([fractionCompleted floatValue] == 1.0f) {
         
-        [self.baseRefreshControl endRefreshing];
         [self.loadingProgress removeObserver:self
                                   forKeyPath:@"fractionCompleted"];
         
         Story * detailStory = (Story*)_detailItem;
         [detailStory finishLoadingCommentsForStory];
         
-        _initialLoadDone = YES;
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
+        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                               @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        [self.refreshControl endRefreshing];
     }
 }
 
@@ -506,9 +598,18 @@
 - (void)storyCell:(StoryCell*)cell didTapLink:(NSURL*)link {
     
     if([link isHNInternalLink]) {
-        NSNumber * identifier = [link identifierForHNInternalLink];
-        if(identifier) {
-            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        
+        if([link isHNInternalItemLink]) {
+            NSNumber * identifier = [link identifierForHNInternalItemLink];
+            if(identifier) {
+                [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+            }
+            
+        } else if([link isHNInternalUserLink]) {
+            NSString * username = [link usernameForHNInternalUserLink];
+            if(username) {
+                [self performSegueWithIdentifier:@"showUser" sender:username]; return;
+            }
         }
     } // Catches two else cases implicitly
     

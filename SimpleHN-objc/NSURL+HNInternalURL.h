@@ -11,6 +11,10 @@
 @interface NSURL (HNInternalURL)
 
 - (BOOL)isHNInternalLink;
-- (NSNumber*)identifierForHNInternalLink;
+- (BOOL)isHNInternalItemLink;
+- (BOOL)isHNInternalUserLink;
+
+- (NSNumber*)identifierForHNInternalItemLink;
+- (NSString*)usernameForHNInternalUserLink;
 
 @end

@@ -93,6 +93,7 @@
         
         _headerView.collapsed = NO;
         _headerView.hidden = NO;
+        self.votingEnabled = YES;
         
     } else if(_comment.sizeStatus == CommentSizeStatusNormal) {
         _actionDrawerView.hidden = YES;
@@ -100,6 +101,7 @@
         
         _headerView.collapsed = NO;
         _headerView.hidden = NO;
+        self.votingEnabled = YES;
         
     } else if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
         _actionDrawerView.hidden = YES;
@@ -111,6 +113,7 @@
             _headerView.hidden = NO;
         }
         _headerView.collapsed = YES;
+        self.votingEnabled = NO;
     }
     
     if(self.comment.voteStatus == StoryCommentUserVoteUpvote) {

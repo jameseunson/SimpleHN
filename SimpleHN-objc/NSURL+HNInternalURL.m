@@ -8,20 +8,32 @@
 
 #import "NSURL+HNInternalURL.h"
 
+#define kInternalItemLinkRegex @"https?:\\/\\/news.ycombinator.com\\/item\\?id=([0-9]+)"
+#define kInternalUserLinkRegex @"https?:\\/\\/news.ycombinator.com\\/user\\?id=([a-zA-Z0-9]+)"
+
 @interface NSURL (HNInternalURLPrivate)
-- (NSArray*)matchesForCandidateString;
+- (NSArray*)matchesForItemRegex;
+- (NSArray*)matchesForUserRegex;
 
 @end
 
 @implementation NSURL (HNInternalURL)
 
 - (BOOL)isHNInternalLink {
-    return ([[self matchesForCandidateString] count] > 0);
+    return ([[self matchesForItemRegex] count] > 0) || ([[self matchesForUserRegex] count] > 0);
 }
 
-- (NSNumber*)identifierForHNInternalLink {
+- (BOOL)isHNInternalItemLink {
+    return ([[self matchesForItemRegex] count] > 0);
+}
 
-    if([self isHNInternalLink]) {
+- (BOOL)isHNInternalUserLink {
+    return ([[self matchesForUserRegex] count] > 0);
+}
+
+- (NSNumber*)identifierForHNInternalItemLink {
+
+    if([self isHNInternalItemLink]) {
         
         @try {
             NSNumber * identifier = @([[[[self absoluteString] componentsSeparatedByString:@"?id="] lastObject] intValue]);
@@ -34,15 +46,33 @@
     return nil;
 }
 
-- (NSArray*)matchesForCandidateString {
-    NSString * internalLinkRegex = @"https?:\\/\\/news.ycombinator.com\\/item\\?id=([0-9]+)";
+- (NSString*)usernameForHNInternalUserLink {
+    
+    if([self isHNInternalUserLink]) {
+        
+        @try {
+            return [[[self absoluteString] componentsSeparatedByString:@"?id="] lastObject];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"ERROR: Could not extract username from %@", [self absoluteString]);
+        }
+    }
+    return nil;
+}
+
+- (NSArray*)matchesForItemRegex {
     
     NSError * error = nil;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:internalLinkRegex options:NSRegularExpressionCaseInsensitive error:&error];
+    NSArray* itemMatches = [[NSRegularExpression regularExpressionWithPattern:kInternalItemLinkRegex options:NSRegularExpressionCaseInsensitive error:&error] matchesInString:[self absoluteString] options:0 range:NSMakeRange(0, [[self absoluteString] length])];
     
-    NSArray* matches = [regex matchesInString:[self absoluteString] options:0 range:NSMakeRange(0, [[self absoluteString] length])];
+    return itemMatches;
+}
+- (NSArray*)matchesForUserRegex {
     
-    return matches;
+    NSError * error = nil;
+    NSArray* userMatches = [[NSRegularExpression regularExpressionWithPattern:kInternalUserLinkRegex options:NSRegularExpressionCaseInsensitive error:&error] matchesInString:[self absoluteString] options:0 range:NSMakeRange(0, [[self absoluteString] length])];
+    
+    return userMatches;
 }
 
 @end

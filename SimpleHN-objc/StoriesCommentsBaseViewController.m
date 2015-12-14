@@ -15,14 +15,13 @@
 @interface StoriesCommentsBaseViewController ()
 - (void)didToggleNightMode:(id)sender;
 
-@property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
-
 @end
 
 @implementation StoriesCommentsBaseViewController
 
 - (void)awakeFromNib {
     
+    _initialLoadDone = NO;
     _currentVisibleItemMax = 20;
     _shouldDisplayLoadMoreCell = NO;
     
@@ -54,6 +53,8 @@
            forCellReuseIdentifier:kStoryLoadMoreCellReuseIdentifier];
     [self.tableView registerClass:[CommentCell class]
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
+    [self.tableView registerClass:[StoryCommentsContentLoadingCell class]
+           forCellReuseIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor whiteColor];
@@ -61,12 +62,6 @@
     [self.refreshControl addTarget:self
                             action:@selector(loadContent:)
                   forControlEvents:UIControlEventValueChanged];
-    
-    self.baseRefreshControl = self.refreshControl;
-    self.baseTableView = self.tableView;
-    
-    self.loadingView = [[ContentLoadingView alloc] init];
-    _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
     
     self.searchResultsController = [[StoriesCommentsSearchResultsViewController alloc] init];
     _searchResultsController.delegate = self;
@@ -94,25 +89,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Disgusting hack so we can have both refreshControl from UITableViewController,
-    // and tableview as a subview of self.view, instead of tableview == self.view,
-    // so we can add arbitrary views over the top (for instance _loadingView)
-    UITableView * baseTableView = (UITableView*)self.view;
-    
-    self.view = [[UIView alloc] initWithFrame:baseTableView.bounds];
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.view.autoresizingMask = baseTableView.autoresizingMask;
-    
-    [self.view addSubview:baseTableView];
-    
-    [self.view addSubview:_loadingView];
-    
-    NSDictionary * bindings = NSDictionaryOfVariableBindings(_loadingView); // _tableView
-    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"H:|[_loadingView]|;V:|[_loadingView]|" options:0 metrics:nil views:bindings]];
-    
     [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
                                                  delegate]).masterProgress];
+    self.initialLoadDone = NO;
 }
 
 // Stub method, to be overridden in subclass
@@ -120,7 +99,7 @@
     NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
     
     // Reset to original state
-    StoryLoadMoreCell * loadMoreCell = [self.baseTableView cellForRowAtIndexPath:
+    StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
                                         [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
     loadMoreCell.state = StoryLoadMoreCellStateNormal;
 }
@@ -166,47 +145,60 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    NSInteger itemsCount = [_visibleItems count];
-    if(itemsCount > 0 && _shouldDisplayLoadMoreCell) {
-        itemsCount = itemsCount + 1;
+    if(_initialLoadDone) {
+        NSInteger itemsCount = [_visibleItems count];
+        if(itemsCount > 0 && _shouldDisplayLoadMoreCell) {
+            itemsCount = itemsCount + 1;
+        }
+        return itemsCount;
+        
+    } else {
+        return 1;
     }
-//    NSLog(@"numberOfRowsInSection: %lu, itemsCount: %lu", section, itemsCount);
-    return itemsCount;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == [_visibleItems count] && [_visibleItems count] > 0
-       && _shouldDisplayLoadMoreCell) {
-        
-        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                                   kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
-        return cell;
-        
-    } else {
-        
-        id item = [self itemForIndexPath:indexPath];
-        if([item isKindOfClass:[Story class]]) {
+    if(_initialLoadDone) {
+
+        if(indexPath.row == [_visibleItems count] && [_visibleItems count] > 0
+           && _shouldDisplayLoadMoreCell) {
             
-            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                               kStoryCellReuseIdentifier forIndexPath:indexPath];
-            cell.story = item;
-            
-            cell.storyCellDelegate = self;
-            cell.votingDelegate = self;
-            
+            StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                       kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
             return cell;
             
         } else {
             
-            CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
-                                                                 forIndexPath:indexPath];
-            cell.comment = item;
-            
-            cell.commentCellDelegate = self;
-            
-            return cell;
+            id item = [self itemForIndexPath:indexPath];
+            if([item isKindOfClass:[Story class]]) {
+                
+                StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                   kStoryCellReuseIdentifier forIndexPath:indexPath];
+                cell.story = item;
+                
+                cell.storyCellDelegate = self;
+                cell.votingDelegate = self;
+                
+                return cell;
+                
+            } else {
+                
+                CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                                     forIndexPath:indexPath];
+                cell.comment = item;
+                
+                cell.commentCellDelegate = self;
+                
+                return cell;
+            }
         }
+        
+    } else {
+        
+        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+        
+        return cell;
     }
 }
 
@@ -228,33 +220,40 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == self.currentVisibleItemMax || indexPath.row > self.currentVisibleItemMax) {
-        return 66.0f;
+    if(_initialLoadDone) {
+        if(indexPath.row == self.currentVisibleItemMax || indexPath.row > self.currentVisibleItemMax) {
+            return 66.0f;
+            
+        } else {
+            
+            @try {
+                id item = [self itemForIndexPath:indexPath];
+                if([item isKindOfClass:[Story class]]) {
+                    return [StoryCell heightForStoryCellWithStory:item width:tableView.frame.size.width];
+                    
+                } else if([item isKindOfClass:[Comment class]]) {
+                    return [CommentCell heightForCommentCell:item width:tableView.frame.size.width];
+                    
+                } else {
+                    return 88.0f;
+                }
+            } @catch(NSException * e) {
+                NSLog(@"heightForRowAtIndexPath: %@, crash", indexPath);
+                return 44.0f;
+            }
+            
+        }
         
     } else {
-        
-        @try {
-            id item = [self itemForIndexPath:indexPath];
-            if([item isKindOfClass:[Story class]]) {
-                return [StoryCell heightForStoryCellWithStory:item width:tableView.frame.size.width];
-                
-            } else if([item isKindOfClass:[Comment class]]) {
-                return [CommentCell heightForCommentCell:item width:tableView.frame.size.width];
-                
-            } else {
-                return 88.0f;
-            }
-        } @catch(NSException * e) {
-            NSLog(@"heightForRowAtIndexPath: %@, crash", indexPath);
-            return 44.0f;
-        }
-
+        return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom;
     }
 }
 
 #pragma mark - UIScrollViewDelegate Methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if(scrollView == self.baseTableView) {
+    if(scrollView == self.tableView) {
+        
+        NSLog(@"%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
         
         // If there isn't more content to display, no reason to run any of this
         if(!_shouldDisplayLoadMoreCell) {
@@ -273,14 +272,14 @@
         // contentOffset.y adjusted to match cell.frame.origin.y, taking into
         // account screen height and inset from navigation bar b/c of translucency
         CGFloat adjustedYPosition = (scrollView.contentOffset.y + scrollView.frame.size.height) -
-        44.0f - self.baseTableView.contentInset.top;
+        44.0f - self.tableView.contentInset.top;
         
         BOOL scrollingDown = NO;
         if(adjustedYPosition > _lastContentOffset) {
             scrollingDown = YES;
         }
         
-        StoryLoadMoreCell * loadMoreCell = [self.baseTableView cellForRowAtIndexPath:
+        StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
                                             [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
         
         // Ensure that transition starts only when contentOffset is
@@ -373,7 +372,7 @@
             
         } else {
             
-            Story * story = [self itemForIndexPath: [self.baseTableView indexPathForSelectedRow]];
+            Story * story = [self itemForIndexPath: [self.tableView indexPathForSelectedRow]];
             [controller setDetailItem:story];
         }
         
@@ -387,7 +386,18 @@
 - (void)setShouldDisplayLoadMoreCell:(BOOL)shouldDisplayLoadMoreCell {
     _shouldDisplayLoadMoreCell = shouldDisplayLoadMoreCell;
     
-    [self.baseTableView reloadData];
+    [self.tableView reloadData];
+}
+
+- (void)setInitialLoadDone:(BOOL)initialLoadDone {
+    _initialLoadDone = initialLoadDone;
+    
+    if(_initialLoadDone) {
+        self.tableView.scrollEnabled = YES;
+        
+    } else {
+        self.tableView.scrollEnabled = NO;
+    }
 }
 
 #pragma mark - StoryCellDelegate Methods
@@ -399,9 +409,18 @@
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
     if([link isHNInternalLink]) {
-        NSNumber * identifier = [link identifierForHNInternalLink];
-        if(identifier) {
-            [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+        
+        if([link isHNInternalItemLink]) {
+            NSNumber * identifier = [link identifierForHNInternalItemLink];
+            if(identifier) {
+                [self performSegueWithIdentifier:@"showDetail" sender:identifier]; return;
+            }
+            
+        } else if([link isHNInternalUserLink]) {
+            NSString * username = [link usernameForHNInternalUserLink];
+            if(username) {
+                [self performSegueWithIdentifier:@"showUser" sender:username]; return;
+            }
         }
     } // Catches two else cases implicitly
     
@@ -464,13 +483,9 @@
 - (void)loadContent:(id)sender {
     NSLog(@"loadContent:");
     
-    if(self.baseRefreshControl) {
-        
-        NSString *title = [NSString stringWithFormat:@"Last update: %@", [_refreshDateFormatter stringFromDate:[NSDate date]]];
-        self.baseRefreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
-                                                   @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
-        [self.baseRefreshControl endRefreshing];
-    }
+//    if(self.refreshControl) {
+//    
+//    }
 }
 
 #pragma mark - StoryCommentVotingTableViewCellDelegate Methods

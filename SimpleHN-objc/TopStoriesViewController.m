@@ -11,6 +11,7 @@
 @interface TopStoriesViewController ()
 
 - (void)didTapTimePeriodItem:(id)sender;
+- (void)didTapDebugItem:(id)sender;
 
 @property (nonatomic, strong) UIBarButtonItem * timePeriodItem;
 @property (nonatomic, strong) NSNumber * selectedTimePeriod;
@@ -32,7 +33,12 @@
     
     self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
                            UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
-    self.navigationItem.rightBarButtonItem = _timePeriodItem;
+//    self.navigationItem.rightBarButtonItem = _timePeriodItem;
+    
+    UIBarButtonItem * debugItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
+                                   UIBarButtonSystemItemOrganize target:self action:@selector(didTapDebugItem:)];
+    
+    self.navigationItem .rightBarButtonItems = @[ _timePeriodItem, debugItem ];
     
     self.ref = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/topstories"];
@@ -79,10 +85,52 @@
 }
 
 #pragma mark - Private Methods
-
-
 - (void)didTapTimePeriodItem:(id)sender {
     [self performSegueWithIdentifier:@"showTimePeriodSelect" sender:nil];
+}
+
+- (void)didTapDebugItem:(id)sender {
+    
+    UIAlertController * controller = [UIAlertController alertControllerWithTitle:
+                                      @"Debug" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [controller addAction:[UIAlertAction actionWithTitle:@"Load Comment" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        __block UITextField * textFieldRef = nil;
+        
+        UIAlertController * commentAlertController = [UIAlertController alertControllerWithTitle:
+                                                      @"Enter Comment ID" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        
+        [commentAlertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            textField.placeholder = @"Comment ID";
+//            textField.text = @"10702042"; // User internal linking
+            textField.text = @"10701973"; // User internal linking
+            textFieldRef = textField;
+        }];
+        
+        [commentAlertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+
+            UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            StoryDetailViewController * vc = (StoryDetailViewController *)
+                [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewController"];
+            
+            [Comment createCommentFromItemIdentifier:@([textFieldRef.text intValue]) completion:^(Comment *comment) {
+                vc.detailComment = comment;
+            }];
+            
+            [self.navigationController pushViewController:vc animated:YES];
+            
+        }]];
+        [commentAlertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        
+        [self presentViewController:commentAlertController animated:YES completion:nil];
+
+    }]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"Load Story" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 @end
