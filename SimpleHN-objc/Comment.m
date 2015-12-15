@@ -29,6 +29,7 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
 
 @implementation Comment
 @synthesize attributedText = _attributedText;
+@synthesize nightAttributedText = _nightAttributedText;
 @synthesize linksLookup = _linksLookup;
 @synthesize childCommentCount = _childCommentCount;
 
@@ -221,6 +222,30 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     _attributedText = [[self class] createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSAttributedString*)nightAttributedText {
+    if(_nightAttributedText) {
+        return _nightAttributedText;
+    }
+    
+    NSMutableAttributedString * mutableAttributedString = [self.attributedText mutableCopy];
+    
+    [mutableAttributedString enumerateAttributesInRange:NSMakeRange(0, [mutableAttributedString length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+
+        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
+            UIColor * color = attrs[NSForegroundColorAttributeName];
+            
+            if([color isEqual:[UIColor blackColor]]) {
+                [mutableAttributedString removeAttribute:NSForegroundColorAttributeName range:range];
+                [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:range];
+            }
+        }
+    }];
+    
+    _nightAttributedText = [mutableAttributedString copy];
+    
+    return _nightAttributedText;
 }
 
 - (NSDictionary*)linksLookup {
@@ -514,8 +539,6 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     if(![string containsString:@"..."]) {
         return @{};
     }
-    
-    NSLog(@"extractLinksLookup, raw, %@", string);
     
     NSMutableDictionary * lookup = [[NSMutableDictionary alloc] init];
     

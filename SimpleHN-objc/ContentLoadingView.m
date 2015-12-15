@@ -64,7 +64,7 @@
             self.loadingLabel.nightTextColor = UIColorFromRGB(0x999999);
             
             self.backgroundColor = [UIColor whiteColor];
-            self.nightBackgroundColor = UIColorFromRGB(0x333333);
+            self.nightBackgroundColor = kNightDefaultColor;
         }];
     }
     return self;

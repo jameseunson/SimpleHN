@@ -49,7 +49,7 @@
     [self addColorChangedBlock:^{
         @strongify(self);
         self.view.normalBackgroundColor = UIColorFromRGB(0xffffff);
-        self.view.nightBackgroundColor = UIColorFromRGB(0x343434);
+        self.view.nightBackgroundColor = kNightDefaultColor;
     }];
 }
 

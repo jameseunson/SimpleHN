@@ -52,7 +52,7 @@
         [self addColorChangedBlock:^{
             @strongify(self);
             self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
-            self.contentView.nightBackgroundColor = UIColorFromRGB(0x343434);
+            self.contentView.nightBackgroundColor = kNightDefaultColor;
         }];
         
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
@@ -242,8 +242,14 @@
 - (void)setComment:(Comment *)comment {
     _comment = comment;
     
-    if(comment.text != nil) {
-        self.commentLabel.text = self.comment.attributedText;
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        if(comment.text != nil) {
+            self.commentLabel.text = self.comment.nightAttributedText;
+        }
+    } else {
+        if(comment.text != nil) {
+            self.commentLabel.text = self.comment.attributedText;
+        }
     }
     
     self.headerView.comment = comment;

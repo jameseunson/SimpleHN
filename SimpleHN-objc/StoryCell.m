@@ -76,10 +76,10 @@
         [self addColorChangedBlock:^{
             @strongify(self);
             self.normalBackgroundColor = UIColorFromRGB(0xffffff);
-            self.nightBackgroundColor = UIColorFromRGB(0x333333);
+            self.nightBackgroundColor = kNightDefaultColor;
             
             self.storyTitleLabel.normalTextColor = [UIColor blackColor];
-            self.storyTitleLabel.nightTextColor = UIColorFromRGB(0x999999);
+            self.storyTitleLabel.nightTextColor = UIColorFromRGB(0xffffff);
         }];
     }
     return self;

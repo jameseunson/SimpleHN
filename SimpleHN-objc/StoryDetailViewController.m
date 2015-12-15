@@ -224,10 +224,10 @@
     [self addColorChangedBlock:^{
         @strongify(self);
         self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
         
         self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.tabBarController.tabBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
     }];
 }
 

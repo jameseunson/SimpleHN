@@ -88,10 +88,10 @@
     [self addColorChangedBlock:^{
         @strongify(self);
         self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
         
         self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.tabBarController.tabBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
     }];
     
 //    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorWithColors([UIColor blackColor], [UIColor whiteColor]);
@@ -103,6 +103,17 @@
     [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
                                                  delegate]).masterProgress];
     self.initialLoadDone = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        
+    } else {
+        self.navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+    }
 }
 
 // Stub method, to be overridden in subclass
