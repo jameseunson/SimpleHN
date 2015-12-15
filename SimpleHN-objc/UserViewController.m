@@ -322,41 +322,51 @@
     [self.tableView reloadData];
 }
 
+#pragma mark - UITableViewDataSource Methods
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == [self.visibleItems count] && [self.visibleItems count] > 0
-       && self.shouldDisplayLoadMoreCell) {
+    if(self.initialLoadDone) {
         
-        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                                   kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
-        return cell;
-        
-    } else {
-        
-        id item = [self itemForIndexPath:indexPath];
-        if([item isKindOfClass:[Story class]]) {
+        if(indexPath.row == [self.visibleItems count] && [self.visibleItems count] > 0
+           && self.shouldDisplayLoadMoreCell) {
             
-            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                               kStoryCellReuseIdentifier forIndexPath:indexPath];
-            cell.story = item;
-            
-            cell.storyCellDelegate = self;
-            cell.votingDelegate = self;
-            
+            StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                       kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
             return cell;
             
         } else {
             
-            CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
-                                                                 forIndexPath:indexPath];
-            cell.comment = item;
-            cell.commentCellDelegate = self;
-            
-            cell.actionDrawerView.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeFlag), @(ActionDrawerViewButtonTypeLink),
-                                                         @(ActionDrawerViewButtonTypeContext), @(ActionDrawerViewButtonTypeMore)];
-            
-            return cell;
+            id item = [self itemForIndexPath:indexPath];
+            if([item isKindOfClass:[Story class]]) {
+                
+                StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                   kStoryCellReuseIdentifier forIndexPath:indexPath];
+                cell.story = item;
+                
+                cell.storyCellDelegate = self;
+                cell.votingDelegate = self;
+                
+                return cell;
+                
+            } else {
+                
+                CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                                     forIndexPath:indexPath];
+                cell.comment = item;
+                cell.commentCellDelegate = self;
+                
+                cell.actionDrawerView.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeFlag), @(ActionDrawerViewButtonTypeLink),
+                                                             @(ActionDrawerViewButtonTypeContext), @(ActionDrawerViewButtonTypeMore)];
+                
+                return cell;
+            }
         }
+        
+    } else {
+        
+        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                                  kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+        return cell;
     }
 }
 
@@ -395,11 +405,16 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    
+    if([fractionCompleted floatValue] > 0.0f && !self.initialLoadDone) {
+        self.initialLoadDone = YES;
+    }
+    
     if([fractionCompleted floatValue] == 1.0f) {
-//        if(!self.loadingView.hidden) {
-//            self.loadingView.hidden = YES;
-//        }
         
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
+        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                               @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
         [self.refreshControl endRefreshing];
     }
 }

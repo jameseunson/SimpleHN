@@ -14,5 +14,7 @@
 
 @property (nonatomic, strong) NSProgress * masterProgress;
 
+- (void)updateNightMode;
+
 @end
 

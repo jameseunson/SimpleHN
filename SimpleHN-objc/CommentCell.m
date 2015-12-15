@@ -48,6 +48,13 @@
                                                          initWithTarget:self action:@selector(didTapBackgroundView:)];
         [self.headerView addGestureRecognizer:_headerBackgroundViewTapGestureRecognizer];
         
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
+            self.contentView.nightBackgroundColor = UIColorFromRGB(0x343434);
+        }];
+        
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
 //                                                     name:kCommentCollapsedChanged object:nil];
     }
@@ -291,6 +298,11 @@
 - (void)attributedLabel:(TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
     
+    if([[self.comment.linksLookup allKeys] containsObject:url.absoluteString]) {
+        NSString * substituteURLString = self.comment.linksLookup[url.absoluteString];
+        url = [NSURL URLWithString:substituteURLString];
+    }
+    
     if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didTapLink:)]) {
         [self.commentCellDelegate performSelector:@selector(commentCell:didTapLink:)
                             withObject:self withObject:url];
@@ -300,6 +312,12 @@
 - (void)attributedLabel:(TTTAttributedLabel *)label
     didLongPressLinkWithURL:(NSURL *)url
                 atPoint:(CGPoint)point {
+    
+    if([[self.comment.linksLookup allKeys] containsObject:url.absoluteString]) {
+        NSString * substituteURLString = self.comment.linksLookup[url.absoluteString];
+        url = [NSURL URLWithString:substituteURLString];
+    }
+    
     if([self.commentCellDelegate respondsToSelector:@selector(commentCell:didLongPressLink:)]) {
         [self.commentCellDelegate performSelector:@selector(commentCell:didLongPressLink:)
                                        withObject:self withObject:url];

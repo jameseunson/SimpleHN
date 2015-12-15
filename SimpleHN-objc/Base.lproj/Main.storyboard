@@ -56,6 +56,55 @@
             </objects>
             <point key="canvasLocation" x="2364" y="-323"/>
         </scene>
+        <!--Root View Controller-->
+        <scene sceneID="jke-if-OUz">
+            <objects>
+                <tableViewController id="Lj0-8u-K5z" customClass="LoginViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="1H1-vQ-Li4">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="QKB-gV-Xbu">
+                                <rect key="frame" x="0.0" y="114" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QKB-gV-Xbu" id="Rxw-WF-JC1">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <animations/>
+                                </tableViewCellContentView>
+                                <animations/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Lj0-8u-K5z" id="T3e-wn-YEe"/>
+                            <outlet property="delegate" destination="Lj0-8u-K5z" id="Eyi-HI-4Tz"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="CGD-Ka-j5E"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xn5-C2-yON" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3984" y="-1877"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="yXD-vC-chM">
+            <objects>
+                <navigationController id="xQP-B7-WHp" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="O7I-Om-4nm">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Lj0-8u-K5z" kind="relationship" relationship="rootViewController" id="kgF-lK-IEu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0zq-hH-yG5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3168" y="-1877"/>
+        </scene>
         <!--Master-->
         <scene sceneID="pY4-Hu-kfo">
             <objects>
@@ -281,6 +330,7 @@
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="HNE-CW-QBG"/>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="vrM-eb-W5I"/>
                         <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="elz-1I-4gk"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="p1A-Bm-3KK"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cz7-Ox-PfB" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -305,6 +355,7 @@
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="NuV-e3-WeM"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="hoo-Tj-FIl"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="Vqu-ZW-CHT"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Led-ww-ny2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -329,6 +380,7 @@
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="W8o-wt-jKi"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="uTo-f3-lkL"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="JFy-cT-bla"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wut-4Y-scY" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -353,6 +405,7 @@
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="bbp-NZ-Hdx"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="gmJ-ZK-BDG"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="tsB-BR-xsZ"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jch-hy-RYH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -371,7 +424,8 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Fsd-YD-tWK"/>
         <segue reference="RlB-mf-JeE"/>
+        <segue reference="Fsd-YD-tWK"/>
+        <segue reference="tsB-BR-xsZ"/>
     </inferredMetricsTieBreakers>
 </document>

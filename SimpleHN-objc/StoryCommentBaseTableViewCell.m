@@ -39,7 +39,12 @@
         _downvoteCornerImageView.hidden = YES;
         [self.contentView addSubview:_downvoteCornerImageView];
         
-        self.contentView.backgroundColor = [UIColor whiteColor];
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
+            self.contentView.nightBackgroundColor = UIColorFromRGB(0x343434);
+        }];
         
         // Configuring the views and colors.
         self.upvoteImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-upvote-icon"]];

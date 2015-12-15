@@ -16,11 +16,15 @@
 #define kSearchFilterTimePeriod @"searchFilterTimePeriod"
 #define kSearchFilterSortType @"searchFilterSortType"
 
+#define kNightModeEnabled @"nightModeEnabled"
+
 @interface AppConfig : AppConfigBase
 
 + (AppConfig *)sharedConfig;
 
 - (BOOL)storyAutomaticallyShowReader;
 - (NSArray*)searchRecentQueries;
+
+- (BOOL)nightModeEnabled;
 
 @end

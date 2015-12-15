@@ -43,6 +43,8 @@
     
     self.masterProgress = [NSProgress progressWithTotalUnitCount:0];
     
+    [self updateNightMode];
+    
     return YES;
 }
 
@@ -77,6 +79,20 @@
         return YES;
     } else {
         return NO;
+    }
+}
+
+- (void)updateNightMode {
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        
+        if([DKNightVersionManager currentThemeVersion] != DKThemeVersionNight) {
+            [DKNightVersionManager nightFalling];
+        }
+    } else {
+        
+        if([DKNightVersionManager currentThemeVersion] != DKThemeVersionNormal) {
+            [DKNightVersionManager dawnComing];
+        }
     }
 }
 

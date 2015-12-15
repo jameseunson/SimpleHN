@@ -55,6 +55,17 @@
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_stackView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_stackView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+        
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            
+            self.loadingLabel.textColor = RGBCOLOR(102, 102, 102);
+            self.loadingLabel.nightTextColor = UIColorFromRGB(0x999999);
+            
+            self.backgroundColor = [UIColor whiteColor];
+            self.nightBackgroundColor = UIColorFromRGB(0x333333);
+        }];
     }
     return self;
 }

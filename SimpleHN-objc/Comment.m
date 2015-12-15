@@ -29,6 +29,7 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
 
 @implementation Comment
 @synthesize attributedText = _attributedText;
+@synthesize linksLookup = _linksLookup;
 @synthesize childCommentCount = _childCommentCount;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
@@ -220,6 +221,16 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     _attributedText = [[self class] createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSDictionary*)linksLookup {
+    if(_linksLookup) {
+        return _linksLookup;
+    }
+    
+    _linksLookup = [[self class] extractLinksLookup:self.text];
+    
+    return _linksLookup;
 }
 
 - (NSString*)shareTitle {
@@ -493,6 +504,37 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     }];
     
     return text;
+}
+
++ (NSDictionary*)extractLinksLookup:(NSString*)string {
+
+    if(![string containsString:@"<a "]) {
+        return @{};
+    }
+    if(![string containsString:@"..."]) {
+        return @{};
+    }
+    
+    NSLog(@"extractLinksLookup, raw, %@", string);
+    
+    NSMutableDictionary * lookup = [[NSMutableDictionary alloc] init];
+    
+    TFHpple * doc = [[TFHpple alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+    NSArray * elements = [doc searchWithXPathQuery:@"//a"];
+    
+    for(TFHppleElement * e in elements) {
+        
+        if([[e tagName] isEqualToString:@"a"] && [[[e attributes] allKeys] containsObject:@"href"]) {
+            NSString * href = e.attributes[@"href"];
+            NSString * content = [e.content stringByReplacingOccurrencesOfString:@"..." withString:@""];
+            
+            if(href && [href length] > 0 && content && [content length] > 0) {
+                lookup[content] = href;
+            }
+        }
+    }
+    
+    return lookup;
 }
 
 @end

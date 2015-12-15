@@ -27,6 +27,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 @synthesize subtitleString = _subtitleString;
 @synthesize timeString = _timeString;
 @synthesize attributedText = _attributedText;
+@synthesize linksLookup = _linksLookup;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -308,6 +309,17 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     return _attributedText;
 }
+
+- (NSDictionary*)linksLookup {
+    if(_linksLookup) {
+        return _linksLookup;
+    }
+    
+    _linksLookup = [Comment extractLinksLookup:self.text];
+    
+    return _linksLookup;
+}
+
 
 - (NSURL*)hnPublicLink {
     return [NSURL URLWithString: [NSString stringWithFormat:@"https://news.ycombinator.com/item?id=%@", self.storyId]];

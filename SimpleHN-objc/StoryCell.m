@@ -262,6 +262,11 @@
 - (void)attributedLabel:(TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
     
+    if([[self.story.linksLookup allKeys] containsObject:url.absoluteString]) {
+        NSString * substituteURLString = self.story.linksLookup[url.absoluteString];
+        url = [NSURL URLWithString:substituteURLString];
+    }
+    
     if([self.storyCellDelegate respondsToSelector:@selector(storyCell:didTapLink:)]) {
         [self.storyCellDelegate performSelector:@selector(storyCell:didTapLink:)
                                      withObject:self withObject:url];

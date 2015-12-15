@@ -25,6 +25,7 @@
 @synthesize accountCreatedDate = _accountCreatedDate;
 @synthesize submissionsString = _submissionsString;
 @synthesize attributedAboutText = _attributedAboutText;
+@synthesize linksLookup = _linksLookup;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
     self = [super initWithDictionary:dictionaryValue error:error];
@@ -87,6 +88,16 @@
     _attributedAboutText = [Comment createAttributedStringFromHTMLString:self.about];
     
     return _attributedAboutText;
+}
+
+- (NSDictionary*)linksLookup {
+    if(_linksLookup) {
+        return _linksLookup;
+    }
+    
+    _linksLookup = [Comment extractLinksLookup:self.about];
+    
+    return _linksLookup;
 }
 
 - (NSDate*)accountCreatedDate {

@@ -63,6 +63,7 @@ typedef void (^CommentBlock)(Comment* comment);
 
 // text property with styles applied. Links are handled by TTTAttributedLabel
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
+@property (nonatomic, strong, readonly) NSDictionary * linksLookup;
 
 + (void)createCommentFromItemIdentifier:(NSNumber*)identifier
                             completion:(CommentBlock)completion;
@@ -81,6 +82,9 @@ typedef void (^CommentBlock)(Comment* comment);
 + (NSString*)completeParagraphTags:(NSString*)string;
 + (NSString*)wrapQuotesInBlockQuoteTags:(NSString*)string;
 + (NSString*)wrapMultiQuotesInBlockQuoteTags:(NSString*)string;
+
++ (NSDictionary*)extractLinksLookup:(NSString*)string;
+
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string;
 
 @end

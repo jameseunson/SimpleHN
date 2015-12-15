@@ -34,8 +34,6 @@
 		984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 984DCC6B1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m */; };
 		985219591C11234700A183A6 /* CommentCellHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 985219581C11234700A183A6 /* CommentCellHeaderView.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
-		986F32D31C19195B0019A165 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC491BFAF07E00BA5B86 /* libz.tbd */; };
-		986F32D41C19196A0019A165 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
 		989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 989E97F51C16863D009A4400 /* NSURL+HNInternalURL.m */; };
@@ -59,6 +57,13 @@
 		98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B51BF19A6200607CBC /* NewStoriesViewController.m */; };
 		98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725B81BF19A6A00607CBC /* AskHNViewController.m */; };
 		98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E725BB1BF19A7200607CBC /* ShowHNViewController.m */; };
+		98E96C281C1FFB6800AD1A2F /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C271C1FFB6800AD1A2F /* LoginViewController.m */; };
+		98E96C2C1C20004E00AD1A2F /* HNSessionAuthenticator.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C2B1C20004E00AD1A2F /* HNSessionAuthenticator.m */; };
+		98E96C2F1C2000D800AD1A2F /* HNSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C2E1C2000D800AD1A2F /* HNSession.m */; };
+		98E96C321C20016B00AD1A2F /* HNAuthenticationParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C311C20016B00AD1A2F /* HNAuthenticationParser.m */; };
+		98E96C351C2001F400AD1A2F /* LoginFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C341C2001F400AD1A2F /* LoginFieldTableViewCell.m */; };
+		98E96C381C20069300AD1A2F /* LoginButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */; };
+		98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */; };
 		98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */; };
 		98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */; };
 		98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD71BF085D600B1BA08 /* UserViewController.m */; };
@@ -186,6 +191,20 @@
 		98E725B81BF19A6A00607CBC /* AskHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AskHNViewController.m; sourceTree = "<group>"; };
 		98E725BA1BF19A7200607CBC /* ShowHNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowHNViewController.h; sourceTree = "<group>"; };
 		98E725BB1BF19A7200607CBC /* ShowHNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowHNViewController.m; sourceTree = "<group>"; };
+		98E96C261C1FFB6800AD1A2F /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		98E96C271C1FFB6800AD1A2F /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		98E96C2A1C20004E00AD1A2F /* HNSessionAuthenticator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNSessionAuthenticator.h; sourceTree = "<group>"; };
+		98E96C2B1C20004E00AD1A2F /* HNSessionAuthenticator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNSessionAuthenticator.m; sourceTree = "<group>"; };
+		98E96C2D1C2000D800AD1A2F /* HNSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNSession.h; sourceTree = "<group>"; };
+		98E96C2E1C2000D800AD1A2F /* HNSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNSession.m; sourceTree = "<group>"; };
+		98E96C301C20016B00AD1A2F /* HNAuthenticationParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNAuthenticationParser.h; sourceTree = "<group>"; };
+		98E96C311C20016B00AD1A2F /* HNAuthenticationParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNAuthenticationParser.m; sourceTree = "<group>"; };
+		98E96C331C2001F400AD1A2F /* LoginFieldTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginFieldTableViewCell.h; sourceTree = "<group>"; };
+		98E96C341C2001F400AD1A2F /* LoginFieldTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginFieldTableViewCell.m; sourceTree = "<group>"; };
+		98E96C361C20069300AD1A2F /* LoginButtonTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginButtonTableViewCell.h; sourceTree = "<group>"; };
+		98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginButtonTableViewCell.m; sourceTree = "<group>"; };
+		98E96C391C200A6900AD1A2F /* HNSessionAPIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNSessionAPIManager.h; sourceTree = "<group>"; };
+		98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNSessionAPIManager.m; sourceTree = "<group>"; };
 		98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerButton.h; sourceTree = "<group>"; };
 		98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionDrawerButton.m; sourceTree = "<group>"; };
 		98F5EBD21BF079D700B1BA08 /* ActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerView.h; sourceTree = "<group>"; };
@@ -212,9 +231,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				986F32D31C19195B0019A165 /* libz.tbd in Frameworks */,
 				311107E5FF8D104CED301173 /* Pods.framework in Frameworks */,
-				986F32D41C19196A0019A165 /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +288,7 @@
 		98052DA71BB68BB7004A0D3A /* SimpleHN-objc */ = {
 			isa = PBXGroup;
 			children = (
+				98E96C291C20004300AD1A2F /* Authentication */,
 				988C10221BF1E4F700FA36B9 /* 3rd Party */,
 				98F5EBDF1BF09EE400B1BA08 /* Helpers */,
 				98F5EBD51BF085BE00B1BA08 /* Controllers */,
@@ -337,6 +355,10 @@
 				98C22D5A1C15698400809299 /* StoryCommentsNoCommentsCell.m */,
 				98DFBB9D1C1EB1E600BFBFA7 /* StoryCommentsContentLoadingCell.h */,
 				98DFBB9E1C1EB1E600BFBFA7 /* StoryCommentsContentLoadingCell.m */,
+				98E96C331C2001F400AD1A2F /* LoginFieldTableViewCell.h */,
+				98E96C341C2001F400AD1A2F /* LoginFieldTableViewCell.m */,
+				98E96C361C20069300AD1A2F /* LoginButtonTableViewCell.h */,
+				98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -427,6 +449,21 @@
 			name = Categories;
 			sourceTree = "<group>";
 		};
+		98E96C291C20004300AD1A2F /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				98E96C2A1C20004E00AD1A2F /* HNSessionAuthenticator.h */,
+				98E96C2B1C20004E00AD1A2F /* HNSessionAuthenticator.m */,
+				98E96C2D1C2000D800AD1A2F /* HNSession.h */,
+				98E96C2E1C2000D800AD1A2F /* HNSession.m */,
+				98E96C301C20016B00AD1A2F /* HNAuthenticationParser.h */,
+				98E96C311C20016B00AD1A2F /* HNAuthenticationParser.m */,
+				98E96C391C200A6900AD1A2F /* HNSessionAPIManager.h */,
+				98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */,
+			);
+			name = Authentication;
+			sourceTree = "<group>";
+		};
 		98F5EBD51BF085BE00B1BA08 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -454,6 +491,8 @@
 				9849D0AE1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m */,
 				98B841451C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.h */,
 				98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */,
+				98E96C261C1FFB6800AD1A2F /* LoginViewController.h */,
+				98E96C271C1FFB6800AD1A2F /* LoginViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -741,20 +780,25 @@
 				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
 				984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
+				98E96C2F1C2000D800AD1A2F /* HNSession.m in Sources */,
 				98B841471C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m in Sources */,
 				980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */,
 				98E725B61BF19A6200607CBC /* NewStoriesViewController.m in Sources */,
 				984DCC4D1BFB0B1200BA5B86 /* StoriesCommentsBaseViewController.m in Sources */,
 				98DFBB9F1C1EB1E600BFBFA7 /* StoryCommentsContentLoadingCell.m in Sources */,
+				98E96C381C20069300AD1A2F /* LoginButtonTableViewCell.m in Sources */,
 				98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				989E97FC1C16AC30009A4400 /* CommentStyle.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
 				98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */,
+				98E96C321C20016B00AD1A2F /* HNAuthenticationParser.m in Sources */,
 				98C22D5B1C15698400809299 /* StoryCommentsNoCommentsCell.m in Sources */,
+				98E96C351C2001F400AD1A2F /* LoginFieldTableViewCell.m in Sources */,
 				98F5EBDB1BF086A400B1BA08 /* User.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
+				98E96C281C1FFB6800AD1A2F /* LoginViewController.m in Sources */,
 				989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
@@ -765,6 +809,7 @@
 				984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				989E97FF1C16AD3B009A4400 /* HNItemHelper.m in Sources */,
+				98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
@@ -772,6 +817,7 @@
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
 				983A19D71C07F93A00072B40 /* CommentTextView.m in Sources */,
+				98E96C2C1C20004E00AD1A2F /* HNSessionAuthenticator.m in Sources */,
 				984418B51BB696FA00F66A02 /* Story.m in Sources */,
 				98B841441C0FE67500FC80F6 /* StoriesCommentsSearchResultsSectionHeaderView.m in Sources */,
 				98F9F8AB1C06C58200C946AC /* HNAlgoliaAPIManager.m in Sources */,

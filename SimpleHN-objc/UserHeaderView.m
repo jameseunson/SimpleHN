@@ -191,6 +191,11 @@
 - (void)attributedLabel:(TTTAttributedLabel *)label
    didSelectLinkWithURL:(NSURL *)url {
     
+    if([[self.user.linksLookup allKeys] containsObject:url.absoluteString]) {
+        NSString * substituteURLString = self.user.linksLookup[url.absoluteString];
+        url = [NSURL URLWithString:substituteURLString];
+    }
+    
     if([self.delegate respondsToSelector:@selector(userHeaderView:didTapLink:)]) {
         [self.delegate performSelector:@selector(userHeaderView:didTapLink:)
                             withObject:self withObject:url];

@@ -82,8 +82,19 @@
     nightModeTapGestureRecognizer.numberOfTouchesRequired = 2;
     
     [self.navigationController.navigationBar
-     addGestureRecognizer:nightModeTapGestureRecognizer];
+        addGestureRecognizer:nightModeTapGestureRecognizer];
     
+    @weakify(self);
+    [self addColorChangedBlock:^{
+        @strongify(self);
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.navigationController.navigationBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        
+        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.tabBarController.tabBar.nightBarTintColor = UIColorFromRGB(0x333333);
+    }];
+    
+//    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorWithColors([UIColor blackColor], [UIColor whiteColor]);
 }
 
 - (void)viewDidLoad {
@@ -252,8 +263,6 @@
 #pragma mark - UIScrollViewDelegate Methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if(scrollView == self.tableView) {
-        
-        NSLog(@"%@", NSStringFromUIEdgeInsets(self.tableView.contentInset));
         
         // If there isn't more content to display, no reason to run any of this
         if(!_shouldDisplayLoadMoreCell) {

@@ -34,5 +34,6 @@ typedef void (^UserBlock)(User* user);
 @property (nonatomic, copy, readonly) NSString * submissionsString;
 
 @property (nonatomic, strong, readonly) NSAttributedString * attributedAboutText;
+@property (nonatomic, strong, readonly) NSDictionary * linksLookup;
 
 @end

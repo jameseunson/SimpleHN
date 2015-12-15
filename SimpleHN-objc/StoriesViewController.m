@@ -144,6 +144,20 @@
 #pragma mark - IASKSettingsDelegate Methods
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+    
+    AppDelegate * delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [delegate updateNightMode];
+}
+
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
+    
+    NSDictionary * specifierDict = specifier.specifierDict;
+    if([[specifierDict allKeys] containsObject:@"Key"] && [specifierDict[@"Key"] isEqualToString:@"loginToAccount"]) {
+        
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self performSegueWithIdentifier:@"showLogin" sender:nil];
+        }];
+    }
 }
 
 #pragma mark - Private Methods

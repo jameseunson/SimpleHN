@@ -58,6 +58,7 @@ typedef void (^StoryBlock)(Story* story);
 @property (nonatomic, strong, readonly) NSString * timeString;
 
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
+@property (nonatomic, strong, readonly) NSDictionary * linksLookup;
 
 @property (nonatomic, strong, readonly) NSURL * hnPublicLink;
 

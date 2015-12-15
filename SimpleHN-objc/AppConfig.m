@@ -15,6 +15,7 @@
     kSearchRecentQueries : @[], \
     kSearchFilterTimePeriod : @(0), \
     kSearchFilterSortType : @(0), \
+    kNightModeEnabled : @(NO), \
 } \
 
 @implementation AppConfig
@@ -34,6 +35,7 @@
     self.configDict = [[NSMutableDictionary alloc] init];
     self.configDict[kStoryAutomaticallyShowReader] = kConfigDefaultsDict[kStoryAutomaticallyShowReader];
     self.configDict[kSearchRecentQueries] = kConfigDefaultsDict[kSearchRecentQueries];
+    self.configDict[kNightModeEnabled] = kConfigDefaultsDict[kNightModeEnabled];
     [self saveConfig];
 }
 
@@ -66,6 +68,13 @@
         [self setObject:kConfigDefaultsDict[kSearchRecentQueries] forKey:kSearchRecentQueries];
     }
     return self.configDict[kSearchRecentQueries];
+}
+
+- (BOOL)nightModeEnabled {
+    if(![[self.configDict allKeys] containsObject:kNightModeEnabled]) {
+        [self setBool:[kConfigDefaultsDict[kNightModeEnabled] boolValue] forKey:kNightModeEnabled];
+    }
+    return [self.configDict[kNightModeEnabled] boolValue];
 }
 
 @end

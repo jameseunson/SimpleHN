@@ -219,6 +219,16 @@
     self.navigationItem.rightBarButtonItem = item;
     
     self.initialLoadDone = NO;
+    
+    @weakify(self);
+    [self addColorChangedBlock:^{
+        @strongify(self);
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.navigationController.navigationBar.nightBarTintColor = UIColorFromRGB(0x333333);
+        
+        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.tabBarController.tabBar.nightBarTintColor = UIColorFromRGB(0x333333);
+    }];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -288,8 +298,8 @@
     
     } else {
         
-        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
-        
+        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                                  kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
         return cell;
     }
 }

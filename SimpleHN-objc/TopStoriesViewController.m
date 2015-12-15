@@ -33,12 +33,12 @@
     
     self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
                            UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
-//    self.navigationItem.rightBarButtonItem = _timePeriodItem;
+    self.navigationItem.rightBarButtonItem = _timePeriodItem;
     
-    UIBarButtonItem * debugItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
-                                   UIBarButtonSystemItemOrganize target:self action:@selector(didTapDebugItem:)];
-    
-    self.navigationItem .rightBarButtonItems = @[ _timePeriodItem, debugItem ];
+//    UIBarButtonItem * debugItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
+//                                   UIBarButtonSystemItemOrganize target:self action:@selector(didTapDebugItem:)];
+//    
+//    self.navigationItem .rightBarButtonItems = @[ _timePeriodItem, debugItem ];
     
     self.ref = [[Firebase alloc] initWithUrl:
                                         @"https://hacker-news.firebaseio.com/v0/topstories"];
@@ -48,11 +48,9 @@
     @weakify(self);
     [self addColorChangedBlock:^{
         @strongify(self);
-        self.tableView.normalBackgroundColor = UIColorFromRGB(0xffffff);
-        self.tableView.nightBackgroundColor = UIColorFromRGB(0x343434);
+        self.view.normalBackgroundColor = UIColorFromRGB(0xffffff);
+        self.view.nightBackgroundColor = UIColorFromRGB(0x343434);
     }];
-    
-//    [DKNightVersionManager nightFalling];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
