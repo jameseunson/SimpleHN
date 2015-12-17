@@ -16,9 +16,15 @@
 @property (nonatomic, strong) UIImageView * downvoteImageView;
 @property (nonatomic, strong) UIImageView * downvoteConfirmedImageView;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+
 @end
 
 @implementation StoryCommentBaseTableViewCell
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
@@ -89,12 +95,37 @@
             
             [blockSelf didVoteWithType:StoryCommentUserVoteUpvote];
         }];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            UIView * nightSelectedBackgroundView = [[UIView alloc] init];
+            nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
+            [self setSelectedBackgroundView:nightSelectedBackgroundView];
+            
+        } else {
+            self.selectedBackgroundView = nil;
+        }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
 
 - (void)didVoteWithType:(StoryCommentUserVote)voteType {
     // Stub to be overriden in subclasses
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        UIView * nightSelectedBackgroundView = [[UIView alloc] init];
+        nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
+        [self setSelectedBackgroundView:nightSelectedBackgroundView];
+        
+    } else {
+        self.selectedBackgroundView = nil;
+    }
 }
 
 - (void)layoutSubviews {

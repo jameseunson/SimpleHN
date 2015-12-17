@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "StoriesViewController.h"
-#import "StoriesTimePeriodSelectViewController.h"
 
-@interface TopStoriesViewController : StoriesViewController <StoriesTimePeriodSelectViewController>
+@interface TopStoriesViewController : StoriesViewController
 
 @end

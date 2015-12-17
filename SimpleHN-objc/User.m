@@ -24,7 +24,9 @@
 @synthesize accountCreatedString = _accountCreatedString;
 @synthesize accountCreatedDate = _accountCreatedDate;
 @synthesize submissionsString = _submissionsString;
+
 @synthesize attributedAboutText = _attributedAboutText;
+@synthesize nightAttributedAboutText = _nightAttributedAboutText;
 @synthesize linksLookup = _linksLookup;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionaryValue error:(NSError **)error {
@@ -88,6 +90,16 @@
     _attributedAboutText = [Comment createAttributedStringFromHTMLString:self.about];
     
     return _attributedAboutText;
+}
+
+- (NSAttributedString*)nightAttributedAboutText {
+    if(_nightAttributedAboutText) {
+        return _nightAttributedAboutText;
+    }
+    
+    _nightAttributedAboutText = [Comment createNightAttributedStringFromAttributedString:self.attributedAboutText];
+    
+    return _nightAttributedAboutText;
 }
 
 - (NSDictionary*)linksLookup {

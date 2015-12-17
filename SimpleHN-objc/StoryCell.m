@@ -18,7 +18,11 @@
 @property (nonatomic, strong) UILabel * storySubtitleLabel;
 
 @property (nonatomic, strong) StoryCommentsButton * storyCommentsButton;
+@property (nonatomic, strong) UIImageView * storyScoreIconImageView;
 @property (nonatomic, strong) UILabel * storyScoreLabel;
+
+// Tappable area for comments, includes score, comments and some extra horizontal space
+@property (nonatomic, strong) UIView * storyCommentsAreaView;
 
 // Used for Ask HN and Show HN posts
 @property (nonatomic, strong) TTTAttributedLabel * storyAboutLabel;
@@ -28,6 +32,7 @@
 @property (nonatomic, strong) ActionDrawerView * actionDrawerView;
 
 - (void)didLongPressSelf:(id)sender;
+- (void)didTapStoryCommentsAreaView:(id)sender;
 
 @end
 
@@ -36,6 +41,8 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if(self) {
+        
+        _contextType = StoryCellContextTypeList;
         
         self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(didLongPressSelf:)];
@@ -55,6 +62,9 @@
         _storyCommentsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         [self.contentView addSubview:_storyCommentsButton];
         
+        self.storyScoreIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-upvote-small-icon"]];
+        [self.contentView addSubview:_storyScoreIconImageView];
+        
         self.storyScoreLabel = [[UILabel alloc] init];
         _storyScoreLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
         _storyScoreLabel.textColor = [UIColor orangeColor];
@@ -71,6 +81,13 @@
         _actionDrawerView.delegate = self;
         _actionDrawerView.hidden = YES;
         [self.contentView addSubview:_actionDrawerView];
+        
+        self.storyCommentsAreaView = [[UIView alloc] init];
+        _storyCommentsAreaView.userInteractionEnabled = YES;
+        _storyCommentsAreaView.backgroundColor = [UIColor clearColor];
+        [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
+                                                      self action:@selector(didTapStoryCommentsAreaView:)]];
+        [self.contentView addSubview:_storyCommentsAreaView];
         
         @weakify(self);
         [self addColorChangedBlock:^{
@@ -116,13 +133,16 @@
     self.storyCommentsButton.frame = CGRectIntegral( CGRectMake(self.frame.size.width - kCommentsButtonWidth - horizontalMargin,
                                                                 10.0f, kCommentsButtonWidth, kCommentsButtonHeight) );
     
+    _storyScoreIconImageView.frame = CGRectMake(_storyCommentsButton.frame.origin.x, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 11.0f, _storyScoreIconImageView.frame.size.width, _storyScoreIconImageView.frame.size.height);
+    
     CGSize sizeForScoreLabel = [_storyScoreLabel.text sizeWithAttributes:@{ NSFontAttributeName: _storyScoreLabel.font }];
-    self.storyScoreLabel.frame = CGRectIntegral( CGRectMake(_storyCommentsButton.frame.origin.x, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 8.0f, _storyCommentsButton.frame.size.width, sizeForScoreLabel.height) );
+    self.storyScoreLabel.frame = CGRectIntegral( CGRectMake(_storyScoreIconImageView.frame.origin.x + _storyScoreIconImageView.frame.size.width + 2.0f, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 8.0f, sizeForScoreLabel.width, sizeForScoreLabel.height) );
     
     if(_story.sizeStatus == StorySizeStatusExpanded) {
         _actionDrawerView.hidden = NO;
         
-        if(_story.text) {
+        // Ensure Ask HN text only displays in 'Detail' context, not 'List' context
+        if(_story.text && _contextType == StoryCellContextTypeDetail) {
             
             CGFloat heightForTitleSubtitle = roundf(10.0f + boundingRectForSubtitleLabel.size.height + boundingRectForTitleLabel.size.height + 20.0f);
             CGFloat heightForScoreComments = roundf(10.0f + sizeForScoreLabel.height + 8.0f + kCommentsButtonHeight + 10.0f);
@@ -145,6 +165,18 @@
     } else if(self.story.voteStatus == StoryCommentUserVoteDownvote) {
         self.downvoteCornerImageView.hidden = NO;
         self.upvoteCornerImageView.hidden = YES;
+    }
+    
+    CGFloat storyCommentsAreaViewWidth = roundf(self.frame.size.width / 4);
+    
+    if(_contextType == StoryCellContextTypeList) {
+        _storyCommentsAreaView.frame = CGRectMake(self.frame.size.width - storyCommentsAreaViewWidth,
+                                                  0, storyCommentsAreaViewWidth, self.frame.size.height);
+        _storyCommentsAreaView.hidden = NO;
+        
+    } else {
+        _storyCommentsAreaView.frame = CGRectZero;
+        _storyCommentsAreaView.hidden = YES;
     }
     
     _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
@@ -181,6 +213,10 @@
 }
 
 + (CGFloat)heightForStoryCellWithStory:(Story*)story width:(CGFloat)width {
+    return [[self class] heightForStoryCellWithStory:story width:width context:StoryCellContextTypeList];
+}
+
++ (CGFloat)heightForStoryCellWithStory:(Story*)story width:(CGFloat)width context:(StoryCellContextType)contextType {
     
     // 20pts padding either side
     CGFloat horizontalMargin = 20.0f;
@@ -203,7 +239,7 @@
     
     if(story.sizeStatus == StorySizeStatusExpanded) {
         
-        if(story.text) {
+        if(story.text && contextType == StoryCellContextTypeDetail) {
             CGSize sizeForAboutLabel = [TTTAttributedLabel sizeThatFitsAttributedString:story.attributedText withConstraints:
                                         CGSizeMake((width - (horizontalMargin * 2)), CGFLOAT_MAX) limitedToNumberOfLines:0];
             contentHeight += roundf(sizeForAboutLabel.height + 10.0f + 20.0f); // 10pts top, 20pts bottom
@@ -235,7 +271,20 @@
     [_storyScoreLabel sizeToFit];
     
     if(story.text) {
-        _storyAboutLabel.text = story.attributedText;
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            if(story.text != nil) {
+                self.storyAboutLabel.text = self.story.nightAttributedText;
+                self.storyAboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
+                                                      NSUnderlineStyleAttributeName: @(1) };
+            }
+        } else {
+            if(story.text != nil) {
+                self.storyAboutLabel.text = self.story.attributedText;
+                self.storyAboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
+                                                      NSUnderlineStyleAttributeName: @(1) };
+            }
+        }
         _storyAboutLabel.hidden = NO;
         
     } else {
@@ -255,6 +304,12 @@
         if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidDisplayActionDrawer:)]) {
             [self.storyCellDelegate performSelector:@selector(storyCellDidDisplayActionDrawer:) withObject:self];
         }
+    }
+}
+
+- (void)didTapStoryCommentsAreaView:(id)sender {
+    if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidTapCommentsArea:)]) {
+        [self.storyCellDelegate performSelector:@selector(storyCellDidTapCommentsArea:) withObject:self];
     }
 }
 

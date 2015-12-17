@@ -18,6 +18,9 @@
                                         @"https://hacker-news.firebaseio.com/v0/newstories"];
 //    [self loadStoryIdentifiersWithRef:self.ref];
     [self loadContent:nil];
+    
+    // Remove time period selector - this is 'new' stories, so not relevant
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 

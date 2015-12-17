@@ -19,9 +19,15 @@
 @property (nonatomic, strong) UILabel * loadingLabel;
 @property (nonatomic, strong) UIActivityIndicatorView * loadingView;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+
 @end
 
 @implementation ContentLoadingView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)init {
     self = [super init];
@@ -40,6 +46,13 @@
                             UIActivityIndicatorViewStyleGray];
         [_loadingView startAnimating];        
         [_loadingView sizeToFit];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            _loadingView.color = [UIColor whiteColor];
+        } else {
+            _loadingView.color = [UIColor grayColor];
+        }
+        
         [self.stackView addArrangedSubview:_loadingView];
         
         self.loadingLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
@@ -66,8 +79,21 @@
             self.backgroundColor = [UIColor whiteColor];
             self.nightBackgroundColor = kNightDefaultColor;
         }];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _loadingView.color = [UIColor whiteColor];
+    } else {
+        _loadingView.color = [UIColor grayColor];
+    }
 }
 
 @end

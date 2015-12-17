@@ -29,4 +29,13 @@
     [super showDetailViewController:vc sender:sender];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        return UIStatusBarStyleLightContent;
+        
+    } else {
+        return UIStatusBarStyleDefault;
+    }
+}
+
 @end

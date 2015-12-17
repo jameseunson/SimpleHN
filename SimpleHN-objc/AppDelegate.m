@@ -88,6 +88,7 @@
         if([DKNightVersionManager currentThemeVersion] != DKThemeVersionNight) {
             [DKNightVersionManager nightFalling];
         }
+        
     } else {
         
         if([DKNightVersionManager currentThemeVersion] != DKThemeVersionNormal) {

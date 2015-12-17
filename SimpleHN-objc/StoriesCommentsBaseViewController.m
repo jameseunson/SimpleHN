@@ -9,15 +9,15 @@
 #import "StoriesCommentsBaseViewController.h"
 #import "StoriesCommentsSearchResultsViewController.h"
 #import "SuProgress.h"
+#import "SimpleHNWebViewController.h"
 
-@import SafariServices;
-
-@interface StoriesCommentsBaseViewController ()
-- (void)didToggleNightMode:(id)sender;
-
-@end
+//@import SafariServices;
 
 @implementation StoriesCommentsBaseViewController
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)awakeFromNib {
     
@@ -39,6 +39,7 @@
     [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     _refreshDateFormatter.locale = locale;
+
 }
 
 - (void)loadView {
@@ -76,14 +77,6 @@
     self.searchController.dimsBackgroundDuringPresentation = NO; // default is YES
     self.searchController.searchBar.delegate = self; // so we can monitor text changes + others
     
-    UITapGestureRecognizer * nightModeTapGestureRecognizer = [[UITapGestureRecognizer alloc]
-                                                           initWithTarget:self action:@selector(didToggleNightMode:)];
-    nightModeTapGestureRecognizer.numberOfTapsRequired = 2;
-    nightModeTapGestureRecognizer.numberOfTouchesRequired = 2;
-    
-    [self.navigationController.navigationBar
-        addGestureRecognizer:nightModeTapGestureRecognizer];
-    
     @weakify(self);
     [self addColorChangedBlock:^{
         @strongify(self);
@@ -92,6 +85,12 @@
         
         self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
         self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
+        
+        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
+        self.refreshControl.nightBackgroundColor = kNightDefaultColor;
+        
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.nightBackgroundColor = kNightDefaultColor;
     }];
     
 //    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorWithColors([UIColor blackColor], [UIColor whiteColor]);
@@ -109,11 +108,18 @@
     [super viewDidAppear:animated];
     
     if([[AppConfig sharedConfig] nightModeEnabled]) {
-        self.navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
         
     } else {
-        self.navigationController.navigationBar.titleTextAttributes = @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
 }
 
 // Stub method, to be overridden in subclass
@@ -244,7 +250,7 @@
     
     if(_initialLoadDone) {
         if(indexPath.row == self.currentVisibleItemMax || indexPath.row > self.currentVisibleItemMax) {
-            return 66.0f;
+            return 60.0f;
             
         } else {
             
@@ -399,6 +405,11 @@
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
+        
+    } else if([[segue identifier] isEqualToString:@"showWeb"]) {
+        
+        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)[segue destinationViewController];
+//        controller.selectedStory = self.detailItem;
     }
 }
 
@@ -425,6 +436,10 @@
     [StoryCell handleActionForStory:cell.story withType:type inController:self];
 }
 
+- (void)storyCellDidTapCommentsArea:(StoryCell*)cell {
+    [self performSegueWithIdentifier:@"showDetail" sender:cell.story];
+}
+
 #pragma mark - CommentCellDelegate Methods
 - (void)commentCell:(CommentCell*)cell didTapLink:(NSURL*)link {
     
@@ -444,9 +459,8 @@
         }
     } // Catches two else cases implicitly
     
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link];
-    [self.navigationController pushViewController:controller animated:YES];
+    NSLog(@"%@", link);
+    [self performSegueWithIdentifier:@"showWeb" sender:nil];
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
@@ -496,16 +510,9 @@
 }
 
 #pragma mark - Private Methods
-- (void)didToggleNightMode:(id)sender {
-    NSLog(@"didToggleNightMode:");
-}
 
 - (void)loadContent:(id)sender {
     NSLog(@"loadContent:");
-    
-//    if(self.refreshControl) {
-//    
-//    }
 }
 
 #pragma mark - StoryCommentVotingTableViewCellDelegate Methods

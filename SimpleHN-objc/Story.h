@@ -21,6 +21,11 @@ typedef NS_ENUM(NSInteger, StoryLoadStatus) {
     StoryLoadStatusLoaded
 };
 
+typedef NS_ENUM(NSInteger, StoryType) {
+    StoryTypeDefault,
+    StoryTypeAskHN
+};
+
 @class Story;
 typedef void (^StoryBlock)(Story* story);
 
@@ -53,11 +58,15 @@ typedef void (^StoryBlock)(Story* story);
 
 @property (nonatomic, assign) StorySizeStatus sizeStatus;
 
+@property (nonatomic, assign) BOOL algoliaResult; // Items from Algolia are missing a lot of information, so must be reloaded
+
 // Generated properties
 @property (nonatomic, strong, readonly) NSString * subtitleString;
 @property (nonatomic, strong, readonly) NSString * timeString;
 
 @property (nonatomic, strong, readonly) NSAttributedString * attributedText;
+@property (nonatomic, strong, readonly) NSAttributedString * nightAttributedText;
+
 @property (nonatomic, strong, readonly) NSDictionary * linksLookup;
 
 @property (nonatomic, strong, readonly) NSURL * hnPublicLink;

@@ -11,13 +11,19 @@
 #import "StoryCell.h"
 #import "StoriesCommentsBaseViewController.h"
 #import "IASKAppSettingsViewController.h"
+#import "StoriesTimePeriodSelectViewController.h"
 
 @class StoryDetailViewController;
 
-@interface StoriesViewController : StoriesCommentsBaseViewController <IASKSettingsDelegate>
+@interface StoriesViewController : StoriesCommentsBaseViewController <IASKSettingsDelegate, StoriesTimePeriodSelectViewController>
 
 @property (nonatomic, strong) Firebase * ref;
 @property (nonatomic, strong) NSMutableArray * storiesList;
+
+@property (nonatomic, assign) StoryType storyType;
+
+@property (nonatomic, assign) StoriesTimePeriods selectedTimePeriod;
+@property (nonatomic, strong) NSMutableArray * selectedTimePeriodStories;
 
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
 

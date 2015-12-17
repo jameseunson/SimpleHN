@@ -14,18 +14,19 @@
 #import "RegexKitLite.h"
 #import "StoryCommentsNoCommentsCell.h"
 #import "StoryCommentsContentLoadingCell.h"
+#import "SimpleHNWebViewController.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
 #define kNoCommentsReuseIdentifier @"noCommentsReuseIdentifier"
 #define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
 
-@import WebKit;
+//@import WebKit;
 
 @interface StoryDetailViewController ()
 
-@property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
-@property (nonatomic, strong) SFSafariViewController * webViewController;
+//@property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
+//@property (nonatomic, strong) SFSafariViewController * webViewController;
 
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
@@ -97,21 +98,44 @@
     [self.refreshControl addTarget:self
                             action:@selector(reloadContent:)
                   forControlEvents:UIControlEventValueChanged];
+    
+    @weakify(self);
+    [self addColorChangedBlock:^{
+        @strongify(self);
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
+        
+        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
+        
+        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
+        self.refreshControl.nightBackgroundColor = kNightDefaultColor;
+        
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.nightBackgroundColor = kNightDefaultColor;
+    }];
 }
 
 - (void)setDetailItem:(Story*)newDetailItem {
     if (_detailItem != newDetailItem) {
         
-        _detailItem = [newDetailItem copy];
-        _detailItem.sizeStatus = StorySizeStatusExpanded;
-        
-        if(_webViewController) {
-            [_webViewController.view removeFromSuperview];
-            _webViewController = nil;
+        if(newDetailItem.algoliaResult) {
+            
+            [Story createStoryFromItemIdentifier:newDetailItem.storyId completion:^(Story *story) {
+                _detailItem = [story copy];
+                _detailItem.sizeStatus = StorySizeStatusExpanded;
+                
+                [self.tableView reloadData];
+                [self configureViewForStory];
+            }];
+            
+        } else {
+            _detailItem = [newDetailItem copy];
+            _detailItem.sizeStatus = StorySizeStatusExpanded;
+            
+            [self.tableView reloadData];
+            [self configureViewForStory];
         }
-        
-        [self.tableView reloadData];
-        [self configureViewForStory];
     }
 }
 
@@ -119,11 +143,6 @@
     if (_detailComment != newDetailComment) {
         
         _detailComment = [newDetailComment copy];
-        if(_webViewController) {
-            [_webViewController.view removeFromSuperview];
-            _webViewController = nil;
-        }
-        
         self.initialLoadDone = YES;
         
         _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
@@ -149,33 +168,13 @@
     if(_displayMode == StoryDetailViewControllerDisplayModeStory) {
         if([_detailItem.flatDisplayComments count] == 0) {
             [self loadContent];
+            
+        } else {
+            self.initialLoadDone = YES;
+            [self.tableView reloadData];
         }
     }
-    
-    if(!_detailItem.url) {
-        self.navigationItem.rightBarButtonItem = nil;
-        
-    } else {
-        UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
-        self.navigationItem.rightBarButtonItem = item;
-    }
-    
-    if(self.detailItem.url) {
-        BOOL enterReaderModeAutomatically = [[AppConfig sharedConfig] storyAutomaticallyShowReader];
-        
-        self.webViewController = [[SFSafariViewController alloc] initWithURL:self.detailItem.url
-                                                     entersReaderIfAvailable:enterReaderModeAutomatically];
-        _webViewController.delegate = self;
-        [self addChildViewController:_webViewController];
-        
-        UIView * webView = self.webViewController.view;
-        
-        webView.frame = CGRectMake(0, 0,
-                                   self.view.frame.size.width,
-                                   self.view.frame.size.height - (self.navigationController.navigationBar.frame.size.height + self.tabBarController.tabBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height));
-        
-        webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-    }
+
 }
 
 - (void)configureViewForComment {
@@ -210,25 +209,15 @@
     self.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
     self.navigationItem.leftItemsSupplementBackButton = YES;
     
-    self.contentSelectSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"Comments", @"Story" ]];
-    _contentSelectSegmentedControl.selectedSegmentIndex = 0;
-    [_contentSelectSegmentedControl addTarget:self action:@selector(didSelectContentSegment:)
-                             forControlEvents:UIControlEventValueChanged];
-    
-    UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
-    self.navigationItem.rightBarButtonItem = item;
+//    self.contentSelectSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"Comments", @"Story" ]];
+//    _contentSelectSegmentedControl.selectedSegmentIndex = 0;
+//    [_contentSelectSegmentedControl addTarget:self action:@selector(didSelectContentSegment:)
+//                             forControlEvents:UIControlEventValueChanged];
+//    
+//    UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
+//    self.navigationItem.rightBarButtonItem = item;
     
     self.initialLoadDone = NO;
-    
-    @weakify(self);
-    [self addColorChangedBlock:^{
-        @strongify(self);
-        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
-    }];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -271,6 +260,7 @@
             
             cell.story = self.detailItem;
             cell.storyCellDelegate = self;
+            cell.contextType = StoryCellContextTypeDetail;
             
             return cell;
             
@@ -313,7 +303,7 @@
     if(_initialLoadDone) {
         if(indexPath.section == 0) {
             return [StoryCell heightForStoryCellWithStory:self.detailItem
-                                                    width:tableView.frame.size.width];
+                                                    width:tableView.frame.size.width context:StoryCellContextTypeDetail];
             
         } else {
             
@@ -342,8 +332,10 @@
 
     if(self.initialLoadDone) {
         if(indexPath.section == 0 && indexPath.row == 0) {
-            self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
-            [self didSelectContentSegment:self.contentSelectSegmentedControl];
+//            self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
+//            [self didSelectContentSegment:self.contentSelectSegmentedControl];
+            
+            [self performSegueWithIdentifier:@"showWeb" sender:nil];
             
         } else {
             NSInteger commentCount = [_detailItem.flatDisplayComments count];
@@ -407,24 +399,34 @@
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
+        
+    } else if([[segue identifier] isEqualToString:@"showWeb"]) {
+        
+        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
+        [[segue destinationViewController] topViewController];
+        controller.selectedStory = self.detailItem;
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
 
-- (void)didSelectContentSegment:(id)sender {
-    
-    if(_contentSelectSegmentedControl.selectedSegmentIndex == 0) {
-        
-        if(_webViewController) {
-            [_webViewController.view removeFromSuperview];
-        }
-        
-    } else {
-        
-        if(_webViewController) {
-            [self.view addSubview:self.webViewController.view];
-        }
-    }
-}
+//- (void)didSelectContentSegment:(id)sender {
+//    
+//    if(_contentSelectSegmentedControl.selectedSegmentIndex == 0) {
+//        
+//        if(_webViewController) {
+//            [_webViewController.view removeFromSuperview];
+//        }
+//        
+//    } else {
+//        
+//        if(_webViewController) {
+//            [self.view addSubview:self.webViewController.view];
+//        }
+//    }
+//}
 
 - (void)commentCreated:(NSNotification*)notification {
     [self.tableView reloadData];
@@ -541,9 +543,8 @@
         }
     } // Catches two else cases implicitly
     
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link];
-    [self.navigationController pushViewController:controller animated:YES];
+    NSLog(@"%@", link);
+    [self performSegueWithIdentifier:@"showWeb" sender:nil];
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
@@ -560,8 +561,8 @@
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         
-        [[self class] createShareActionSheetInController:self title:
-         cell.comment.shareTitle url:cell.comment.hnPublicLink text:nil];
+        [CommentCell createShareActionSheetInController:self title:
+            cell.comment.shareTitle url:cell.comment.hnPublicLink text:nil];
     }
 }
 
@@ -583,18 +584,14 @@
         [detailStory finishLoadingCommentsForStory];
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
-        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
-                                               @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                                   @{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
+        } else {
+            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                                   @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        }
         [self.refreshControl endRefreshing];
-    }
-}
-
-#pragma mark - SFSafariViewControllerDelegate Methods
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    self.contentSelectSegmentedControl.selectedSegmentIndex = 0;
-    
-    if(_webViewController) {
-        [_webViewController.view removeFromSuperview];
     }
 }
 
@@ -623,9 +620,8 @@
         }
     } // Catches two else cases implicitly
     
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link];
-    [self.navigationController pushViewController:controller animated:YES];
+    NSLog(@"%@", link);
+    [self performSegueWithIdentifier:@"showWeb" sender:nil];
 }
 
 @end

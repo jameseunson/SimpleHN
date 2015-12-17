@@ -26,7 +26,10 @@ static NSDateFormatter * _timeDateFormatter = nil;
 @implementation Story
 @synthesize subtitleString = _subtitleString;
 @synthesize timeString = _timeString;
+
 @synthesize attributedText = _attributedText;
+@synthesize nightAttributedText = _nightAttributedText;
+
 @synthesize linksLookup = _linksLookup;
 
 - (void)dealloc {
@@ -39,6 +42,8 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     self.comments = [[NSMutableArray alloc] init];
     self.flatDisplayComments = [[NSMutableArray alloc] init];
+    
+    _algoliaResult = NO;
     
     return self;
 }
@@ -193,7 +198,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 + (void)createStoryFromItemIdentifier:(NSNumber*)identifier
                              completion:(StoryBlock)completion {
     
-    NSLog(@"createStoryFromItemIdentifier: %@", identifier);
+//    NSLog(@"createStoryFromItemIdentifier: %@", identifier);
     // Get comment for identification number
     NSString * storyURL = [NSString stringWithFormat:
                              @"https://hacker-news.firebaseio.com/v0/item/%@", identifier];
@@ -211,7 +216,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
 + (void)createStoryFromSnapshot:(FDataSnapshot*)snapshot
                      completion:(StoryBlock)completion {
     
-    NSLog(@"createStoryFromSnapshot");
+//    NSLog(@"createStoryFromSnapshot");
     NSError * error = nil;
     
     if([snapshot.value isKindOfClass:[NSNull class]]) {
@@ -256,6 +261,9 @@ static NSDateFormatter * _timeDateFormatter = nil;
     }
     if([[result allKeys] containsObject:@"created_at_i"]) {
         mutableStoryDict[@"time"] = @([result[@"created_at_i"] intValue]);
+    }
+    if([[result allKeys] containsObject:@"story_text"]) {
+        mutableStoryDict[@"text"] = result[@"text"];
     }
     
     NSError * error = nil;
@@ -308,6 +316,16 @@ static NSDateFormatter * _timeDateFormatter = nil;
     _attributedText = [Comment createAttributedStringFromHTMLString:self.text];
     
     return _attributedText;
+}
+
+- (NSAttributedString*)nightAttributedText {
+    if(_nightAttributedText) {
+        return _nightAttributedText;
+    }
+    
+    _nightAttributedText = [Comment createNightAttributedStringFromAttributedString:self.attributedText];
+    
+    return _nightAttributedText;
 }
 
 - (NSDictionary*)linksLookup {

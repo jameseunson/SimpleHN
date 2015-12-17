@@ -9,31 +9,16 @@
 #import "TopStoriesViewController.h"
 
 @interface TopStoriesViewController ()
-
-- (void)didTapTimePeriodItem:(id)sender;
 - (void)didTapDebugItem:(id)sender;
-
-@property (nonatomic, strong) UIBarButtonItem * timePeriodItem;
-@property (nonatomic, strong) NSNumber * selectedTimePeriod;
 
 @end
 
 @implementation TopStoriesViewController
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    
-    self.selectedTimePeriod = [kTimePeriods firstObject];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.title = @"Top";
-    
-    self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
-                           UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
-    self.navigationItem.rightBarButtonItem = _timePeriodItem;
     
 //    UIBarButtonItem * debugItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
 //                                   UIBarButtonSystemItemOrganize target:self action:@selector(didTapDebugItem:)];
@@ -53,38 +38,21 @@
     }];
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:@"showTimePeriodSelect"]) {
-        
-        StoriesTimePeriodSelectViewController *controller = (StoriesTimePeriodSelectViewController *)
-            [[segue destinationViewController] topViewController];
-        controller.delegate = self;
-
-    } else {
-        [super prepareForSegue:segue sender:sender];
-    }
-}
-
 #pragma mark - StoriesTimePeriodSelectViewController Methods
 - (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
                   didChangeSelectedTimePeriod:(NSNumber*)period {
-    NSLog(@"storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:");
     
-//    self.titleView.subtitleLabel.text = kTimePeriodsLookup[period];
-    self.timePeriodItem.title = kTimePeriodsLookup[period];
+    [super storiesTimePeriodSelectViewController:controller didChangeSelectedTimePeriod:period];
     
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)storiesTimePeriodSelectViewControllerDidCancelSelect:(StoriesTimePeriodSelectViewController*)controller {
-    NSLog(@"storiesTimePeriodSelectViewControllerDidCancelSelect:");
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Private Methods
-- (void)didTapTimePeriodItem:(id)sender {
-    [self performSegueWithIdentifier:@"showTimePeriodSelect" sender:nil];
+    [[HNAlgoliaAPIManager sharedManager] loadTopStoriesWithTimePeriod:[period intValue] page:0 type:StoriesPageTypeTop completion:^(NSDictionary *result) {
+        if(!result || ![[result allKeys] containsObject:kHNAlgoliaAPIManagerResults] || [result[kHNAlgoliaAPIManagerResults] count] == 0) {
+            [self createErrorAlertWithTitle:@"Error" message:@"Unable to load stories for specified time period. Please check your connection and try again later."];
+            return;
+        }
+        [self.selectedTimePeriodStories addObjectsFromArray:result[kHNAlgoliaAPIManagerResults]];
+        [self.tableView reloadData];
+        self.initialLoadDone = YES;
+    }];
 }
 
 - (void)didTapDebugItem:(id)sender {
@@ -125,6 +93,9 @@
 
     }]];
     [controller addAction:[UIAlertAction actionWithTitle:@"Load Story" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"Load User" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
     }]];
     [controller addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];

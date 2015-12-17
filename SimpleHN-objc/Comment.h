@@ -86,6 +86,8 @@ typedef void (^CommentBlock)(Comment* comment);
 
 + (NSDictionary*)extractLinksLookup:(NSString*)string;
 
++ (NSAttributedString*)createNightAttributedStringFromAttributedString:(NSAttributedString*)string;
+
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string;
 
 @end

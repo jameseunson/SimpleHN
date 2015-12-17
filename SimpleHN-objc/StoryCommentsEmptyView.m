@@ -39,6 +39,14 @@
         [self addConstraint:[self.centerYAnchor constraintEqualToAnchor:
                                           _stackView.centerYAnchor]];
         
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            
+            self.backgroundColor = UIColorFromRGB(0xffffff);
+            self.nightBackgroundColor = kNightDefaultColor;
+        }];
+        
     }
     return self;
 }

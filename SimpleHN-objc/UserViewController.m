@@ -395,9 +395,8 @@
         }
     } // Catches two else cases implicitly
     
-    SFSafariViewController * controller = [[SFSafariViewController alloc]
-                                           initWithURL:link];
-    [self.navigationController pushViewController:controller animated:YES];
+    NSLog(@"%@", link);
+    [self performSegueWithIdentifier:@"showWeb" sender:nil];
 }
 
 #pragma mark - KVO Callback Methods
@@ -413,8 +412,13 @@
     if([fractionCompleted floatValue] == 1.0f) {
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
-        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
-                                               @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                                   @{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
+        } else {
+            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+                                                   @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+        }
         [self.refreshControl endRefreshing];
     }
 }

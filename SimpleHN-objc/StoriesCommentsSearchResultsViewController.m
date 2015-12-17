@@ -94,7 +94,11 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     StoryCell * cell = (StoryCell*)[super tableView:tableView cellForRowAtIndexPath:indexPath];
-    cell.votingEnabled = NO;
+    
+    if([cell isKindOfClass:[StoryCell class]]) {
+        cell.votingEnabled = NO;
+    }
+    
     return cell;
 }
 

@@ -157,7 +157,7 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     
     if(self.parent) {
         // Create comment from parent
-        NSLog(@"findStoryForComment, loading %@", self.parent);
+//        NSLog(@"findStoryForComment, loading %@", self.parent);
         
         NSString * itemURL = [NSString stringWithFormat:
                                  @"https://hacker-news.firebaseio.com/v0/item/%@", self.parent];
@@ -229,21 +229,7 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
         return _nightAttributedText;
     }
     
-    NSMutableAttributedString * mutableAttributedString = [self.attributedText mutableCopy];
-    
-    [mutableAttributedString enumerateAttributesInRange:NSMakeRange(0, [mutableAttributedString length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-
-        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
-            UIColor * color = attrs[NSForegroundColorAttributeName];
-            
-            if([color isEqual:[UIColor blackColor]]) {
-                [mutableAttributedString removeAttribute:NSForegroundColorAttributeName range:range];
-                [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:range];
-            }
-        }
-    }];
-    
-    _nightAttributedText = [mutableAttributedString copy];
+    _nightAttributedText = [[self class] createNightAttributedStringFromAttributedString:self.attributedText];
     
     return _nightAttributedText;
 }
@@ -462,6 +448,35 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     }
     
     return string;
+}
+
++ (NSAttributedString*)createNightAttributedStringFromAttributedString:(NSAttributedString *)string {
+    NSMutableAttributedString * mutableAttributedString = [string mutableCopy];
+    
+    [mutableAttributedString enumerateAttributesInRange:NSMakeRange(0, [mutableAttributedString length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(NSDictionary<NSString *,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        
+        if([[attrs allKeys] containsObject:NSForegroundColorAttributeName]) {
+            UIColor * color = attrs[NSForegroundColorAttributeName];
+            
+            if([color isEqual:[UIColor blackColor]]) {
+                [mutableAttributedString removeAttribute:NSForegroundColorAttributeName range:range];
+                [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:range];
+                
+            } else {
+                
+                // This seems very specific, but we're trying to catch the default link color of DTCoreText
+                const CGFloat *components = CGColorGetComponents(color.CGColor);
+                NSNumber * blue = @([[NSString stringWithFormat:@"%.00f", components[2] * 10.0f] floatValue]);
+                
+                if([blue integerValue] == 9) {
+                    [mutableAttributedString removeAttribute:NSForegroundColorAttributeName range:range];
+                    [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor orangeColor] range:range];
+                }
+            }
+        }
+    }];
+    
+    return [mutableAttributedString copy];
 }
 
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string {

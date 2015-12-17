@@ -54,9 +54,6 @@
             self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
             self.contentView.nightBackgroundColor = kNightDefaultColor;
         }];
-        
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
-//                                                     name:kCommentCollapsedChanged object:nil];
     }
     return self;
 }
@@ -245,10 +242,14 @@
     if([[AppConfig sharedConfig] nightModeEnabled]) {
         if(comment.text != nil) {
             self.commentLabel.text = self.comment.nightAttributedText;
+            self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
+                                                  NSUnderlineStyleAttributeName: @(1) };
         }
     } else {
         if(comment.text != nil) {
             self.commentLabel.text = self.comment.attributedText;
+            self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
+                                                  NSUnderlineStyleAttributeName: @(1) };
         }
     }
     

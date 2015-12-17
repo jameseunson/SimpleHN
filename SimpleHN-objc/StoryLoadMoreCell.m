@@ -56,6 +56,13 @@
         
         // Vertically center _loadingView
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:_loadingView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+        
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
+            self.contentView.nightBackgroundColor = kNightDefaultColor;
+        }];
     }
     return self;
 }

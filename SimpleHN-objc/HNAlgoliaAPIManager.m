@@ -17,6 +17,8 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
 
 @property (nonatomic, strong, readonly) AFHTTPSessionManager * searchManager;
 
++ (NSDictionary*)processAlgoliaResponseDict:(NSDictionary*)responseDict;
+
 @end
 
 @implementation HNAlgoliaAPIManager
@@ -51,26 +53,8 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
         if(![[responseDict allKeys] containsObject:@"hits"] || ![responseDict[@"hits"] isKindOfClass:[NSArray class]]) {
             completion(nil); return;
         }
-        NSArray * hits = responseDict[@"hits"];
-        
-        NSMutableArray * stories = [[NSMutableArray alloc] init];
-        for(NSDictionary * hit in hits) {
-            
-            Story * story = [Story createStoryFromAlgoliaResult:hit];
-            [stories addObject:story];
-        }
-        
-        NSMutableDictionary * output = [@{ kHNAlgoliaAPIManagerResults: stories } mutableCopy];
-        if([[responseDict allKeys] containsObject:@"nbHits"]) {
-            output[kHNAlgoliaAPIManagerTotalHits] = responseDict[@"nbHits"];
-        }
-        if([[responseDict allKeys] containsObject:@"nbPages"]) {
-            output[kHNAlgoliaAPIManagerTotalPages] = responseDict[@"nbPages"];
-        }
-        if([[responseDict allKeys] containsObject:@"page"]) {
-            output[kHNAlgoliaAPIManagerCurrentPage] = responseDict[@"page"];
-        }
-        completion(output);
+
+        completion([[self class] processAlgoliaResponseDict:responseDict]);
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"_searchManager, ERROR: %@", error);
@@ -78,8 +62,58 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
     }];
 }
 
-- (void)loadTopStoriesWithTimePeriod:(StoriesTimePeriods)period withCompletion: (void (^)(NSDictionary * result))completion {
+- (void)loadTopStoriesWithTimePeriod:(StoriesTimePeriods)period page:(NSInteger)page type:(StoriesPageType)type completion: (void (^)(NSDictionary * result))completion {
     
+    // https://hn.algolia.com/api/v1/search?tags=front_page,story&numericFilters=created_at_i%3E1450254334,created_at_i%3C1450340734
+    
+    NSString * pageTypeTag = nil;
+    if(type == StoriesPageTypeTop) {
+        pageTypeTag = @"story";
+        
+    } else if(type == StoriesPageTypeShowHN) {
+        pageTypeTag = @"show_hn";
+        
+    } else if(type == StoriesPageTypeAskHN) {
+        pageTypeTag = @"ask_hn";
+    }
+    
+    NSString * urlStringTemplate = @"search?tags=%@&numericFilters=created_at_i>%@,created_at_i<%@&page=%@";
+    NSCalendar * cal = [NSCalendar currentCalendar];
+    NSDate * startPeriodDate = nil;
+    
+    if(period == StoriesTimePeriodsLast24hrs) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastWeek) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-7 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastMonth) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitMonth value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastYear) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsAllTime) {
+        // TODO: Probably not correct, but oh well
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-5 toDate:[NSDate date] options:NSCalendarWrapComponents];
+    }
+    
+    NSString * urlStringFormatted = [NSString stringWithFormat:urlStringTemplate, pageTypeTag, @((int)[startPeriodDate timeIntervalSince1970]),
+                                     @((int)[[NSDate date] timeIntervalSince1970]), @(page)];
+    NSString* urlStringEncoded = [urlStringFormatted stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    [self.searchManager GET:urlStringEncoded parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSDictionary * responseDict = (NSDictionary*)responseObject;
+        if(![[responseDict allKeys] containsObject:@"hits"] || ![responseDict[@"hits"] isKindOfClass:[NSArray class]]) {
+            completion(nil); return;
+        }
+        
+        completion([[self class] processAlgoliaResponseDict:responseDict]);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"loadTopStoriesWithTimePeriod, ERROR: %@", error);
+        completion(nil);
+    }];
 }
 
 #pragma mark - Property Override Methods
@@ -94,6 +128,33 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
                       [NSURLSessionConfiguration defaultSessionConfiguration]];
     
     return _searchManager;
+}
+
+#pragma mark - Private Methods
++ (NSDictionary*)processAlgoliaResponseDict:(NSDictionary *)responseDict {
+    
+    NSArray * hits = responseDict[@"hits"];
+    
+    NSMutableArray * stories = [[NSMutableArray alloc] init];
+    for(NSDictionary * hit in hits) {
+        
+        Story * story = [Story createStoryFromAlgoliaResult:hit];
+        story.algoliaResult = YES;
+        
+        [stories addObject:story];
+    }
+    
+    NSMutableDictionary * output = [@{ kHNAlgoliaAPIManagerResults: stories } mutableCopy];
+    if([[responseDict allKeys] containsObject:@"nbHits"]) {
+        output[kHNAlgoliaAPIManagerTotalHits] = responseDict[@"nbHits"];
+    }
+    if([[responseDict allKeys] containsObject:@"nbPages"]) {
+        output[kHNAlgoliaAPIManagerTotalPages] = responseDict[@"nbPages"];
+    }
+    if([[responseDict allKeys] containsObject:@"page"]) {
+        output[kHNAlgoliaAPIManagerCurrentPage] = responseDict[@"page"];
+    }
+    return output;
 }
 
 @end

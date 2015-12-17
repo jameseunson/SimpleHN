@@ -34,10 +34,16 @@
 @property (nonatomic, strong) NSArray * heightDependentViews;
 
 - (void)didChangeSegment:(id)sender;
+- (void)nightModeEvent:(NSNotification*)notification;
+
 
 @end
 
 @implementation UserHeaderView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)init {
     self = [super init];
@@ -98,7 +104,12 @@
         self.toolbar = [[UIToolbar alloc] init];
         _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
         _toolbar.translucent = YES;
-        _toolbar.barTintColor = [UIColor whiteColor];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            _toolbar.barTintColor = kNightDefaultColor;
+        } else {
+            _toolbar.barTintColor = [UIColor whiteColor];
+        }
         _toolbar.tintColor = [UIColor orangeColor];
         
         self.sectionSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"All", @"Submissions", @"Comments" ]];
@@ -134,7 +145,24 @@
                               @"H:|-12-[_sectionSegmentedControl]-12-|" options:0 metrics:nil views:bindings]];
 
         // Stackview is 75% of UserHeaderView width
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_mainStackView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_mainStackView attribute:NSLayoutAttributeWidth
+                                                         relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.75 constant:0]];
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.normalBackgroundColor = UIColorFromRGB(0xffffff);
+            self.nightBackgroundColor = kNightDefaultColor;
+            
+            self.nameLabel.normalTextColor = [UIColor blackColor];
+            self.nameLabel.nightTextColor = UIColorFromRGB(0xffffff);
+            
+//            self.toolbar.barTintColor = [UIColor whiteColor];
+        }];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
@@ -153,6 +181,31 @@
     return CGSizeMake(UIViewNoIntrinsicMetric, heightForContent);
 }
 
+#pragma mark - Private Methods
+- (void)nightModeEvent:(NSNotification*)notification {
+    NSLog(@"nightModeEvent:");
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _toolbar.barTintColor = kNightDefaultColor;
+    } else {
+        _toolbar.barTintColor = [UIColor whiteColor];
+    }
+    
+    if(_user.about) {
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            self.aboutLabel.text = _user.nightAttributedAboutText;
+            self.aboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
+                                                NSUnderlineStyleAttributeName: @(1) };
+        } else {
+            
+            self.aboutLabel.text = _user.attributedAboutText;
+            self.aboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
+                                                NSUnderlineStyleAttributeName: @(1) };
+        }
+    }
+}
+
 #pragma mark - Property Override Methods
 - (void)setUser:(User *)user {
     _user = user;
@@ -164,7 +217,17 @@
     self.karmaLabel.text = [_user.karma stringValue];
     
     if(_user.about) {
-        self.aboutLabel.text = _user.attributedAboutText;
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            self.aboutLabel.text = _user.nightAttributedAboutText;
+            self.aboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
+                                                NSUnderlineStyleAttributeName: @(1) };
+        } else {
+            
+            self.aboutLabel.text = _user.attributedAboutText;
+            self.aboutLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
+                                                NSUnderlineStyleAttributeName: @(1) };
+        }
     }
     
     [self invalidateIntrinsicContentSize];

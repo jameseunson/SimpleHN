@@ -13,21 +13,39 @@
 - (void)didTouchDown:(id)sender;
 - (void)didTouchUp:(id)sender;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+
 @end
 
 @implementation ActionDrawerButton
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (instancetype)init {
     self = [super init];
     if(self) {
-        
-        self.alpha = 0.4f;
         
         [self addTarget:self action:@selector(didTouchUp:) forControlEvents:
             (UIControlEventTouchUpOutside|UIControlEventTouchUpInside|UIControlEventTouchCancel)];
         
         [self addTarget:self action:@selector(didTouchDown:)
             forControlEvents:UIControlEventTouchDown];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            self.tintColor = [UIColor orangeColor];
+            self.alpha = 1.0f;
+            
+        } else {
+            self.tintColor = [UIColor blackColor];
+            self.alpha = 0.4f;
+        }
     }
     return self;
 }
@@ -51,7 +69,20 @@
 }
 
 - (void)didTouchUp:(id)sender {
-    self.alpha = 0.4f;
+    if(![[AppConfig sharedConfig] nightModeEnabled]) {
+        self.alpha = 0.4f;
+    }
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.tintColor = [UIColor orangeColor];
+        self.alpha = 1.0f;
+        
+    } else {
+        self.tintColor = [UIColor blackColor];
+        self.alpha = 0.4f;
+    }
 }
 
 #pragma mark - Property Override Methods
@@ -59,23 +90,23 @@
     _drawerButtonType = drawerButtonType;
     
     if(drawerButtonType == ActionDrawerViewButtonTypeUser) {
-        [self setImage:[UIImage imageNamed:@"story-action-user-icon"]
+        [self setImage:[[UIImage imageNamed:@"story-action-user-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
         
     } else if(drawerButtonType == ActionDrawerViewButtonTypeFlag) {
-        [self setImage:[UIImage imageNamed:@"story-action-flag-icon"]
+        [self setImage:[[UIImage imageNamed:@"story-action-flag-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
         
     } else if(drawerButtonType == ActionDrawerViewButtonTypeLink) {
-        [self setImage:[UIImage imageNamed:@"story-action-link-icon"]
+        [self setImage:[[UIImage imageNamed:@"story-action-link-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
         
     } else if(drawerButtonType == ActionDrawerViewButtonTypeMore) {
-        [self setImage:[UIImage imageNamed:@"story-action-more-icon"]
+        [self setImage:[[UIImage imageNamed:@"story-action-more-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
         
     } else if(drawerButtonType == ActionDrawerViewButtonTypeContext) {
-        [self setImage:[UIImage imageNamed:@"story-action-context-icon"]
+        [self setImage:[[UIImage imageNamed:@"story-action-context-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
     }
 }

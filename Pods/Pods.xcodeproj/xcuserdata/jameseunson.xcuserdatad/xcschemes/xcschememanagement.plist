@@ -29,6 +29,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>IPSqueezableViewController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>InAppSettingsKit-InAppSettingsKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -92,12 +97,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>02125EE52DBDF610F8CBD3B109AD32C7</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>05DB05C275DA837D5C41F026C9D740CF</key>
+		<key>420D1F10C77EFB4F8B18345602083177</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,12 +112,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5E87662C126925353EF5AA2A0D10A35E</key>
+		<key>670A44E63C52448D7E5F0FBAC32FA7AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>670A44E63C52448D7E5F0FBAC32FA7AC</key>
+		<key>69642EF96F793FDAA53819BD8B42896E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -128,6 +128,11 @@
 			<true/>
 		</dict>
 		<key>814D7F0C846B4DCB10FE73B71013FF5D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8271641E8A6F82B51C39C99845EEB65B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -147,7 +152,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C58B4A88BA7D5B38D0A06DD722B40EF7</key>
+		<key>BC13AE3233A0CBF79FC53C5B3620ED5D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D7A0848C18B59A5E710546DEA9BBFB7B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

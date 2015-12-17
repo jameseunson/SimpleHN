@@ -17,6 +17,8 @@
 		98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98052DB91BB68BB7004A0D3A /* LaunchScreen.storyboard */; };
 		98052DD11BB68BB8004A0D3A /* SimpleHN_objcUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DD01BB68BB8004A0D3A /* SimpleHN_objcUITests.m */; };
 		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; };
+		981953E31C22AF7E00E571B4 /* UIViewController+ErrorAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 981953E21C22AF7E00E571B4 /* UIViewController+ErrorAlert.m */; };
+		981953E61C22C2B700E571B4 /* StoryPastDiscussionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */; };
 		9834013A1C04105400A85638 /* BaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401391C04105400A85638 /* BaseTest.m */; };
 		9834013D1C0410AE00A85638 /* CommentTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9834013C1C0410AE00A85638 /* CommentTest.m */; };
 		983401401C04110800A85638 /* CommentTest-input-1.html in Resources */ = {isa = PBXBuildFile; fileRef = 9834013F1C04110800A85638 /* CommentTest-input-1.html */; };
@@ -64,6 +66,7 @@
 		98E96C351C2001F400AD1A2F /* LoginFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C341C2001F400AD1A2F /* LoginFieldTableViewCell.m */; };
 		98E96C381C20069300AD1A2F /* LoginButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */; };
 		98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */; };
+		98ED2CA21C2253A800BD8BA6 /* SimpleHNWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */; };
 		98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */; };
 		98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */; };
 		98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD71BF085D600B1BA08 /* UserViewController.m */; };
@@ -116,6 +119,10 @@
 		98052DD21BB68BB8004A0D3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		980C6DB81BE7252400D4318C /* CommentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentCell.h; sourceTree = "<group>"; };
 		980C6DB91BE7252400D4318C /* CommentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentCell.m; sourceTree = "<group>"; };
+		981953E11C22AF7E00E571B4 /* UIViewController+ErrorAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ErrorAlert.h"; sourceTree = "<group>"; };
+		981953E21C22AF7E00E571B4 /* UIViewController+ErrorAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ErrorAlert.m"; sourceTree = "<group>"; };
+		981953E41C22C2B700E571B4 /* StoryPastDiscussionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPastDiscussionsViewController.h; sourceTree = "<group>"; };
+		981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPastDiscussionsViewController.m; sourceTree = "<group>"; };
 		983401391C04105400A85638 /* BaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTest.m; sourceTree = "<group>"; };
 		9834013B1C04106600A85638 /* BaseTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseTest.h; sourceTree = "<group>"; };
 		9834013C1C0410AE00A85638 /* CommentTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTest.m; sourceTree = "<group>"; };
@@ -205,6 +212,8 @@
 		98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginButtonTableViewCell.m; sourceTree = "<group>"; };
 		98E96C391C200A6900AD1A2F /* HNSessionAPIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNSessionAPIManager.h; sourceTree = "<group>"; };
 		98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNSessionAPIManager.m; sourceTree = "<group>"; };
+		98ED2CA01C2253A800BD8BA6 /* SimpleHNWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNWebViewController.h; sourceTree = "<group>"; };
+		98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNWebViewController.m; sourceTree = "<group>"; };
 		98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerButton.h; sourceTree = "<group>"; };
 		98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionDrawerButton.m; sourceTree = "<group>"; };
 		98F5EBD21BF079D700B1BA08 /* ActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerView.h; sourceTree = "<group>"; };
@@ -445,6 +454,8 @@
 				989E97F31C168624009A4400 /* 3rd Party */,
 				989E97F41C16863D009A4400 /* NSURL+HNInternalURL.h */,
 				989E97F51C16863D009A4400 /* NSURL+HNInternalURL.m */,
+				981953E11C22AF7E00E571B4 /* UIViewController+ErrorAlert.h */,
+				981953E21C22AF7E00E571B4 /* UIViewController+ErrorAlert.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -493,6 +504,10 @@
 				98B841461C1012F400FC80F6 /* StoriesCommentsSearchFilterViewController.m */,
 				98E96C261C1FFB6800AD1A2F /* LoginViewController.h */,
 				98E96C271C1FFB6800AD1A2F /* LoginViewController.m */,
+				98ED2CA01C2253A800BD8BA6 /* SimpleHNWebViewController.h */,
+				98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */,
+				981953E41C22C2B700E571B4 /* StoryPastDiscussionsViewController.h */,
+				981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -800,6 +815,7 @@
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98E96C281C1FFB6800AD1A2F /* LoginViewController.m in Sources */,
 				989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */,
+				981953E31C22AF7E00E571B4 /* UIViewController+ErrorAlert.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
 				98B841411C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m in Sources */,
@@ -812,8 +828,10 @@
 				98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
+				981953E61C22C2B700E571B4 /* StoryPastDiscussionsViewController.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
 				9849D0AF1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m in Sources */,
+				98ED2CA21C2253A800BD8BA6 /* SimpleHNWebViewController.m in Sources */,
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
 				983A19D71C07F93A00072B40 /* CommentTextView.m in Sources */,

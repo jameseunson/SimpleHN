@@ -25,6 +25,7 @@
 #import "HNItemHelper.h"
 
 #import "HNSessionAPIManager.h"
+#import "UIViewController+ErrorAlert.h"
 
 #define kNightDefaultColor UIColorFromRGB(0x000000)
 
