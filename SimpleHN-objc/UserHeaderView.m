@@ -103,12 +103,14 @@
         
         self.toolbar = [[UIToolbar alloc] init];
         _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
-        _toolbar.translucent = YES;
         
         if([[AppConfig sharedConfig] nightModeEnabled]) {
             _toolbar.barTintColor = kNightDefaultColor;
+            _toolbar.translucent = NO;
+            
         } else {
             _toolbar.barTintColor = [UIColor whiteColor];
+            _toolbar.translucent = YES;
         }
         _toolbar.tintColor = [UIColor orangeColor];
         

@@ -50,6 +50,7 @@
                     <navigationItem key="navigationItem" id="91a-x0-EIL"/>
                     <connections>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="FAD-lY-ulH"/>
+                        <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="Gkx-Ps-Sbu"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sFI-QU-nBz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -286,7 +287,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="7xo-IT-iDZ">
-                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7xo-IT-iDZ" id="TL1-ZM-S0j">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -471,10 +472,10 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="g7Q-3Q-ajt"/>
-        <segue reference="zg7-lk-R3M"/>
+        <segue reference="Fsd-YD-tWK"/>
+        <segue reference="RlB-mf-JeE"/>
+        <segue reference="7Ui-l1-jaH"/>
         <segue reference="tsB-BR-xsZ"/>
-        <segue reference="bbp-NZ-Hdx"/>
-        <segue reference="gmJ-ZK-BDG"/>
+        <segue reference="g7Q-3Q-ajt"/>
     </inferredMetricsTieBreakers>
 </document>

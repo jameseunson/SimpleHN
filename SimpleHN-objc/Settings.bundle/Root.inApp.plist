@@ -46,6 +46,28 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>About</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>acknowledgementsCell</string>
+			<key>Title</key>
+			<string>Acknowledgements</string>
+			<key>Type</key>
+			<string>IASKCustomViewSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>versionCell</string>
+			<key>Title</key>
+			<string>Version</string>
+			<key>Type</key>
+			<string>IASKCustomViewSpecifier</string>
+		</dict>
 	</array>
 </dict>
 </plist>

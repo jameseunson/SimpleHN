@@ -403,8 +403,14 @@
     } else if([[segue identifier] isEqualToString:@"showWeb"]) {
         
         SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
-        [[segue destinationViewController] topViewController];
-        controller.selectedStory = self.detailItem;
+            [[segue destinationViewController] topViewController];
+        
+        if(sender && [sender isKindOfClass:[NSURL class]]) {
+            controller.selectedURL = sender;
+            
+        } else {
+            controller.selectedStory = self.detailItem;
+        }
         
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
@@ -544,7 +550,7 @@
     } // Catches two else cases implicitly
     
     NSLog(@"%@", link);
-    [self performSegueWithIdentifier:@"showWeb" sender:nil];
+    [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
@@ -620,8 +626,7 @@
         }
     } // Catches two else cases implicitly
     
-    NSLog(@"%@", link);
-    [self performSegueWithIdentifier:@"showWeb" sender:nil];
+    [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 
 @end

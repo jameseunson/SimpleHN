@@ -48,6 +48,7 @@
 @property (nonatomic, assign) CGFloat loadMoreStartYPosition;
 @property (nonatomic, assign) CGFloat loadMoreCompleteYPosition;
 @property (nonatomic, assign) CGFloat lastContentOffset;
+@property (nonatomic, assign) NSInteger loadMoreRowIndex;
 
 @property (nonatomic, assign) BOOL loadMoreOnReleasePending;
 

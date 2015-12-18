@@ -12,6 +12,7 @@
 #import "ContentLoadingView.h"
 #import "StoryCommentsNoCommentsCell.h"
 #import "ActionDrawerButton.h"
+#import "SimpleHNWebViewController.h"
 
 @import SafariServices;
 
@@ -92,18 +93,71 @@
 //    }];
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if([[segue identifier] isEqualToString:@"showDetail"]) {
+        
+        Story * story = nil;
+        if(sender) {
+            story = (Story*)sender;
+        }
+        
+        StoryDetailViewController *controller = (StoryDetailViewController *)
+            [[segue destinationViewController] topViewController];
+        [controller setDetailItem:story];
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+        
+    } else if([[segue identifier] isEqualToString:@"showWeb"]) {
+        
+        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
+        [[segue destinationViewController] topViewController];
+        
+        if(sender && [sender isKindOfClass:[NSURL class]]) {
+            controller.selectedURL = sender;
+        }
+        
+        controller.navigationItem.leftBarButtonItem =
+            self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}
+
 #pragma mark - UITableViewDataSource Methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if(indexPath.row == self.currentVisibleItemMax && self.user
+    NSInteger loadMoreRowIndex = self.currentVisibleItemMax;
+    
+    UserHeaderViewVisibleData visibleData = self.headerView.visibleData;
+    if(visibleData == UserHeaderViewVisibleDataComments || visibleData == UserHeaderViewVisibleDataSubmissions) {
+        loadMoreRowIndex = [self.visibleItems count];
+    }
+    
+    if(indexPath.row == loadMoreRowIndex && self.user
        && [self.user.submitted count] > 0) {
         
         [self loadMoreItems];
         
     } else {
-        [self expandCollapseItemForRow:indexPath];
+        
+        NSNumber * identifier = self.visibleItems[indexPath.row];
+        id item = self.itemsLookup[identifier];
+        if([item isKindOfClass:[Story class]]) {
+            
+            Story * storyItem = (Story*)item;
+            if(!storyItem.url) { // Ask HN item, or Show HN item without a url
+                [self performSegueWithIdentifier:@"showDetail" sender:storyItem];
+                
+            } else {
+                [self performSegueWithIdentifier:@"showWeb" sender:storyItem];
+            }
+        } else {
+            [self expandCollapseItemForRow:indexPath];
+        }
     }
 }
 
@@ -157,7 +211,7 @@
 //    self.loadingProgress.totalUnitCount = 20;
     
     self.currentVisibleItemMax += 20;
-    [self loadContent:nil];
+    [self loadVisibleItems];
 }
 
 #pragma mark - Property Override Methods
@@ -184,6 +238,18 @@
     [self loadContent:nil];
 }
 
+
+- (NSInteger)loadMoreRowIndex {
+    
+    NSInteger loadMoreRowIndex = self.currentVisibleItemMax;
+    if(self.headerView.visibleData == UserHeaderViewVisibleDataComments ||
+       self.headerView.visibleData == UserHeaderViewVisibleDataSubmissions) {
+        loadMoreRowIndex = [self.visibleItems count];
+    }
+    
+    return loadMoreRowIndex;
+}
+
 - (void)loadContent:(id)sender {
     [super loadContent:nil];
     
@@ -197,6 +263,10 @@
         [self.tableView reloadData];
     }
     
+    [self loadVisibleItems];
+}
+
+- (void)loadVisibleItems {
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
     
@@ -248,8 +318,8 @@
                                     self.loadingProgress.completedUnitCount++;
                                 }
                                 
-//                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-//                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
+                                //                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
+                                //                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
                                 
                                 [self applyFiltering];
                             });
@@ -396,7 +466,7 @@
     } // Catches two else cases implicitly
     
     NSLog(@"%@", link);
-    [self performSegueWithIdentifier:@"showWeb" sender:nil];
+    [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 
 #pragma mark - KVO Callback Methods

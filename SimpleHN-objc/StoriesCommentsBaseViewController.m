@@ -128,7 +128,7 @@
     
     // Reset to original state
     StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
-                                        [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
+                                        [NSIndexPath indexPathForRow:self.loadMoreRowIndex inSection:0]];
     loadMoreCell.state = StoryLoadMoreCellStateNormal;
 }
 
@@ -232,7 +232,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(indexPath.row == self.currentVisibleItemMax) {
+    if(indexPath.row == self.loadMoreRowIndex) {
         _loadMoreStartYPosition = cell.frame.origin.y;
         _loadMoreCompleteYPosition = cell.frame.origin.y + cell.frame.size.height;
     }
@@ -240,7 +240,7 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
     
-    if(indexPath.row == self.currentVisibleItemMax) {
+    if(indexPath.row == self.loadMoreRowIndex) {
         _loadMoreStartYPosition = -1;
         _loadMoreCompleteYPosition = -1;
     }
@@ -249,7 +249,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if(_initialLoadDone) {
-        if(indexPath.row == self.currentVisibleItemMax || indexPath.row > self.currentVisibleItemMax) {
+        if(indexPath.row == self.loadMoreRowIndex || indexPath.row > self.loadMoreRowIndex) {
             return 60.0f;
             
         } else {
@@ -306,7 +306,7 @@
         }
         
         StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
-                                            [NSIndexPath indexPathForRow:self.currentVisibleItemMax inSection:0]];
+                                            [NSIndexPath indexPathForRow:self.loadMoreRowIndex inSection:0]];
         
         // Ensure that transition starts only when contentOffset is
         // within the 44pt size of the loading cell, and when the user
@@ -408,8 +408,11 @@
         
     } else if([[segue identifier] isEqualToString:@"showWeb"]) {
         
-        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)[segue destinationViewController];
-//        controller.selectedStory = self.detailItem;
+        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
+            [[segue destinationViewController] topViewController];
+        if(sender && [sender isKindOfClass:[NSURL class]]) {
+            controller.selectedURL = sender;
+        }
     }
 }
 
@@ -429,6 +432,10 @@
     } else {
         self.tableView.scrollEnabled = NO;
     }
+}
+
+- (NSInteger)loadMoreRowIndex {
+    return self.currentVisibleItemMax;
 }
 
 #pragma mark - StoryCellDelegate Methods
@@ -460,7 +467,7 @@
     } // Catches two else cases implicitly
     
     NSLog(@"%@", link);
-    [self performSegueWithIdentifier:@"showWeb" sender:nil];
+    [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {

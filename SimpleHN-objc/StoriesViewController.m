@@ -14,6 +14,8 @@
 #import "SuProgress.h"
 #import "ContentLoadingView.h"
 #import "SimpleHNWebViewController.h"
+#import "SettingsVersionTableViewCell.h"
+#import "VTAcknowledgementsViewController.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
@@ -238,8 +240,9 @@
         }
     }
     
-    if(self.storyType == StoryTypeAskHN) { // Ask HN item
+    if(self.storyType == StoryTypeAskHN || !selectedStory.url) { // Ask HN item, or Show HN item without a url
         [self performSegueWithIdentifier:@"showDetail" sender:selectedStory];
+        
     } else {
         [self performSegueWithIdentifier:@"showWeb" sender:selectedStory];
     }
@@ -265,6 +268,34 @@
         [self dismissViewControllerAnimated:YES completion:^{
             [self performSegueWithIdentifier:@"showLogin" sender:nil];
         }];
+    }
+}
+
+- (CGFloat)tableView:(UITableView*)tableView heightForSpecifier:(IASKSpecifier*)specifier {
+    return 44.0f;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForSpecifier:(IASKSpecifier*)specifier {
+    
+    if([specifier.specifierDict[@"Key"] isEqualToString:@"acknowledgementsCell"]) {
+        
+        UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        
+        cell.textLabel.text = @"Acknowledgements";
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        return cell;
+        
+    } else {
+        return [[SettingsVersionTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    }
+}
+
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender tableView:(UITableView *)tableView didSelectCustomViewSpecifier:(IASKSpecifier*)specifier {
+    if([specifier.specifierDict[@"Key"] isEqualToString:@"acknowledgementsCell"]) {
+        
+        VTAcknowledgementsViewController *viewController = [VTAcknowledgementsViewController acknowledgementsViewController];
+        [sender.navigationController pushViewController:viewController animated:YES];
     }
 }
 

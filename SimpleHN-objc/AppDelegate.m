@@ -28,16 +28,19 @@
     [Fabric with:@[[Crashlytics class]]];
     
     // Override point for customization after application launch.
+    id rootVC = self.window.rootViewController;
+    NSLog(@"rootVC: %@", NSStringFromClass([rootVC class]));
+    
     SimpleHNSplitViewController *splitViewController =
         (SimpleHNSplitViewController *)self.window.rootViewController;
     
-//    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-//    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
+    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
+    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;
     
     splitViewController.tabBarController = [splitViewController.viewControllers firstObject];
-//    splitViewController.storyDetailViewController =
-//        (StoryDetailViewController*)navigationController.topViewController;
+    splitViewController.storyDetailViewController =
+        (StoryDetailViewController*)navigationController.topViewController;
     
     self.window.tintColor = [UIColor orangeColor];
     

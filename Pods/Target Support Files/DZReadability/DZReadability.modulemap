@@ -1,0 +1,6 @@
+framework module DZReadability {
+  umbrella header "DZReadability-umbrella.h"
+
+  export *
+  module * { export * }
+}

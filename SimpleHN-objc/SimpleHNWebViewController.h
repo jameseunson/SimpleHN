@@ -7,14 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "IPNavBarSqueezableViewController.h"
 
 @import WebKit;
 
 @interface SimpleHNWebViewController : UIViewController <WKNavigationDelegate>
 
 @property (nonatomic, strong) Story * selectedStory;
-
-//@property (nonatomic, strong)
+@property (nonatomic, strong) NSURL * selectedURL;
 
 @end

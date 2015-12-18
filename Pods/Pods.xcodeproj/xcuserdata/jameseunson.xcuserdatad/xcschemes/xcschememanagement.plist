@@ -24,12 +24,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>DZReadability.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Firebase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>IPSqueezableViewController.xcscheme</key>
+		<key>HTMLReader.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -79,6 +84,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>VTAcknowledgementsViewController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>hpple.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -97,7 +107,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>420D1F10C77EFB4F8B18345602083177</key>
+		<key>1F688E9D95C18D12BCEA8C4F70496500</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>26792428AD521627F88D353E6C9D7A28</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,7 +132,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>69642EF96F793FDAA53819BD8B42896E</key>
+		<key>6F94A79E09EABF8FF27E77485BFFB6D3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -127,12 +142,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>814D7F0C846B4DCB10FE73B71013FF5D</key>
+		<key>7BBE49203FC5D4E48F03BE054941747A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8271641E8A6F82B51C39C99845EEB65B</key>
+		<key>814D7F0C846B4DCB10FE73B71013FF5D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,17 +167,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BC13AE3233A0CBF79FC53C5B3620ED5D</key>
+		<key>BEE8E95F0173D3E07A86A49A76BF0033</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D7A0848C18B59A5E710546DEA9BBFB7B</key>
+		<key>D89A6E17A5501D54C81DFFDB5E10E4B3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>DAE300BFCB196ED7F72727FFA274790D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EAB79AE699C117F7F2D39A4F21BD3F11</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -1,0 +1,1 @@
+../../../DZReadability/Pod/Classes/GGReadabilityParser.h

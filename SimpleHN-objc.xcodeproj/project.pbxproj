@@ -19,6 +19,8 @@
 		980C6DBA1BE7252400D4318C /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 980C6DB91BE7252400D4318C /* CommentCell.m */; };
 		981953E31C22AF7E00E571B4 /* UIViewController+ErrorAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 981953E21C22AF7E00E571B4 /* UIViewController+ErrorAlert.m */; };
 		981953E61C22C2B700E571B4 /* StoryPastDiscussionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */; };
+		981953E91C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 981953E81C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m */; };
+		981953F31C23EFAF00E571B4 /* readability.js in Resources */ = {isa = PBXBuildFile; fileRef = 981953F21C23EFAF00E571B4 /* readability.js */; };
 		9834013A1C04105400A85638 /* BaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 983401391C04105400A85638 /* BaseTest.m */; };
 		9834013D1C0410AE00A85638 /* CommentTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9834013C1C0410AE00A85638 /* CommentTest.m */; };
 		983401401C04110800A85638 /* CommentTest-input-1.html in Resources */ = {isa = PBXBuildFile; fileRef = 9834013F1C04110800A85638 /* CommentTest-input-1.html */; };
@@ -67,6 +69,11 @@
 		98E96C381C20069300AD1A2F /* LoginButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */; };
 		98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */; };
 		98ED2CA21C2253A800BD8BA6 /* SimpleHNWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */; };
+		98F49A461C23F47900F1DF4E /* reader.template.html in Resources */ = {isa = PBXBuildFile; fileRef = 98F49A451C23F47900F1DF4E /* reader.template.html */; };
+		98F49A481C23F4B500F1DF4E /* bootstrap.min.css in Resources */ = {isa = PBXBuildFile; fileRef = 98F49A471C23F4B500F1DF4E /* bootstrap.min.css */; };
+		98F49A4E1C23F97000F1DF4E /* SettingsVersionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F49A4D1C23F97000F1DF4E /* SettingsVersionTableViewCell.m */; };
+		98F49A501C23FC5400F1DF4E /* Pods-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98F49A4F1C23FC5400F1DF4E /* Pods-acknowledgements.plist */; };
+		98F49A521C23FF5F00F1DF4E /* reader-night.template.html in Resources */ = {isa = PBXBuildFile; fileRef = 98F49A511C23FF5F00F1DF4E /* reader-night.template.html */; };
 		98F5EBD11BF0757600B1BA08 /* ActionDrawerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */; };
 		98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD31BF079D700B1BA08 /* ActionDrawerView.m */; };
 		98F5EBD81BF085D600B1BA08 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBD71BF085D600B1BA08 /* UserViewController.m */; };
@@ -123,6 +130,9 @@
 		981953E21C22AF7E00E571B4 /* UIViewController+ErrorAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ErrorAlert.m"; sourceTree = "<group>"; };
 		981953E41C22C2B700E571B4 /* StoryPastDiscussionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPastDiscussionsViewController.h; sourceTree = "<group>"; };
 		981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPastDiscussionsViewController.m; sourceTree = "<group>"; };
+		981953E71C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNWebTitleSubtitleView.h; sourceTree = "<group>"; };
+		981953E81C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNWebTitleSubtitleView.m; sourceTree = "<group>"; };
+		981953F21C23EFAF00E571B4 /* readability.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = readability.js; sourceTree = "<group>"; };
 		983401391C04105400A85638 /* BaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTest.m; sourceTree = "<group>"; };
 		9834013B1C04106600A85638 /* BaseTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseTest.h; sourceTree = "<group>"; };
 		9834013C1C0410AE00A85638 /* CommentTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTest.m; sourceTree = "<group>"; };
@@ -214,6 +224,12 @@
 		98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNSessionAPIManager.m; sourceTree = "<group>"; };
 		98ED2CA01C2253A800BD8BA6 /* SimpleHNWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNWebViewController.h; sourceTree = "<group>"; };
 		98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNWebViewController.m; sourceTree = "<group>"; };
+		98F49A451C23F47900F1DF4E /* reader.template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = reader.template.html; sourceTree = "<group>"; };
+		98F49A471C23F4B500F1DF4E /* bootstrap.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = bootstrap.min.css; sourceTree = "<group>"; };
+		98F49A4C1C23F97000F1DF4E /* SettingsVersionTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsVersionTableViewCell.h; sourceTree = "<group>"; };
+		98F49A4D1C23F97000F1DF4E /* SettingsVersionTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsVersionTableViewCell.m; sourceTree = "<group>"; };
+		98F49A4F1C23FC5400F1DF4E /* Pods-acknowledgements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Pods-acknowledgements.plist"; path = "../Pods/Target Support Files/Pods/Pods-acknowledgements.plist"; sourceTree = "<group>"; };
+		98F49A511C23FF5F00F1DF4E /* reader-night.template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "reader-night.template.html"; sourceTree = "<group>"; };
 		98F5EBCF1BF0757500B1BA08 /* ActionDrawerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerButton.h; sourceTree = "<group>"; };
 		98F5EBD01BF0757500B1BA08 /* ActionDrawerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionDrawerButton.m; sourceTree = "<group>"; };
 		98F5EBD21BF079D700B1BA08 /* ActionDrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionDrawerView.h; sourceTree = "<group>"; };
@@ -321,9 +337,14 @@
 		98052DA81BB68BB7004A0D3A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				98F49A4F1C23FC5400F1DF4E /* Pods-acknowledgements.plist */,
+				98F49A471C23F4B500F1DF4E /* bootstrap.min.css */,
 				98B8413A1C0EDEFC00FC80F6 /* Settings.bundle */,
 				98052DA91BB68BB7004A0D3A /* main.m */,
 				98F9F8AE1C06D62600C946AC /* reset.css */,
+				981953F21C23EFAF00E571B4 /* readability.js */,
+				98F49A451C23F47900F1DF4E /* reader.template.html */,
+				98F49A511C23FF5F00F1DF4E /* reader-night.template.html */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -368,6 +389,8 @@
 				98E96C341C2001F400AD1A2F /* LoginFieldTableViewCell.m */,
 				98E96C361C20069300AD1A2F /* LoginButtonTableViewCell.h */,
 				98E96C371C20069300AD1A2F /* LoginButtonTableViewCell.m */,
+				98F49A4C1C23F97000F1DF4E /* SettingsVersionTableViewCell.h */,
+				98F49A4D1C23F97000F1DF4E /* SettingsVersionTableViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -393,6 +416,8 @@
 				985219581C11234700A183A6 /* CommentCellHeaderView.m */,
 				98C22D561C1564AF00809299 /* StoryCommentsEmptyView.h */,
 				98C22D571C1564AF00809299 /* StoryCommentsEmptyView.m */,
+				981953E71C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.h */,
+				981953E81C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -649,11 +674,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98F49A481C23F4B500F1DF4E /* bootstrap.min.css in Resources */,
 				98052DBB1BB68BB7004A0D3A /* LaunchScreen.storyboard in Resources */,
 				98052DB81BB68BB7004A0D3A /* Assets.xcassets in Resources */,
+				98F49A521C23FF5F00F1DF4E /* reader-night.template.html in Resources */,
 				98B8413B1C0EDEFC00FC80F6 /* Settings.bundle in Resources */,
+				981953F31C23EFAF00E571B4 /* readability.js in Resources */,
 				98052DB61BB68BB7004A0D3A /* Main.storyboard in Resources */,
+				98F49A501C23FC5400F1DF4E /* Pods-acknowledgements.plist in Resources */,
 				98F9F8AF1C06D62600C946AC /* reset.css in Resources */,
+				98F49A461C23F47900F1DF4E /* reader.template.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -815,6 +845,7 @@
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
 				98E96C281C1FFB6800AD1A2F /* LoginViewController.m in Sources */,
 				989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */,
+				981953E91C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m in Sources */,
 				981953E31C22AF7E00E571B4 /* UIViewController+ErrorAlert.m in Sources */,
 				98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */,
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
@@ -822,6 +853,7 @@
 				98B841391C0EDC9200FC80F6 /* AppConfig.m in Sources */,
 				98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */,
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
+				98F49A4E1C23F97000F1DF4E /* SettingsVersionTableViewCell.m in Sources */,
 				984DCC461BFAE9E200BA5B86 /* ContentLoadingView.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				989E97FF1C16AD3B009A4400 /* HNItemHelper.m in Sources */,
