@@ -94,8 +94,8 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings-icon"] style:
                                              UIBarButtonItemStylePlain target:self action:@selector(didTapSettingsIcon:)];
     
-    self.detailViewController = ((SimpleHNSplitViewController*)
-                                 self.splitViewController).storyDetailViewController;
+//    self.detailViewController = ((SimpleHNSplitViewController*)
+//                                 self.splitViewController).storyDetailViewController;
     
     self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
                            UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
