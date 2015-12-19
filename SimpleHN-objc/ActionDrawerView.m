@@ -27,9 +27,16 @@
 - (void)didTapActionButton:(id)sender;
 - (ActionDrawerButton*)createButtonWithType:(ActionDrawerViewButtonType)type;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation ActionDrawerView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)init {
     self = [super init];
@@ -74,6 +81,13 @@
         [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                               @"V:|-10-[_actionDrawerContainerView];H:|-0-[_actionDrawerContainerView]-0-|"
                                                                         options:0 metrics:nil views:bindings]];
+        
+        [self updateNightMode];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
@@ -117,6 +131,19 @@
     if([self.delegate respondsToSelector:@selector(actionDrawerView:didTapActionWithType:)]) {
         [self.delegate performSelector:@selector(actionDrawerView:didTapActionWithType:)
                             withObject:self withObject:@(button.drawerButtonType)];
+    }
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _actionDrawerBorderLayer.backgroundColor = [UIColorFromRGB(0x555555) CGColor];
+    } else {
+        _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
     }
 }
 

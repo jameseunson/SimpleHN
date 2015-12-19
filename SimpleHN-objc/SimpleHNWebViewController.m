@@ -57,6 +57,9 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 
 - (void)createBarButtonItems;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation SimpleHNWebViewController
@@ -82,9 +85,7 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     _readerWebView.translatesAutoresizingMaskIntoConstraints = NO;
     _readerWebView.navigationDelegate = self;
     _readerWebView.hidden = YES;
-    _readerWebView.scrollView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
-                                                              [UIApplication sharedApplication].statusBarFrame.size.height,
-                                                              0, self.tabBarController.tabBar.frame.size.height, 0);
+
     [self.view addSubview:_readerWebView];
     
     self.readerContentLoadingView = [[ContentLoadingView alloc] init];
@@ -104,18 +105,14 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     
     [self createBarButtonItems];
     
-    if([[AppConfig sharedConfig] nightModeEnabled]) {
-        self.navigationController.toolbar.barTintColor = UIColorFromRGB(0x222222);
-    } else {
-        self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xffffff);
-    }
-    
     self.titleView = [[SimpleHNWebTitleSubtitleView alloc] init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
                                                  name:DKNightVersionNightFallingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
                                                  name:DKNightVersionDawnComingNotification object:nil];
+    
+    [self updateNightMode];
 }
 
 - (void)viewDidLoad {
@@ -158,7 +155,9 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
                       options:NSKeyValueObservingOptionNew context:NULL];
 
     
-    self.navigationController.hidesBarsOnSwipe = YES;
+    if([[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
+        self.navigationController.hidesBarsOnSwipe = YES;
+    }
     self.navigationController.toolbarHidden = NO;
     
     self.flexibleSpaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
@@ -223,6 +222,10 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
         }
     }];
     [self.readability start];
+    
+    _readerWebView.scrollView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                              [UIApplication sharedApplication].statusBarFrame.size.height,
+                                                              0, self.tabBarController.tabBar.frame.size.height + self.navigationController.toolbar.frame.size.height, 0);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -270,8 +273,13 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([[segue identifier] isEqualToString:@"showDetail"]) {
         
-        StoryDetailViewController *controller = (StoryDetailViewController *)
-            [[segue destinationViewController] topViewController];
+        StoryDetailViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (StoryDetailViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (StoryDetailViewController *)[segue destinationViewController];
+        }
+        
         [controller setDetailItem:sender];
         
         controller.navigationItem.leftBarButtonItem =
@@ -450,7 +458,27 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 }
 
 - (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
     
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        
+        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
+        self.tabBarController.tabBar.barTintColor = kNightDefaultColor;
+        
+        self.view.backgroundColor = kNightDefaultColor;
+        self.navigationController.toolbar.barTintColor = UIColorFromRGB(0x111111);
+        
+    } else {
+        
+        self.navigationController.navigationBar.barTintColor = nil;
+        self.tabBarController.tabBar.barTintColor = nil;
+    
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.navigationController.toolbar.barTintColor = nil;
+    }
 }
 
 @end

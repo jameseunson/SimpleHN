@@ -15,4 +15,6 @@
 @interface StoryCommentsButton : UIButton
 @property (nonatomic, strong) Story * story;
 
+@property (nonatomic, assign) BOOL tapFeedbackViewVisible;
+
 @end

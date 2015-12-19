@@ -205,7 +205,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
     __block Firebase * storyDetailRef = [[Firebase alloc] initWithUrl:storyURL];
     
     [storyDetailRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        NSLog(@"createStoryFromItemIdentifier, RESULT: %@", identifier);        
+//        NSLog(@"createStoryFromItemIdentifier, RESULT: %@", identifier);        
         
         [[self class] createStoryFromSnapshot:snapshot completion:completion];
         [storyDetailRef removeAllObservers];
@@ -216,7 +216,6 @@ static NSDateFormatter * _timeDateFormatter = nil;
 + (void)createStoryFromSnapshot:(FDataSnapshot*)snapshot
                      completion:(StoryBlock)completion {
     
-//    NSLog(@"createStoryFromSnapshot");
     NSError * error = nil;
     
     if([snapshot.value isKindOfClass:[NSNull class]]) {
@@ -247,7 +246,11 @@ static NSDateFormatter * _timeDateFormatter = nil;
         mutableStoryDict[@"by"] = result[@"author"];
     }
     if([[result allKeys] containsObject:@"points"]) {
-        mutableStoryDict[@"score"] = @([result[@"points"] intValue]);
+        if([result[@"points"] isKindOfClass:[NSNull class]]) {
+            mutableStoryDict[@"score"] = @(0);
+        } else {
+            mutableStoryDict[@"score"] = @([result[@"points"] intValue]);
+        }
     }
     if([[result allKeys] containsObject:@"num_comments"]) {
         if([result[@"num_comments"] isKindOfClass:[NSNull class]]) {
@@ -264,6 +267,14 @@ static NSDateFormatter * _timeDateFormatter = nil;
     }
     if([[result allKeys] containsObject:@"story_text"]) {
         mutableStoryDict[@"text"] = result[@"text"];
+    }
+    
+    // Strip whitespace from inputs, otherwise they can cause a Mantle crash, especially URLs
+    for(NSString * key in [mutableStoryDict allKeys]) {
+        if([mutableStoryDict[key] isKindOfClass:[NSString class]]) {
+            mutableStoryDict[key] = [mutableStoryDict[key] stringByTrimmingCharactersInSet:
+                                     [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        }
     }
     
     NSError * error = nil;

@@ -22,8 +22,10 @@
 - (instancetype)init {
     self = [super init];
     if(self) {
-        _selectedPeriodIndex = 0;
-        _lastPeriodSelected = [NSIndexPath indexPathForRow:0 inSection:0];
+        
+        _selectedPeriodIndex = [kSearchTimePeriods indexOfObject:@([[AppConfig sharedConfig] activeSearchFilter])];
+        _lastPeriodSelected = [NSIndexPath indexPathForRow:[kSearchTimePeriods indexOfObject:
+                                                            @([[AppConfig sharedConfig] activeSearchFilter])] inSection:0];
     }
     return self;
 }
@@ -42,6 +44,16 @@
     
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+    
+    @weakify(self);
+    [self addColorChangedBlock:^{
+        @strongify(self);
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
+        
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.nightBackgroundColor = kNightDefaultColor;
+    }];
 }
 
 - (void)viewDidLoad {
@@ -54,17 +66,29 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
                                              UIBarButtonSystemItemCancel target:self action:@selector(cancelFilter:)];
     
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.navigationController.navigationBar.titleTextAttributes =
+        @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+        
+    } else {
+        self.navigationController.navigationBar.titleTextAttributes =
+        @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+        
+        self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [kTimePeriods count];
+    return [kSearchTimePeriods count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:kTimePeriodCellReuseIdentifier forIndexPath:indexPath];
     
-    NSMutableArray * modifiedTimePeriods = [kTimePeriods mutableCopy];
+    NSMutableArray * modifiedTimePeriods = [kSearchTimePeriods mutableCopy];
     
     [modifiedTimePeriods removeObject:[modifiedTimePeriods firstObject]];
     [modifiedTimePeriods insertObject:@(StoriesTimePeriodsNoPeriod) atIndex:0];
@@ -77,6 +101,16 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
+    @weakify(cell);
+    [self addColorChangedBlock:^{
+        @strongify(cell);
+        cell.backgroundColor = UIColorFromRGB(0xffffff);
+        cell.nightBackgroundColor = kNightDefaultColor;
+        
+        cell.textLabel.textColor = UIColorFromRGB(0x000000);
+        cell.textLabel.nightTextColor = UIColorFromRGB(0xffffff);
+    }];
+    
     return cell;
 }
 
@@ -87,10 +121,6 @@
     [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
     
     self.lastPeriodSelected = indexPath;
-    
-    if([self.delegate respondsToSelector:@selector(storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:)]) {
-        [self.delegate performSelector:@selector(storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:) withObject:self withObject:kTimePeriods[indexPath.row]];
-    }
     
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
                   withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -107,6 +137,11 @@
 
 - (void)didSelectFilter:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+    
+    if([self.delegate respondsToSelector:@selector(storiesCommentsSearchFilterViewControllerDelegate:didSelectFilter:)]) {
+        [self.delegate performSelector:@selector(storiesCommentsSearchFilterViewControllerDelegate:didSelectFilter:)
+                            withObject:self withObject:kSearchTimePeriods[_lastPeriodSelected.row]];
+    }
 }
 
 @end

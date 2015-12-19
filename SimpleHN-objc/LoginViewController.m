@@ -43,6 +43,16 @@
     
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
+    
+    @weakify(self);
+    [self addColorChangedBlock:^{
+        @strongify(self);
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
+        
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.nightBackgroundColor = kNightDefaultColor;
+    }];
 }
 
 - (void)viewDidLoad {
@@ -57,6 +67,19 @@
     UIBarButtonItem * cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
                                     UIBarButtonSystemItemCancel target:self action:@selector(didTapCancelItem:)];
     self.navigationItem.leftBarButtonItem = cancelItem;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.navigationController.navigationBar.titleTextAttributes =
+        @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        
+    } else {
+        self.navigationController.navigationBar.titleTextAttributes =
+        @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+    }
 }
 
 #pragma mark - UITableViewDataSource Methods

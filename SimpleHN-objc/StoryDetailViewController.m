@@ -15,11 +15,13 @@
 #import "StoryCommentsNoCommentsCell.h"
 #import "StoryCommentsContentLoadingCell.h"
 #import "SimpleHNWebViewController.h"
+#import "StoryDetailNoContentSelectedTableViewCell.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
 #define kNoCommentsReuseIdentifier @"noCommentsReuseIdentifier"
 #define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
+#define kNoContentSelectedCellReuseIdentifier @"noContentSelectedCellReuseIdentifier"
 
 //@import WebKit;
 
@@ -28,14 +30,18 @@
 //@property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
 //@property (nonatomic, strong) SFSafariViewController * webViewController;
 
+@property (nonatomic, assign) StoryDetailViewControllerLoadStatus loadStatus;
+
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
-@property (nonatomic, assign) BOOL initialLoadDone;
+//@property (nonatomic, assign) BOOL initialLoadDone;
 @property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
 
 //@property (nonatomic, strong) ContentLoadingView * loadingView;
 
 @property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
+
+@property (nonatomic, strong) UIColor * defaultSeparatorColor;
 
 - (void)loadContent;
 
@@ -50,6 +56,11 @@
 - (void)configureViewForStory;
 - (void)configureViewForComment;
 
+- (void)setCellColor:(UIColor *)color forCell:(UITableViewCell *)cell;
+
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation StoryDetailViewController
@@ -62,6 +73,8 @@
 
 - (void)awakeFromNib {
     
+    self.loadStatus = StoryDetailViewControllerLoadStatusNotLoaded;
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
@@ -69,12 +82,17 @@
                                                  name:kCommentCollapsedComplete object:nil];
     
     _displayMode = StoryDetailViewControllerDisplayModeStory;
-    _initialLoadDone = NO;
+//    _initialLoadDone = NO;
     
     self.refreshDateFormatter = [[NSDateFormatter alloc] init];
     [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     _refreshDateFormatter.locale = locale;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                 name:DKNightVersionNightFallingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                 name:DKNightVersionDawnComingNotification object:nil];
 }
 
 - (void)loadView {
@@ -92,6 +110,9 @@
     [self.tableView registerClass:[StoryCommentsContentLoadingCell class]
            forCellReuseIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier];
     
+    [self.tableView registerClass:[StoryDetailNoContentSelectedTableViewCell class]
+           forCellReuseIdentifier:kNoContentSelectedCellReuseIdentifier];
+    
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor whiteColor];
     self.refreshControl.tintColor = [UIColor grayColor];
@@ -99,25 +120,14 @@
                             action:@selector(reloadContent:)
                   forControlEvents:UIControlEventValueChanged];
     
-    @weakify(self);
-    [self addColorChangedBlock:^{
-        @strongify(self);
-        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
-        self.refreshControl.nightBackgroundColor = kNightDefaultColor;
-        
-        self.view.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.nightBackgroundColor = kNightDefaultColor;
-    }];
+    [self updateNightMode];
 }
 
 - (void)setDetailItem:(Story*)newDetailItem {
     if (_detailItem != newDetailItem) {
+        
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoadingStory;
+        [self.tableView reloadData];
         
         if(newDetailItem.algoliaResult) {
             
@@ -143,8 +153,7 @@
     if (_detailComment != newDetailComment) {
         
         _detailComment = [newDetailComment copy];
-        self.initialLoadDone = YES;
-        
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoadingStory;
         _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
         
         [self.tableView reloadData];
@@ -170,7 +179,7 @@
             [self loadContent];
             
         } else {
-            self.initialLoadDone = YES;
+            self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
             [self.tableView reloadData];
         }
     }
@@ -217,20 +226,22 @@
 //    UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
 //    self.navigationItem.rightBarButtonItem = item;
     
-    self.initialLoadDone = NO;
+//    self.initialLoadDone = NO;
 }
 
 #pragma mark - UITableViewDataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if(_initialLoadDone) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+        
         if(section == 0) {
             return 1;
             
         } else {
             
             NSInteger commentCount = [_detailItem.flatDisplayComments count];
-            if(commentCount == 0 && _initialLoadDone) {
+            if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
                 return 1;
                 
             } else {
@@ -243,16 +254,22 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if(_initialLoadDone) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusNotLoaded) {
+        return 1;
+        
+    } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+              || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
         return 2;
-    } else {
+        
+    } else { // StoryDetailViewControllerLoadStatusLoadingStory, loading view
         return 1;
     }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    if(_initialLoadDone) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
     
         if(indexPath.section == 0) {
             StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
@@ -268,7 +285,7 @@
             
             NSInteger commentCount = [_detailItem.flatDisplayComments count];
             
-            if(commentCount == 0 && _initialLoadDone) {
+            if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
                 StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
                 return cell;
                 
@@ -286,10 +303,16 @@
         }
     
     
-    } else {
+    } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
         
         StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
                                                   kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+        return cell;
+        
+    } else {
+        StoryDetailNoContentSelectedTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                  kNoContentSelectedCellReuseIdentifier forIndexPath:indexPath];
+    
         return cell;
     }
 }
@@ -300,7 +323,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
-    if(_initialLoadDone) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
         if(indexPath.section == 0) {
             return [StoryCell heightForStoryCellWithStory:self.detailItem
                                                     width:tableView.frame.size.width context:StoryCellContextTypeDetail];
@@ -308,7 +332,8 @@
         } else {
             
             NSInteger commentCount = [_detailItem.flatDisplayComments count];
-            if(commentCount == 0 && _initialLoadDone) {
+            if(commentCount == 0 && (_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+                                           || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
                 
                 CGFloat headerHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
                                                                         width:tableView.frame.size.width];
@@ -326,11 +351,44 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
+        
+        CommentCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            cell.backgroundColor = UIColorFromRGB(0x222222);
+            
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
+        CommentCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            cell.backgroundColor = kNightDefaultColor;
+            
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
+    }
+}
+
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if(self.initialLoadDone) {
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
+        
         if(indexPath.section == 0 && indexPath.row == 0) {
 //            self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
 //            [self didSelectContentSegment:self.contentSelectSegmentedControl];
@@ -352,8 +410,12 @@
     if([[segue identifier] isEqualToString:@"showUser"]) {
         NSLog(@"prepareForSegue, showUser");
         
-        __block UserViewController *controller = (UserViewController *)
-            [[segue destinationViewController] topViewController];
+        __block UserViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (UserViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (UserViewController *)[segue destinationViewController];
+        }
         
         if(sender && [sender isKindOfClass:[NSString class]]) {
             controller.author = sender;
@@ -370,8 +432,12 @@
         
         NSNumber * itemIdentifier = (NSNumber*)sender;
         
-        StoryDetailViewController *controller = (StoryDetailViewController *)
-            [[segue destinationViewController] topViewController];
+        __block StoryDetailViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (StoryDetailViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (StoryDetailViewController *)[segue destinationViewController];
+        }
         
         NSString * itemURL = [NSString stringWithFormat:
                               @"https://hacker-news.firebaseio.com/v0/item/%@", itemIdentifier];
@@ -402,8 +468,12 @@
         
     } else if([[segue identifier] isEqualToString:@"showWeb"]) {
         
-        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
-            [[segue destinationViewController] topViewController];
+        SimpleHNWebViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (SimpleHNWebViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (SimpleHNWebViewController *)[segue destinationViewController];
+        }
         
         if(sender && [sender isKindOfClass:[NSURL class]]) {
             controller.selectedURL = sender;
@@ -459,7 +529,9 @@
     Story * detailStory = (Story*)_detailItem;
     if(!detailStory.kids || [detailStory.kids count] == 0) {
         
-        self.initialLoadDone = YES;
+//        self.initialLoadDone = YES;
+        
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
         
         self.tableView.scrollEnabled = NO;
         [self.tableView reloadData]; // Display no comments cell
@@ -492,6 +564,48 @@
     [self loadContent];
 }
 
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if(!_defaultSeparatorColor) {
+        _defaultSeparatorColor = self.tableView.separatorColor;
+    }
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        
+        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
+        self.tabBarController.tabBar.barTintColor = kNightDefaultColor;
+        
+        self.refreshControl.backgroundColor = kNightDefaultColor;
+        self.view.backgroundColor = kNightDefaultColor;
+        self.tableView.backgroundColor = kNightDefaultColor;
+        
+        self.tableView.separatorColor = UIColorFromRGB(0x555555);
+        
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        
+    } else {
+        
+        self.navigationController.navigationBar.barTintColor = nil;
+        self.tabBarController.tabBar.barTintColor = nil;
+        
+        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.tableView.backgroundColor = UIColorFromRGB(0xffffff);
+        
+        self.tableView.separatorColor = _defaultSeparatorColor;
+        
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+    }
+    
+    [self.tableView reloadData];
+}
+
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
     
     Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
@@ -519,12 +633,26 @@
 }
 
 #pragma mark - Property Override Methods
-- (void)setInitialLoadDone:(BOOL)initialLoadDone {
-    _initialLoadDone = initialLoadDone;
+//- (void)setInitialLoadDone:(BOOL)initialLoadDone {
+//    _initialLoadDone = initialLoadDone;
+//    
+//    if(_initialLoadDone) {
+//        self.tableView.scrollEnabled = YES;
+//        
+//    } else {
+//        self.tableView.scrollEnabled = NO;
+//    }
+//}
+
+- (void)setLoadStatus:(StoryDetailViewControllerLoadStatus)loadStatus {
+    _loadStatus = loadStatus;
     
-    if(_initialLoadDone) {
+    NSLog(@"StoryDetailViewControllerLoadStatus: %lu", loadStatus);
+    
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
         self.tableView.scrollEnabled = YES;
-        
+
     } else {
         self.tableView.scrollEnabled = NO;
     }
@@ -577,8 +705,8 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
-    if([fractionCompleted floatValue] > 0.0f && !_initialLoadDone) {
-        self.initialLoadDone = YES;
+    if([fractionCompleted floatValue] > 0.0f && _loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoadingComments;
     }
     
     if([fractionCompleted floatValue] == 1.0f) {

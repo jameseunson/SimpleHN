@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIImageView * downvoteConfirmedImageView;
 
 - (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
 
 @end
 
@@ -45,13 +46,6 @@
         _downvoteCornerImageView.hidden = YES;
         [self.contentView addSubview:_downvoteCornerImageView];
         
-        @weakify(self);
-        [self addColorChangedBlock:^{
-            @strongify(self);
-            self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
-            self.contentView.nightBackgroundColor = kNightDefaultColor;
-        }];
-        
         // Configuring the views and colors.
         self.upvoteImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-upvote-icon"]];
         _upvoteImageView.backgroundColor = [UIColor orangeColor];
@@ -68,8 +62,6 @@
         self.downvoteConfirmedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"story-cell-tick-icon"]];
         _downvoteConfirmedImageView.backgroundColor = RGBCOLOR(88, 86, 214);
         _downvoteConfirmedImageView.contentMode = UIViewContentModeCenter;
-    
-        [self setDefaultColor:[UIColor whiteColor]];
         
         // Adding gestures per state basis.
         [self setSwipeGestureWithView:_downvoteImageView color:RGBCOLOR(88, 86, 214) mode:MCSwipeTableViewCellModeSwitch state:MCSwipeTableViewCellState1 completionBlock:nil];
@@ -96,19 +88,13 @@
             [blockSelf didVoteWithType:StoryCommentUserVoteUpvote];
         }];
         
-        if([[AppConfig sharedConfig] nightModeEnabled]) {
-            UIView * nightSelectedBackgroundView = [[UIView alloc] init];
-            nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
-            [self setSelectedBackgroundView:nightSelectedBackgroundView];
-            
-        } else {
-            self.selectedBackgroundView = nil;
-        }
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
                                                      name:DKNightVersionNightFallingNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
                                                      name:DKNightVersionDawnComingNotification object:nil];
+        
+        [self updateNightMode];        
     }
     return self;
 }
@@ -118,13 +104,15 @@
 }
 
 - (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
     if([[AppConfig sharedConfig] nightModeEnabled]) {
-        UIView * nightSelectedBackgroundView = [[UIView alloc] init];
-        nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
-        [self setSelectedBackgroundView:nightSelectedBackgroundView];
+        [self setDefaultColor:kNightDefaultColor];
         
     } else {
-        self.selectedBackgroundView = nil;
+        [self setDefaultColor:[UIColor whiteColor]];
     }
 }
 

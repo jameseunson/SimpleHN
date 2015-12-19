@@ -17,6 +17,13 @@
 
 @import SafariServices;
 
+typedef NS_ENUM(NSInteger, StoryDetailViewControllerLoadStatus) {
+    StoryDetailViewControllerLoadStatusNotLoaded = 0,
+    StoryDetailViewControllerLoadStatusLoadingStory = 1,
+    StoryDetailViewControllerLoadStatusLoadingComments = 2,
+    StoryDetailViewControllerLoadStatusLoaded = 3
+};
+
 typedef NS_ENUM(NSInteger, StoryDetailViewControllerDisplayMode) {
     StoryDetailViewControllerDisplayModeStory = 0,
     StoryDetailViewControllerDisplayModeCommentContext = 1

@@ -14,9 +14,16 @@
 @property (nonatomic, strong) UILabel * titleLabel;
 @property (nonatomic, strong) UILabel * subtitleLabel;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation SimpleHNWebTitleSubtitleView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)init {
     if(self = [super init]) {
@@ -25,13 +32,6 @@
         
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        
-        
-        if([[AppConfig sharedConfig] nightModeEnabled]) {
-            _titleLabel.textColor = [UIColor whiteColor];
-        } else {
-            _titleLabel.textColor = [UIColor blackColor];
-        }
         [self addSubview:_titleLabel];
         
         self.subtitleLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
@@ -48,6 +48,13 @@
         [self addGestureRecognizer:singleTapGestureRecognizer];
         
         self.userInteractionEnabled = YES;
+        
+        [self updateNightMode];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
@@ -83,6 +90,19 @@
 - (void)didTapSelf:(id)sender {
     if([self.delegate respondsToSelector:@selector(simpleHNWebTitleSubtitleViewDidTapView:)]) {
         [self.delegate performSelector:@selector(simpleHNWebTitleSubtitleViewDidTapView:) withObject:self];
+    }
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _titleLabel.textColor = [UIColor whiteColor];
+    } else {
+        _titleLabel.textColor = [UIColor blackColor];
     }
 }
 

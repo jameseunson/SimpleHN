@@ -34,9 +34,16 @@
 - (void)didLongPressSelf:(id)sender;
 - (void)didTapStoryCommentsAreaView:(id)sender;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation StoryCell
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
@@ -85,19 +92,27 @@
         self.storyCommentsAreaView = [[UIView alloc] init];
         _storyCommentsAreaView.userInteractionEnabled = YES;
         _storyCommentsAreaView.backgroundColor = [UIColor clearColor];
-        [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
-                                                      self action:@selector(didTapStoryCommentsAreaView:)]];
+//        [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
+//                                                      self action:@selector(didTapStoryCommentsAreaView:)]];
+        
+        UILongPressGestureRecognizer * recognizer = [[UILongPressGestureRecognizer alloc]
+                                                                     initWithTarget:self action:@selector(didTapStoryCommentsAreaView:)];
+        recognizer.minimumPressDuration = .001;
+        [_storyCommentsAreaView addGestureRecognizer:recognizer];
+        
         [self.contentView addSubview:_storyCommentsAreaView];
         
-        @weakify(self);
-        [self addColorChangedBlock:^{
-            @strongify(self);
-            self.normalBackgroundColor = UIColorFromRGB(0xffffff);
-            self.nightBackgroundColor = kNightDefaultColor;
-            
-            self.storyTitleLabel.normalTextColor = [UIColor blackColor];
-            self.storyTitleLabel.nightTextColor = UIColorFromRGB(0xffffff);
-        }];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
+        
+        [self updateNightMode];
+//        @weakify(self);
+//        [self addColorChangedBlock:^{
+//            @strongify(self);
+//
+//        }];
     }
     return self;
 }
@@ -308,8 +323,50 @@
 }
 
 - (void)didTapStoryCommentsAreaView:(id)sender {
+    
+    UILongPressGestureRecognizer * recognizer = (UILongPressGestureRecognizer*)sender;
+    NSLog(@"UILongPressGestureRecognizer.state = %lu", recognizer.state);
+    
     if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidTapCommentsArea:)]) {
         [self.storyCellDelegate performSelector:@selector(storyCellDidTapCommentsArea:) withObject:self];
+    }
+    
+    if(recognizer.state == UIGestureRecognizerStateBegan) {
+        self.storyCommentsButton.tapFeedbackViewVisible = YES;
+        
+    } else if(recognizer.state == UIGestureRecognizerStateEnded) {
+        self.storyCommentsButton.tapFeedbackViewVisible = NO;
+    }
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        UIView * nightSelectedBackgroundView = [[UIView alloc] init];
+        nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
+        [self setSelectedBackgroundView:nightSelectedBackgroundView];
+        
+    } else {
+        self.selectedBackgroundView = nil;
+    }
+    
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.storyTitleLabel.textColor = [UIColor whiteColor];
+        self.backgroundColor = kNightDefaultColor;
+        
+        self.contentView.backgroundColor = nil;
+        
+    } else {
+        
+        self.storyTitleLabel.textColor = [UIColor blackColor];
+        self.backgroundColor = UIColorFromRGB(0xffffff);
+        
+        self.contentView.backgroundColor = nil;
     }
 }
 

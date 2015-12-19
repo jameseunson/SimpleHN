@@ -18,6 +18,13 @@
         self.textLabel.font = [UIFont systemFontOfSize:18.0f];
         self.textLabel.textColor = [UIColor orangeColor];
         self.textLabel.textAlignment = NSTextAlignmentCenter;
+        
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.backgroundColor = UIColorFromRGB(0xffffff);
+            self.nightBackgroundColor = kNightDefaultColor;
+        }];
     }
     return self;
 }

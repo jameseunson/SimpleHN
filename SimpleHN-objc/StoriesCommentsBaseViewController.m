@@ -13,6 +13,17 @@
 
 //@import SafariServices;
 
+@interface StoriesCommentsBaseViewController ()
+
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
+- (void)processAlgoliaSearchResult:(NSDictionary*)result;
+
+@property (nonatomic, strong) UIColor * defaultSeparatorColor;
+
+@end
+
 @implementation StoriesCommentsBaseViewController
 
 - (void)dealloc {
@@ -39,7 +50,11 @@
     [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     _refreshDateFormatter.locale = locale;
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                 name:DKNightVersionNightFallingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                 name:DKNightVersionDawnComingNotification object:nil];
 }
 
 - (void)loadView {
@@ -77,23 +92,7 @@
     self.searchController.dimsBackgroundDuringPresentation = NO; // default is YES
     self.searchController.searchBar.delegate = self; // so we can monitor text changes + others
     
-    @weakify(self);
-    [self addColorChangedBlock:^{
-        @strongify(self);
-        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.tabBarController.tabBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.tabBarController.tabBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
-        self.refreshControl.nightBackgroundColor = kNightDefaultColor;
-        
-        self.view.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.nightBackgroundColor = kNightDefaultColor;
-    }];
-    
-//    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorWithColors([UIColor blackColor], [UIColor whiteColor]);
+    [self updateNightMode];
 }
 
 - (void)viewDidLoad {
@@ -102,19 +101,6 @@
     [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
                                                  delegate]).masterProgress];
     self.initialLoadDone = NO;
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    if([[AppConfig sharedConfig] nightModeEnabled]) {
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
-        
-    } else {
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -133,37 +119,10 @@
 }
 
 - (void)query:(NSString*)query {
-    
-    NSLog(@"query: %@", query);
-    
-    [[HNAlgoliaAPIManager sharedManager] query:query withCompletion:^(NSDictionary *result) {
-        NSLog(@"StoriesCommentsBaseViewController, HNAlgoliaAPIManager query, result: %@", result);
-
-        if(!result) {
-            UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error"
-                                                                           message:@"Unable to contact the search server. Please try again later."
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-            
-            UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                                  handler:^(UIAlertAction * action) {}];
-            [alert addAction:defaultAction];
-            [self presentViewController:alert animated:YES completion:nil];
-            
-        } else {
-            
-            if([[result allKeys] containsObject:kHNAlgoliaAPIManagerTotalHits]) {
-                _searchResultsController.totalResultsCount = [result[kHNAlgoliaAPIManagerTotalHits] integerValue];
-            }
-            if([[result allKeys] containsObject:kHNAlgoliaAPIManagerCurrentPage]) {
-                _searchResultsController.currentPage = [result[kHNAlgoliaAPIManagerCurrentPage] integerValue];
-            }
-            NSArray * results = result[kHNAlgoliaAPIManagerResults];
-            [_searchResultsController addSearchResults:results];
-        }
+    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
+                                      withPage:0 withCompletion:^(NSDictionary *result) {
+        [self processAlgoliaSearchResult:result];
     }];
-    
-//    https://hn.algolia.com/api
-//    http://hn.algolia.com/api/v1/search?query=foo&tags=story
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -274,6 +233,36 @@
         
     } else {
         return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if(_initialLoadDone) {
+        
+        UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            cell.backgroundColor = UIColorFromRGB(0x222222);
+            
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if(_initialLoadDone) {
+        
+        UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+        
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            cell.backgroundColor = kNightDefaultColor;
+            
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
     }
 }
 
@@ -410,6 +399,7 @@
         
         SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
             [[segue destinationViewController] topViewController];
+        
         if(sender && [sender isKindOfClass:[NSURL class]]) {
             controller.selectedURL = sender;
         }
@@ -493,6 +483,7 @@
         NSLog(@"query is already activeQuery, returning early");
         return;
     }
+    self.activeQuery = query;
     
     if(_pendingSearchOperation) {
         [NSObject cancelPreviousPerformRequestsWithTarget:
@@ -508,18 +499,147 @@
     _pendingSearchQuery = query;
 }
 
-#pragma mark - StoriesCommentsSearchResultsViewControllerDelegate <NSObject>
+#pragma mark - StoriesCommentsSearchResultsViewControllerDelegate
 - (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
     NSLog(@"storiesCommentsSearchResultsViewController:didSelectResult:");
     
-    [self.searchController setActive:NO];
-    [self performSegueWithIdentifier:@"showDetail" sender:result];
+    if(self.splitViewController.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        [self.searchController setActive:NO];
+    }
+    
+    Story * story = (Story*)result;
+    if(!story.url) { // Ask HN item, or Show HN item without a url
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        UINavigationController * nav = (UINavigationController *)
+            [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
+        StoryDetailViewController * vc = (StoryDetailViewController *)[nav topViewController];
+        
+        vc.detailItem = story;
+        [self.splitViewController showDetailViewController:nav sender:nil];
+        
+    } else {
+        
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        
+        UINavigationController * nav = (UINavigationController *)
+        [sb instantiateViewControllerWithIdentifier:@"SimpleHNWebViewControllerNavController"];
+        SimpleHNWebViewController * vc = (SimpleHNWebViewController *)[nav topViewController];
+        
+        vc.selectedStory = story;
+        [self.splitViewController showDetailViewController:nav sender:nil];
+    }
+}
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+    controller didTapCommentsForResult:(id)result {
+    
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UINavigationController * nav = (UINavigationController *)
+    [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
+    StoryDetailViewController * vc = (StoryDetailViewController *)[nav topViewController];
+    
+    vc.detailItem = result;
+    [self.splitViewController showDetailViewController:nav sender:nil];
+}
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+    controller loadResultsForPageWithNumber:(NSNumber*)pageNumber {
+    NSLog(@"storiesCommentsSearchResultsViewController:loadResultsForPageWithNumber: %@", pageNumber);
+    
+    NSString * query = self.activeQuery;
+    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
+                                      withPage:[pageNumber integerValue] withCompletion:^(NSDictionary *result) {
+        [self processAlgoliaSearchResult:result];
+    }];
+}
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+    controller didChangeTimePeriod:(NSNumber*)timePeriod {
+    NSLog(@"storiesCommentsSearchResultsViewController:didChangeTimePeriod: %@", timePeriod);
+    
+    NSString * query = self.activeQuery;
+    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
+                                      withPage:0 withCompletion:^(NSDictionary *result) {
+        [self processAlgoliaSearchResult:result];
+    }];
 }
 
 #pragma mark - Private Methods
 
 - (void)loadContent:(id)sender {
     NSLog(@"loadContent:");
+}
+
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if(!_defaultSeparatorColor) {
+        _defaultSeparatorColor = self.tableView.separatorColor;
+    }
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        
+        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
+        self.tabBarController.tabBar.barTintColor = kNightDefaultColor;
+        
+        self.refreshControl.backgroundColor = kNightDefaultColor;
+        self.view.backgroundColor = kNightDefaultColor;
+        self.tableView.backgroundColor = kNightDefaultColor;
+        
+        self.tableView.separatorColor = UIColorFromRGB(0x555555);
+        
+        [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor whiteColor]];
+        
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
+        
+    } else {
+        
+        self.navigationController.navigationBar.barTintColor = nil;
+        self.tabBarController.tabBar.barTintColor = nil;
+        
+        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
+        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.tableView.backgroundColor = UIColorFromRGB(0xffffff);
+        
+        self.tableView.separatorColor = _defaultSeparatorColor;
+        
+        [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor blackColor]];
+        
+        self.navigationController.navigationBar.titleTextAttributes =
+            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+    }
+    
+    [self.tableView reloadData];
+}
+
+- (void)processAlgoliaSearchResult:(NSDictionary*)result {
+    
+    if(!result) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error"
+                                                                       message:@"Unable to contact the search server. Please try again later."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {}];
+        [alert addAction:defaultAction];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    } else {
+        
+        if([[result allKeys] containsObject:kHNAlgoliaAPIManagerTotalHits]) {
+            _searchResultsController.totalResultsCount = [result[kHNAlgoliaAPIManagerTotalHits] integerValue];
+        }
+        if([[result allKeys] containsObject:kHNAlgoliaAPIManagerCurrentPage]) {
+            _searchResultsController.currentPage = [result[kHNAlgoliaAPIManagerCurrentPage] integerValue];
+        }
+        NSArray * results = result[kHNAlgoliaAPIManagerResults];
+        [_searchResultsController addSearchResults:results];
+    }
 }
 
 #pragma mark - StoryCommentVotingTableViewCellDelegate Methods

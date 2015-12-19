@@ -11,13 +11,20 @@
 @interface StoriesCommentsSearchResultsSectionHeaderView ()
 
 @property (nonatomic, strong) UIView * actionLabelTappableAreaView;
+@property (nonatomic, strong, readonly) NSString * titleString;
+
 - (void)didTapActionLabelArea:(id)sender;
 
-@property (nonatomic, strong, readonly) NSString * titleString;
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
 
 @end
 
 @implementation StoriesCommentsSearchResultsSectionHeaderView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -73,6 +80,13 @@
         [_actionLabelTappableAreaView addGestureRecognizer:tapGestureRecognizer];
         
         [self addSubview:_actionLabelTappableAreaView];
+        
+        [self updateNightMode];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
@@ -158,6 +172,25 @@
     
     self.titleLabel.text = self.titleString;
     [self setNeedsLayout];
+}
+
+#pragma mark - Private Methods
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _titleLabel.textColor = [UIColor whiteColor];
+        _sectionBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
+        [_bottomBorderLayer setBackgroundColor:UIColorFromRGB(0x444444).CGColor];
+        
+    } else {
+        _titleLabel.textColor = RGBCOLOR(51, 51, 51);
+        _sectionBackgroundView.backgroundColor = RGBCOLOR(247, 247, 247);
+        [_bottomBorderLayer setBackgroundColor:RGBCOLOR(221, 221, 221).CGColor];
+    }
 }
 
 @end

@@ -28,4 +28,13 @@
 @protocol StoriesCommentsSearchResultsViewControllerDelegate <NSObject>
 - (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
     controller didSelectResult:(id)result;
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+controller didTapCommentsForResult:(id)result;
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+    controller loadResultsForPageWithNumber:(NSNumber*)pageNumber;
+
+- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
+    controller didChangeTimePeriod:(NSNumber*)timePeriod;
 @end

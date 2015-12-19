@@ -23,11 +23,18 @@
 
 - (void)didTouchDown:(id)sender;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @property (nonatomic, strong) NSLayoutConstraint * headerStackHorizontalInsetConstraint;
 
 @end
 
 @implementation CommentCellHeaderView
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (instancetype)init {
     if(self = [super init]) {
@@ -73,6 +80,13 @@
         UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc]
                                                          initWithTarget:self action:@selector(didTouchDown:)];
         [self addGestureRecognizer:tapGestureRecognizer];
+        
+        [self updateNightMode];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
@@ -120,6 +134,19 @@
 
 - (void)didTouchDown:(id)sender {
     NSLog(@"didTouchDown");
+}
+
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        _headerBorderLayer.backgroundColor = [UIColorFromRGB(0x555555) CGColor];
+    } else {
+        _headerBorderLayer.backgroundColor = [RGBCOLOR(215, 215, 215) CGColor];
+    }
 }
 
 @end

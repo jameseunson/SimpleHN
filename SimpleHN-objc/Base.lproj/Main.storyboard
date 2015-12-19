@@ -49,12 +49,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="91a-x0-EIL"/>
                     <connections>
-                        <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="Gkx-Ps-Sbu"/>
+                        <segue destination="te4-ta-Qol" kind="show" identifier="showDetail" id="g27-HR-Cs9"/>
+                        <segue destination="RUj-a9-uw6" kind="show" identifier="showWeb" id="Htd-eM-zYK"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sFI-QU-nBz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5506" y="-2239"/>
+            <point key="canvasLocation" x="5472" y="-2223"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="jke-if-OUz">
@@ -67,7 +68,7 @@
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="QKB-gV-Xbu">
-                                <rect key="frame" x="0.0" y="114" width="600" height="44"/>
+                                <rect key="frame" x="0.0" y="94" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QKB-gV-Xbu" id="Rxw-WF-JC1">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -305,7 +306,7 @@
         <!--Navigation Controller-->
         <scene sceneID="r7l-gg-dq7">
             <objects>
-                <navigationController id="vC3-pB-5Vb" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="StoryDetailViewControllerNavController" id="vC3-pB-5Vb" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="DjV-YW-jjY">
                         <autoresizingMask key="autoresizingMask"/>
                         <animations/>
@@ -337,6 +338,9 @@
                                     <animations/>
                                 </tableViewCellContentView>
                                 <animations/>
+                                <connections>
+                                    <segue destination="te4-ta-Qol" kind="show" identifier="showDetail" id="ead-SY-QJD"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -346,8 +350,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="jUg-52-pZd"/>
                     <connections>
-                        <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="TM4-7K-dDi"/>
-                        <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="Rqc-Vc-gbn"/>
+                        <segue destination="RUj-a9-uw6" kind="show" identifier="showWeb" id="Hty-hv-MEp"/>
+                        <segue destination="Inr-gh-xbU" kind="show" identifier="showUser" id="1Rm-ai-C0Z"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kax-tV-W0b" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -357,7 +361,7 @@
         <!--SimpleHN Web View Controller-->
         <scene sceneID="wgG-dC-TzQ">
             <objects>
-                <viewController id="RUj-a9-uw6" customClass="SimpleHNWebViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SimpleHNWebViewController" id="RUj-a9-uw6" customClass="SimpleHNWebViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="4an-8M-ufS"/>
                         <viewControllerLayoutGuide type="bottom" id="5bU-hr-v74"/>
@@ -369,6 +373,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="ve2-gc-sos"/>
+                    <connections>
+                        <segue destination="te4-ta-Qol" kind="show" identifier="showDetail" id="tgd-n4-mf7"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zqB-U9-d05" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -377,7 +384,7 @@
         <!--Navigation Controller-->
         <scene sceneID="JnU-JO-0sT">
             <objects>
-                <navigationController id="LKZ-0v-7n4" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="SimpleHNWebViewControllerNavController" id="LKZ-0v-7n4" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cYh-dG-wZb">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -409,7 +416,7 @@
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="vrM-eb-W5I"/>
                         <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="elz-1I-4gk"/>
-                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="p1A-Bm-3KK"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" modalPresentationStyle="pageSheet" id="p1A-Bm-3KK"/>
                         <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="va5-7A-uB7"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="pde-BE-6jO"/>
                     </connections>
@@ -435,8 +442,8 @@
                     <navigationItem key="navigationItem" id="WBq-Vl-sCB"/>
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="NuV-e3-WeM"/>
-                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="Vqu-ZW-CHT"/>
-                        <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="d30-A7-ZM2"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" modalPresentationStyle="pageSheet" id="Vqu-ZW-CHT"/>
+                        <segue destination="LKZ-0v-7n4" kind="show" identifier="showWeb" action="showDetailViewController:sender:" id="d30-A7-ZM2"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="TeO-B2-9Ud"/>
                     </connections>
                 </tableViewController>
@@ -461,7 +468,7 @@
                     <navigationItem key="navigationItem" id="82b-Ns-heB"/>
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="W8o-wt-jKi"/>
-                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="JFy-cT-bla"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" modalPresentationStyle="pageSheet" id="JFy-cT-bla"/>
                         <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="76j-Ha-no0"/>
                         <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="lpX-ly-S0h"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="VSp-fP-7xn"/>
@@ -488,7 +495,7 @@
                     <navigationItem key="navigationItem" id="zZD-Wp-OzM"/>
                     <connections>
                         <segue destination="OKz-Av-1sf" kind="showDetail" identifier="showUser" id="bbp-NZ-Hdx"/>
-                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" id="tsB-BR-xsZ"/>
+                        <segue destination="xQP-B7-WHp" kind="presentation" identifier="showLogin" modalPresentationStyle="pageSheet" id="tsB-BR-xsZ"/>
                         <segue destination="LKZ-0v-7n4" kind="showDetail" identifier="showWeb" id="zg7-lk-R3M"/>
                         <segue destination="zkx-sj-RQR" kind="presentation" identifier="showTimePeriodSelect" id="g7Q-3Q-ajt"/>
                         <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="EOs-Xc-vdc"/>
@@ -512,8 +519,11 @@
     <inferredMetricsTieBreakers>
         <segue reference="g7Q-3Q-ajt"/>
         <segue reference="tsB-BR-xsZ"/>
-        <segue reference="zg7-lk-R3M"/>
-        <segue reference="EOs-Xc-vdc"/>
-        <segue reference="bbp-NZ-Hdx"/>
+        <segue reference="vrM-eb-W5I"/>
+        <segue reference="pde-BE-6jO"/>
+        <segue reference="Viw-na-itg"/>
+        <segue reference="Hty-hv-MEp"/>
+        <segue reference="1Rm-ai-C0Z"/>
+        <segue reference="d30-A7-ZM2"/>
     </inferredMetricsTieBreakers>
 </document>

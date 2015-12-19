@@ -100,6 +100,21 @@
     self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
                            UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
     self.navigationItem.rightBarButtonItem = _timePeriodItem;
+    
+    self.splitViewController.delegate = self;
+}
+
+#pragma mark - UISplitViewControllerDelegate Methods
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
+    
+    if ([secondaryViewController isKindOfClass:[UINavigationController class]]
+        && [[(UINavigationController *)secondaryViewController topViewController] isKindOfClass:[StoryDetailViewController class]]
+        && ([(StoryDetailViewController *)[(UINavigationController *)secondaryViewController topViewController] detailItem] == nil)) {
+        // If the detail controller doesn't have an item, display the primary view controller instead
+        return YES;
+    }
+    
+    return NO;
 }
 
 #pragma mark - Segues
@@ -335,6 +350,8 @@
     controller.settingsStore = [AppConfig sharedConfig];
     
     UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    navController.modalPresentationStyle = UIModalPresentationPageSheet;
+    
     [self presentViewController:navController animated:YES completion:nil];
 }
 

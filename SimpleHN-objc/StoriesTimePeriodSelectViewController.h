@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, StoriesTimePeriods) {
 
 #define kTimePeriods @[ @(StoriesTimePeriodsNow), @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
 
+#define kSearchTimePeriods @[ @(StoriesTimePeriodsNoPeriod), @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
+
 @protocol StoriesTimePeriodSelectViewController;
 @interface StoriesTimePeriodSelectViewController : UITableViewController
 

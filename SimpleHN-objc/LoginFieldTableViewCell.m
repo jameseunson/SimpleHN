@@ -45,6 +45,18 @@
         [self.contentView addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                           @"V:|-[_field]-|;H:|-[_field]-|" options:0 metrics:nil views:
                                           NSDictionaryOfVariableBindings(_field)]];
+        
+        @weakify(self);
+        [self addColorChangedBlock:^{
+            @strongify(self);
+            self.backgroundColor = UIColorFromRGB(0xffffff);
+            self.nightBackgroundColor = kNightDefaultColor;
+            
+            self.field.textColor = UIColorFromRGB(0x000000);
+            self.field.nightTextColor = UIColorFromRGB(0xffffff);
+            
+//            self.field.attributedPlaceholder
+        }];
     }
     return self;
 }

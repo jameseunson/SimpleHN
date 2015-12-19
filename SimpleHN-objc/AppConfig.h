@@ -17,6 +17,9 @@
 #define kSearchFilterSortType @"searchFilterSortType"
 
 #define kNightModeEnabled @"nightModeEnabled"
+#define kBrowserHidesBarsOnScroll @"browserHidesBarsOnScroll"
+
+#define kActiveSearchFilter @"activeSearchFilter"
 
 @interface AppConfig : AppConfigBase
 
@@ -26,5 +29,8 @@
 - (NSArray*)searchRecentQueries;
 
 - (BOOL)nightModeEnabled;
+- (BOOL)browserHidesBarsOnScroll;
+
+- (StoriesTimePeriods)activeSearchFilter;
 
 @end

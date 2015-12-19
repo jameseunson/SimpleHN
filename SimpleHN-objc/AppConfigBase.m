@@ -43,7 +43,7 @@
     _configDict[key] = object;
     [self saveConfig];
 }
-- (void)setInteger:(int)value forKey:(NSString*)key {
+- (void)setInteger:(NSInteger)value forKey:(NSString*)key {
     _configDict[key] = @(value);
     [self saveConfig];
 }

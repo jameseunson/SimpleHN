@@ -102,8 +102,12 @@
             story = (Story*)sender;
         }
         
-        StoryDetailViewController *controller = (StoryDetailViewController *)
-            [[segue destinationViewController] topViewController];
+        StoryDetailViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (StoryDetailViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (StoryDetailViewController *)[segue destinationViewController];
+        }
         [controller setDetailItem:story];
         
         controller.navigationItem.leftBarButtonItem =
@@ -112,11 +116,17 @@
         
     } else if([[segue identifier] isEqualToString:@"showWeb"]) {
         
-        SimpleHNWebViewController *controller = (SimpleHNWebViewController *)
-        [[segue destinationViewController] topViewController];
+        SimpleHNWebViewController *controller = nil;
+        if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
+            controller = (SimpleHNWebViewController *)[[segue destinationViewController] topViewController];
+        } else {
+            controller = (SimpleHNWebViewController *)[segue destinationViewController];
+        }
         
         if(sender && [sender isKindOfClass:[NSURL class]]) {
             controller.selectedURL = sender;
+        } else if(sender && [sender isKindOfClass:[Story class]]) {
+            controller.selectedStory = sender;
         }
         
         controller.navigationItem.leftBarButtonItem =

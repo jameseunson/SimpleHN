@@ -16,6 +16,8 @@
     kSearchFilterTimePeriod : @(0), \
     kSearchFilterSortType : @(0), \
     kNightModeEnabled : @(NO), \
+    kBrowserHidesBarsOnScroll : @(NO), \
+    kActiveSearchFilter : @(StoriesTimePeriodsNoPeriod), \
 } \
 
 @implementation AppConfig
@@ -36,6 +38,8 @@
     self.configDict[kStoryAutomaticallyShowReader] = kConfigDefaultsDict[kStoryAutomaticallyShowReader];
     self.configDict[kSearchRecentQueries] = kConfigDefaultsDict[kSearchRecentQueries];
     self.configDict[kNightModeEnabled] = kConfigDefaultsDict[kNightModeEnabled];
+    self.configDict[kBrowserHidesBarsOnScroll] = kConfigDefaultsDict[kBrowserHidesBarsOnScroll];
+    self.configDict[kActiveSearchFilter] = kConfigDefaultsDict[kActiveSearchFilter];
     [self saveConfig];
 }
 
@@ -58,7 +62,8 @@
 
 - (BOOL)storyAutomaticallyShowReader {
     if(![[self.configDict allKeys] containsObject:kStoryAutomaticallyShowReader]) {
-        [self setBool:[kConfigDefaultsDict[kStoryAutomaticallyShowReader] boolValue] forKey:kStoryAutomaticallyShowReader];
+        [self setBool:[kConfigDefaultsDict[kStoryAutomaticallyShowReader] boolValue]
+               forKey:kStoryAutomaticallyShowReader];
     }
     return [self.configDict[kStoryAutomaticallyShowReader] boolValue];
 }
@@ -75,6 +80,21 @@
         [self setBool:[kConfigDefaultsDict[kNightModeEnabled] boolValue] forKey:kNightModeEnabled];
     }
     return [self.configDict[kNightModeEnabled] boolValue];
+}
+
+- (BOOL)browserHidesBarsOnScroll {
+    if(![[self.configDict allKeys] containsObject:kBrowserHidesBarsOnScroll]) {
+        [self setBool:[kConfigDefaultsDict[kBrowserHidesBarsOnScroll] boolValue]
+               forKey:kBrowserHidesBarsOnScroll];
+    }
+    return [self.configDict[kBrowserHidesBarsOnScroll] boolValue];
+}
+
+- (StoriesTimePeriods)activeSearchFilter {
+    if(![[self.configDict allKeys] containsObject:kActiveSearchFilter]) {
+        [self setInteger:[kConfigDefaultsDict[kActiveSearchFilter] integerValue] forKey:kActiveSearchFilter];
+    }
+    return [self integerForKey:kActiveSearchFilter];
 }
 
 @end

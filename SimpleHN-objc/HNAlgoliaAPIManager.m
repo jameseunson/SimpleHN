@@ -19,6 +19,8 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
 
 + (NSDictionary*)processAlgoliaResponseDict:(NSDictionary*)responseDict;
 
++ (NSDate*)calculateStartPeriodDateForPeriod:(StoriesTimePeriods)period;
+
 @end
 
 @implementation HNAlgoliaAPIManager
@@ -34,26 +36,39 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
 }
 
 - (void)query:(NSString*)query withCompletion: (void (^)(NSDictionary * result))completion {
-    [self query:query withPage:1 withCompletion:completion];
+    [self query:query withTimePeriod:StoriesTimePeriodsNoPeriod withPage:0 withCompletion:completion];
 }
 
 - (void)query:(NSString*)query withPage:(NSInteger)pageNumber withCompletion: (void (^)(NSDictionary * result))completion {
-    
+    [self query:query withTimePeriod:StoriesTimePeriodsNoPeriod withPage:pageNumber withCompletion:completion];
+}
+
+- (void)query:(NSString*)query withTimePeriod:(StoriesTimePeriods)period withPage:(NSInteger)pageNumber withCompletion: (void (^)(NSDictionary * result))completion {
     // If the passed query is not present the request is malformed, return
     if((!query || [query length] == 0)) return;
     
-    NSString * searchURL = [NSString stringWithFormat: @"search?query=%@",
-                            [query escapedQueryString]];
+    NSString * searchURL = [NSString stringWithFormat: @"search?tags=story&query=%@", query];
     
-    [self.searchManager GET:searchURL parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+    if(pageNumber > 0) {
+        searchURL = [NSString stringWithFormat:@"%@&page=%lu", searchURL, pageNumber];
+    }
+    if(period != StoriesTimePeriodsNoPeriod) {
+        NSDate * startPeriodDate = [[self class] calculateStartPeriodDateForPeriod:period];
+        searchURL = [NSString stringWithFormat:@"%@&numericFilters=created_at_i>%@", searchURL,
+                     @((int)[startPeriodDate timeIntervalSince1970])];
+    }
+    NSString* urlStringEncoded = [searchURL stringByAddingPercentEncodingWithAllowedCharacters:
+                                  [NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    [self.searchManager GET:urlStringEncoded parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         NSLog(@"_searchManager, GET, response for query: %@, url: %@", query, searchURL);
-//        NSLog(@"responseObject: %@", responseObject);
+        //        NSLog(@"responseObject: %@", responseObject);
         
         NSDictionary * responseDict = (NSDictionary*)responseObject;
         if(![[responseDict allKeys] containsObject:@"hits"] || ![responseDict[@"hits"] isKindOfClass:[NSArray class]]) {
             completion(nil); return;
         }
-
+        
         completion([[self class] processAlgoliaResponseDict:responseDict]);
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -78,25 +93,7 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
     }
     
     NSString * urlStringTemplate = @"search?tags=%@&numericFilters=created_at_i>%@,created_at_i<%@&page=%@";
-    NSCalendar * cal = [NSCalendar currentCalendar];
-    NSDate * startPeriodDate = nil;
-    
-    if(period == StoriesTimePeriodsLast24hrs) {
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
-        
-    } else if(period == StoriesTimePeriodsPastWeek) {
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-7 toDate:[NSDate date] options:NSCalendarWrapComponents];
-        
-    } else if(period == StoriesTimePeriodsPastMonth) {
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitMonth value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
-        
-    } else if(period == StoriesTimePeriodsPastYear) {
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
-        
-    } else if(period == StoriesTimePeriodsAllTime) {
-        // TODO: Probably not correct, but oh well
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-5 toDate:[NSDate date] options:NSCalendarWrapComponents];
-    }
+    NSDate * startPeriodDate = [[self class] calculateStartPeriodDateForPeriod:period];
     
     NSString * urlStringFormatted = [NSString stringWithFormat:urlStringTemplate, pageTypeTag, @((int)[startPeriodDate timeIntervalSince1970]),
                                      @((int)[[NSDate date] timeIntervalSince1970]), @(page)];
@@ -155,6 +152,31 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
         output[kHNAlgoliaAPIManagerCurrentPage] = responseDict[@"page"];
     }
     return output;
+}
+
++ (NSDate*)calculateStartPeriodDateForPeriod:(StoriesTimePeriods)period {
+    
+    NSCalendar * cal = [NSCalendar currentCalendar];
+    NSDate * startPeriodDate = nil;
+    
+    if(period == StoriesTimePeriodsLast24hrs) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastWeek) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitDay value:-7 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastMonth) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitMonth value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsPastYear) {
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-1 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        
+    } else if(period == StoriesTimePeriodsAllTime) {
+        // TODO: Probably not correct, but oh well
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-5 toDate:[NSDate date] options:NSCalendarWrapComponents];
+    }
+    
+    return startPeriodDate;
 }
 
 @end

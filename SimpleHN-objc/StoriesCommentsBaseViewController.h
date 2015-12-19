@@ -26,11 +26,6 @@
 
 @interface StoriesCommentsBaseViewController : UITableViewController <StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
 
-//@property (nonatomic, strong) UIRefreshControl * baseRefreshControl;
-//@property (nonatomic, strong) UITableView * baseTableView;
-
-//@property (nonatomic, strong) ContentLoadingView * loadingView;
-
 @property (nonatomic, assign) BOOL initialLoadDone;
 @property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
 
@@ -41,8 +36,6 @@
 
 @property (nonatomic, strong) NSMutableArray < NSNumber * > * visibleItems;
 
-//@property (nonatomic, strong) NSIndexPath * expandedCellIndexPath;
-
 @property (nonatomic, assign) BOOL shouldDisplayLoadMoreCell;
 
 @property (nonatomic, assign) CGFloat loadMoreStartYPosition;
@@ -51,7 +44,6 @@
 @property (nonatomic, assign) NSInteger loadMoreRowIndex;
 
 @property (nonatomic, assign) BOOL loadMoreOnReleasePending;
-
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
 @property (nonatomic, strong) UISearchController * searchController;

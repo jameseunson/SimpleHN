@@ -24,7 +24,7 @@
 - (void)setFloat:(float)value             forKey:(NSString*)key;
 - (void)setDouble:(double)value           forKey:(NSString*)key;
 - (void)setObject:(id)object              forKey:(NSString*)key;
-- (void)setInteger:(int)value             forKey:(NSString*)key;
+- (void)setInteger:(NSInteger)value       forKey:(NSString*)key;
 
 - (BOOL)boolForKey:(NSString*)key;
 - (float)floatForKey:(NSString*)key;

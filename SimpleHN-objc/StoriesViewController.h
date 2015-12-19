@@ -15,7 +15,7 @@
 
 @class StoryDetailViewController;
 
-@interface StoriesViewController : StoriesCommentsBaseViewController <IASKSettingsDelegate, StoriesTimePeriodSelectViewController>
+@interface StoriesViewController : StoriesCommentsBaseViewController <IASKSettingsDelegate, StoriesTimePeriodSelectViewController, UISplitViewControllerDelegate>
 
 @property (nonatomic, strong) Firebase * ref;
 @property (nonatomic, strong) NSMutableArray * storiesList;
