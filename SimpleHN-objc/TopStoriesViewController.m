@@ -36,9 +36,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    self.ref = [[Firebase alloc] initWithUrl:
-                @"https://hacker-news.firebaseio.com/v0/topstories"];
-    [self loadContent:nil];
+    if(!self.ref) {
+        self.ref = [[Firebase alloc] initWithUrl:
+                    @"https://hacker-news.firebaseio.com/v0/topstories"];
+        [self loadContent:nil];
+    }
 }
 
 #pragma mark - StoriesTimePeriodSelectViewController Methods

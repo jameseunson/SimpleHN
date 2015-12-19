@@ -22,9 +22,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    self.ref = [[Firebase alloc] initWithUrl:
-                @"https://hacker-news.firebaseio.com/v0/newstories"];
-    [self loadContent:nil];
+    if(!self.ref) {
+        self.ref = [[Firebase alloc] initWithUrl:
+                    @"https://hacker-news.firebaseio.com/v0/newstories"];
+        [self loadContent:nil];
+    }
 }
 
 @end
