@@ -15,10 +15,13 @@
     
     self.title = @"Ask";
     self.storyType = StoryTypeAskHN;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
     self.ref = [[Firebase alloc] initWithUrl:
-                                @"https://hacker-news.firebaseio.com/v0/askstories"];
-//    [self loadStoryIdentifiersWithRef:self.ref];
+                @"https://hacker-news.firebaseio.com/v0/askstories"];
     [self loadContent:nil];
 }
 

@@ -14,14 +14,17 @@
     [super viewDidLoad];
     
     self.title = @"New";
-    self.ref = [[Firebase alloc] initWithUrl:
-                                        @"https://hacker-news.firebaseio.com/v0/newstories"];
-//    [self loadStoryIdentifiersWithRef:self.ref];
-    [self loadContent:nil];
     
     // Remove time period selector - this is 'new' stories, so not relevant
     self.navigationItem.rightBarButtonItem = nil;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.ref = [[Firebase alloc] initWithUrl:
+                @"https://hacker-news.firebaseio.com/v0/newstories"];
+    [self loadContent:nil];
+}
 
 @end

@@ -25,17 +25,20 @@
 //    
 //    self.navigationItem .rightBarButtonItems = @[ _timePeriodItem, debugItem ];
     
-    self.ref = [[Firebase alloc] initWithUrl:
-                                        @"https://hacker-news.firebaseio.com/v0/topstories"];
-    
-    [self loadContent:nil];
-    
     @weakify(self);
     [self addColorChangedBlock:^{
         @strongify(self);
         self.view.normalBackgroundColor = UIColorFromRGB(0xffffff);
         self.view.nightBackgroundColor = kNightDefaultColor;
     }];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.ref = [[Firebase alloc] initWithUrl:
+                @"https://hacker-news.firebaseio.com/v0/topstories"];
+    [self loadContent:nil];
 }
 
 #pragma mark - StoriesTimePeriodSelectViewController Methods

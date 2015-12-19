@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SimpleHN-objc/TopStoriesViewController.m"
-            timestampString = "472037097.003178"
+            timestampString = "472185415.151635"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
             landmarkName = "-storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:"
             landmarkType = "5">
          </BreakpointContent>
