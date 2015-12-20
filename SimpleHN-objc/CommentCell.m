@@ -20,6 +20,9 @@
 - (void)didTapBackgroundView:(id)sender;
 //- (void)commentCollapsedChanged:(NSNotification*)notification;
 
+- (void)nightModeEvent:(NSNotification*)notification;
+- (void)updateNightMode;
+
 @end
 
 @implementation CommentCell
@@ -37,29 +40,78 @@
         [self.contentView addSubview:_commentLabel];
         
         self.headerView = [[CommentCellHeaderView alloc] init];
+        _headerView.hidden = YES;
         [self.contentView addSubview:_headerView];
         
         self.actionDrawerView = [[ActionDrawerView alloc] init];
         _actionDrawerView.delegate = self;
         _actionDrawerView.hidden = YES;
+        _actionDrawerView.contextType = ActionDrawerViewContextTypeDetail;
         [self.contentView addSubview:_actionDrawerView];
         
         self.headerBackgroundViewTapGestureRecognizer = [[UITapGestureRecognizer alloc]
                                                          initWithTarget:self action:@selector(didTapBackgroundView:)];
         [self.headerView addGestureRecognizer:_headerBackgroundViewTapGestureRecognizer];
         
-        @weakify(self);
-        [self addColorChangedBlock:^{
-            @strongify(self);
-            self.contentView.normalBackgroundColor = UIColorFromRGB(0xffffff);
-            self.contentView.nightBackgroundColor = kNightDefaultColor;
-        }];
+        [self updateNightMode];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionNightFallingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
+                                                     name:DKNightVersionDawnComingNotification object:nil];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
+//    NSLog(@"commentCell, layoutSubviews for cell with comment: %@, %@", _comment.commentId, _comment.author);
+    
+    if(_comment.sizeStatus == CommentSizeStatusExpanded) {
+        _actionDrawerView.hidden = NO;
+        _commentLabel.hidden = NO;
+        
+        _headerView.collapsed = NO;
+        if(_comment) {
+            _headerView.hidden = NO;
+        } else {
+            _headerView.hidden = YES;
+        }
+//        self.votingEnabled = YES;
+        
+    } else if(_comment.sizeStatus == CommentSizeStatusNormal) {
+        _actionDrawerView.hidden = YES;
+        _commentLabel.hidden = NO;
+        
+        _headerView.collapsed = NO;
+        if(_comment) {
+            _headerView.hidden = NO;
+        } else {
+            _headerView.hidden = YES;
+        }
+//        self.votingEnabled = YES;
+        
+    } else if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
+        _actionDrawerView.hidden = YES;
+        
+        _commentLabel.hidden = YES;
+        
+        if(self.comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+            _headerView.hidden = YES;
+        } else {
+            _headerView.hidden = NO;
+            _headerView.collapsed = YES;
+        }
+//        self.votingEnabled = NO;
+    }
+    
+    if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
+        if(_comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+//            NSLog(@"comment and comment parent are collapsed, return early");
+            return;
+        }
+    }
     
     _headerView.frame = CGRectMake(0, 0, self.frame.size.width, _headerView.intrinsicContentSize.height);
     
@@ -68,7 +120,7 @@
     CGFloat commentRightMargin = 20.f;
     CGFloat commentLeftMargin = 20.f;
     
-    if(self.comment && [self.comment.attributedText length] > 0) {
+    if(self.comment && _comment.sizeStatus != CommentSizeStatusCollapsed && [self.comment.attributedText length] > 0) {
         
         if(self.comment.sizeStatus == CommentSizeStatusNormal) {
             commentLeftMargin = (20.0f * (self.comment.indentation + 1));
@@ -85,53 +137,23 @@
             sizeForCommentLabel = [TTTAttributedLabel sizeThatFitsAttributedString:self.comment.attributedText withConstraints:
                                    CGSizeMake((self.frame.size.width - commentRightMargin - commentLeftMargin), CGFLOAT_MAX) limitedToNumberOfLines:0];
         }
+        _commentLabel.frame = CGRectMake(commentLeftMargin, _headerView.frame.origin.y + _headerView.frame.size.height + 10.0f,
+                                         (self.frame.size.width - commentRightMargin - commentLeftMargin), sizeForCommentLabel.height);
     }
-    
-    _commentLabel.frame = CGRectMake(commentLeftMargin, _headerView.frame.origin.y + _headerView.frame.size.height + 10.0f, (self.frame.size.width - commentRightMargin - commentLeftMargin), sizeForCommentLabel.height);
-    
     _actionDrawerView.frame = CGRectMake(0, self.frame.size.height - kActionDrawerViewHeight, self.frame.size.width, kActionDrawerViewHeight);
     
-    if(_comment.sizeStatus == CommentSizeStatusExpanded) {
-        _actionDrawerView.hidden = NO;
-        _commentLabel.hidden = NO;
-        
-        _headerView.collapsed = NO;
-        _headerView.hidden = NO;
-        self.votingEnabled = YES;
-        
-    } else if(_comment.sizeStatus == CommentSizeStatusNormal) {
-        _actionDrawerView.hidden = YES;
-        _commentLabel.hidden = NO;
-        
-        _headerView.collapsed = NO;
-        _headerView.hidden = NO;
-        self.votingEnabled = YES;
-        
-    } else if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
-        _actionDrawerView.hidden = YES;
-        _commentLabel.hidden = YES;
-        
-        if(self.comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
-            _headerView.hidden = YES;
-        } else {
-            _headerView.hidden = NO;
-        }
-        _headerView.collapsed = YES;
-        self.votingEnabled = NO;
-    }
-    
-    if(self.comment.voteStatus == StoryCommentUserVoteUpvote) {
-        self.upvoteCornerImageView.hidden = NO;
-        self.downvoteCornerImageView.hidden = YES;
-        
-    } else if(self.comment.voteStatus == StoryCommentUserVoteDownvote) {
-        self.downvoteCornerImageView.hidden = NO;
-        self.upvoteCornerImageView.hidden = YES;
-    }
+//    if(self.comment.voteStatus == StoryCommentUserVoteUpvote) {
+//        self.upvoteCornerImageView.hidden = NO;
+//        self.downvoteCornerImageView.hidden = YES;
+//        
+//    } else if(self.comment.voteStatus == StoryCommentUserVoteDownvote) {
+//        self.downvoteCornerImageView.hidden = NO;
+//        self.upvoteCornerImageView.hidden = YES;
+//    }
 }
 
 - (void)prepareForReuse {
-
+    
     self.commentLabel.text = nil;
     self.headerView.comment = nil;
     
@@ -155,7 +177,7 @@
         }];
         
     } else if(actionType == ActionDrawerViewButtonTypeContext) {
-        [controller performSegueWithIdentifier:@"showDetail" sender:comment.commentId];
+        [controller performSegueWithIdentifier:@"showDetail" sender:comment];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         NSLog(@"ActionDrawerViewButtonTypeMore");
@@ -173,6 +195,10 @@
 }
 
 + (CGFloat)heightForCommentCell:(Comment*)comment width:(CGFloat)width {
+    
+    if(comment.deleted) {
+        return 0;
+    }
     
     CGFloat heightAccumulator = kCommentCellHeaderViewHeight;
     
@@ -239,21 +265,24 @@
 - (void)setComment:(Comment *)comment {
     _comment = comment;
     
-    if([[AppConfig sharedConfig] nightModeEnabled]) {
-        if(comment.text != nil) {
-            self.commentLabel.text = self.comment.nightAttributedText;
-            self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
-                                                  NSUnderlineStyleAttributeName: @(1) };
-        }
-    } else {
-        if(comment.text != nil) {
-            self.commentLabel.text = self.comment.attributedText;
-            self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
-                                                  NSUnderlineStyleAttributeName: @(1) };
+    if(comment.sizeStatus != CommentSizeStatusCollapsed) {
+        if([[AppConfig sharedConfig] nightModeEnabled]) {
+            if(comment.text != nil) {
+                self.commentLabel.text = self.comment.nightAttributedText;
+                self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: [UIColor orangeColor],
+                                                      NSUnderlineStyleAttributeName: @(1) };
+            }
+        } else {
+            if(comment.text != nil) {
+                self.commentLabel.text = self.comment.attributedText;
+                self.commentLabel.linkAttributes = @{ NSForegroundColorAttributeName: RGBCOLOR(0, 0, 238),
+                                                      NSUnderlineStyleAttributeName: @(1) };
+            }
         }
     }
     
     self.headerView.comment = comment;
+    self.headerView.hidden = NO;
     
     [self setNeedsLayout];
 }
@@ -340,5 +369,29 @@
                             withObject:self withObject:type];
     }
 }
+
+#pragma mark - Private Methods
+- (void)nightModeEvent:(NSNotification*)notification {
+    [self updateNightMode];
+}
+
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        UIView * nightSelectedBackgroundView = [[UIView alloc] init];
+        nightSelectedBackgroundView.backgroundColor = UIColorFromRGB(0x222222);
+        [self setSelectedBackgroundView:nightSelectedBackgroundView];
+        
+    } else {
+        self.selectedBackgroundView = nil;
+    }
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.contentView.backgroundColor = kNightDefaultColor;
+    } else {
+        self.contentView.backgroundColor = UIColorFromRGB(0xffffff);
+    }
+}
+
 
 @end

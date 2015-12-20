@@ -70,11 +70,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if(self.author) {
-        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
-            self.user = user;
-        }];
-    }
+//    if(self.author) {
+//        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
+//            self.user = user;
+//        }];
+//    }
     
 //    [User createUserFromItemIdentifier:@"markmassie" completion:^(User *user) {
 //        self.user = user;
@@ -84,23 +84,18 @@
 //        self.user = user;
 //    }];
     
-//    [User createUserFromItemIdentifier:@"perlpimp" completion:^(User *user) {
+//    [User createUserFromItemIdentifier:@"qzervaas" completion:^(User *user) {
 //        self.user = user;
 //    }];
     
-//    [User createUserFromItemIdentifier:@"graue" completion:^(User *user) {
-//        self.user = user;
-//    }];
+    [User createUserFromItemIdentifier:@"graue" completion:^(User *user) {
+        self.user = user;
+    }];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([[segue identifier] isEqualToString:@"showDetail"]) {
-        
-        Story * story = nil;
-        if(sender) {
-            story = (Story*)sender;
-        }
         
         StoryDetailViewController *controller = nil;
         if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
@@ -108,7 +103,13 @@
         } else {
             controller = (StoryDetailViewController *)[segue destinationViewController];
         }
-        [controller setDetailItem:story];
+        
+        if(sender && [sender isKindOfClass:[Story class]]) {
+            [controller setDetailItem:((Story*)sender)];
+            
+        } else if(sender && [sender isKindOfClass:[Comment class]]) { // Comment context action
+            [controller setDetailComment:((Comment*)sender)];
+        }
         
         controller.navigationItem.leftBarButtonItem =
             self.splitViewController.displayModeButtonItem;
@@ -234,9 +235,14 @@
     // Content size can only be determined when we have a user object
     // tableHeaderView frame can't be changed once assigned, so we have to
     // size and set here
-    CGSize headerContentSize = _headerView.intrinsicContentSize;
-    _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width,
-                                   MAX( headerContentSize.height, 132.0f ) );
+    
+    
+    CGFloat heightForHeaderView = [UserHeaderView heightWithUser:self.user forWidth:self.view.frame.size.width];
+    _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width, heightForHeaderView);
+    
+//    CGSize headerContentSize = _headerView.intrinsicContentSize;
+//    _headerView.frame = CGRectMake(0, 0, self.view.frame.size.width,
+//                                   MAX( headerContentSize.height, 132.0f ) );
     [self.tableView setTableHeaderView:_headerView];
     
     if([self.user.submitted count] > self.currentVisibleItemMax) {
@@ -304,20 +310,17 @@
             
             self.itemsLoadStatus[item] = @(StoryLoadStatusNotLoaded);
             if(i < self.currentVisibleItemMax) {
-                NSString * itemUrl = [NSString stringWithFormat:
-                                      @"https://hacker-news.firebaseio.com/v0/item/%@", item];
                 
+                NSString * itemUrl = [NSString stringWithFormat: @"https://hacker-news.firebaseio.com/v0/item/%@", item];
+                NSLog(@"UserViewController, itemURL (%d): %@", i, itemUrl);
+
                 __block Firebase * itemRef = [[Firebase alloc] initWithUrl:itemUrl];
                 [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-                    NSDictionary * value = snapshot.value;
                     
-                    if(![snapshot.value isKindOfClass:[NSDictionary class]] ||
-                       ![[value allKeys] containsObject:@"type"]) {
-                        return;
-                    }
+                    HNItemHelperIdentificationResult result = [HNItemHelper identifyHNItemWithSnapshotDictionary:
+                                                               snapshot.value];
                     
-                    NSString * typeString = value[@"type"];
-                    if([typeString isEqualToString:@"story"]) {
+                    if(result == HNItemHelperIdentificationResultStory) {
                         [Story createStoryFromSnapshot:snapshot completion:^(Story *story) {
                             self.itemsLookup[item] = story;
                             self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
@@ -327,15 +330,11 @@
                                 if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
                                     self.loadingProgress.completedUnitCount++;
                                 }
-                                
-                                //                                NSLog(@"commentCreated: self.loadingProgress.completedUnitCount %lld of %lld",
-                                //                                      self.loadingProgress.completedUnitCount, self.loadingProgress.totalUnitCount);
-                                
                                 [self applyFiltering];
                             });
                         }];
                         
-                    } else if([typeString isEqualToString:@"comment"]) {
+                    } else if(result == HNItemHelperIdentificationResultComment) {
                         [Comment createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
                             self.itemsLookup[item] = comment;
                             self.itemsLoadStatus[item] = @(StoryLoadStatusLoaded);
@@ -353,6 +352,9 @@
                                 [self applyFiltering];
                             });
                         }];
+                        
+                    } else {
+                        NSLog(@"ERROR: UserViewController, unrecognized type: %@", snapshot.value);
                     }
                     
                     [itemRef removeAllObservers];

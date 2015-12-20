@@ -32,6 +32,7 @@
         
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        _titleLabel.numberOfLines = 1;
         [self addSubview:_titleLabel];
         
         self.subtitleLabel = [LabelHelper labelWithFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
@@ -39,6 +40,7 @@
         _subtitleLabel.textAlignment = NSTextAlignmentCenter;
         _subtitleLabel.textColor = [UIColor grayColor];
         _subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        _subtitleLabel.numberOfLines = 1;
         
         [self addSubview:_subtitleLabel];
         

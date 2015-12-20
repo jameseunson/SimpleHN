@@ -9,10 +9,8 @@
 #import "AppDelegate.h"
 #import "StoryDetailViewController.h"
 #import "Firebase.h"
-
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -22,10 +20,6 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-//    [Fabric with:@[[Crashlytics class]]];
-    
-    [Fabric with:@[[Crashlytics class]]];
     
     // Override point for customization after application launch.
     id rootVC = self.window.rootViewController;
@@ -47,6 +41,8 @@
     self.masterProgress = [NSProgress progressWithTotalUnitCount:0];
     
     [self updateNightMode];
+    
+    [Fabric with:@[[Crashlytics class]]];    
     
     return YES;
 }

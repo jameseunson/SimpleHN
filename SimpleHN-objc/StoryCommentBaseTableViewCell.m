@@ -31,7 +31,7 @@
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if(self) {
         
-        _votingEnabled = YES;
+//        _votingEnabled = YES;
         
         self.firstTrigger = 0.15;
         self.secondTrigger = 0.4;
@@ -88,6 +88,7 @@
             [blockSelf didVoteWithType:StoryCommentUserVoteUpvote];
         }];
         
+        self.shouldDrag = NO;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
                                                      name:DKNightVersionNightFallingNotification object:nil];
@@ -126,10 +127,10 @@
     _downvoteCornerImageView.frame = CGRectMake(self.frame.size.width - _downvoteCornerImageView.frame.size.width, 0, _downvoteCornerImageView.frame.size.width, _downvoteCornerImageView.frame.size.height);
 }
 
-- (void)setVotingEnabled:(BOOL)votingEnabled {
-    _votingEnabled = votingEnabled;
-    
-    self.shouldDrag = votingEnabled;
-}
+//- (void)setVotingEnabled:(BOOL)votingEnabled {
+//    _votingEnabled = votingEnabled;
+//    
+//    self.shouldDrag = votingEnabled;
+//}
 
 @end

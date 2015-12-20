@@ -45,7 +45,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    self.tableView.contentInset = UIEdgeInsetsMake(44.0f, 0, self.tabBarController.tabBar.frame.size.height + _sectionHeaderView.frame.size.height, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(44.0f + [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                   self.tabBarController.tabBar.frame.size.height + _sectionHeaderView.frame.size.height, 0);
 }
 
 #pragma mark - Public Methods
@@ -81,7 +82,8 @@
         self.shouldDisplayLoadMoreCell = YES;
     }
     
-    self.tableView.contentInset = UIEdgeInsetsMake(44.0f, 0, self.tabBarController.tabBar.frame.size.height + _sectionHeaderView.frame.size.height, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(44.0f + [UIApplication sharedApplication].statusBarFrame.size.height, 0,
+                                                   self.tabBarController.tabBar.frame.size.height + _sectionHeaderView.frame.size.height, 0);
     
     [self.tableView reloadData];
     

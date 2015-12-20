@@ -154,7 +154,14 @@
     self.storyScoreLabel.frame = CGRectIntegral( CGRectMake(_storyScoreIconImageView.frame.origin.x + _storyScoreIconImageView.frame.size.width + 2.0f, _storyCommentsButton.frame.origin.y + _storyCommentsButton.frame.size.height + 8.0f, sizeForScoreLabel.width, sizeForScoreLabel.height) );
     
     if(_story.sizeStatus == StorySizeStatusExpanded) {
+        
         _actionDrawerView.hidden = NO;
+        if(self.contextType == StoryCellContextTypeDetail) {
+            _actionDrawerView.contextType = ActionDrawerViewContextTypeDetail;
+            
+        } else if(self.contextType == StoryCellContextTypeList) {
+            _actionDrawerView.contextType = ActionDrawerViewContextTypeList;
+        }
         
         // Ensure Ask HN text only displays in 'Detail' context, not 'List' context
         if(_story.text && _contextType == StoryCellContextTypeDetail) {
@@ -327,15 +334,15 @@
     UILongPressGestureRecognizer * recognizer = (UILongPressGestureRecognizer*)sender;
     NSLog(@"UILongPressGestureRecognizer.state = %lu", recognizer.state);
     
-    if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidTapCommentsArea:)]) {
-        [self.storyCellDelegate performSelector:@selector(storyCellDidTapCommentsArea:) withObject:self];
-    }
-    
     if(recognizer.state == UIGestureRecognizerStateBegan) {
         self.storyCommentsButton.tapFeedbackViewVisible = YES;
         
     } else if(recognizer.state == UIGestureRecognizerStateEnded) {
         self.storyCommentsButton.tapFeedbackViewVisible = NO;
+        
+        if([self.storyCellDelegate respondsToSelector:@selector(storyCellDidTapCommentsArea:)]) {
+            [self.storyCellDelegate performSelector:@selector(storyCellDidTapCommentsArea:) withObject:self];
+        }
     }
 }
 

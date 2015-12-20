@@ -40,6 +40,7 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, copy, readonly) NSDate * time;
 
 @property (nonatomic, copy, readonly) NSString * text;
+@property (nonatomic, assign, readonly) BOOL deleted;
 
 // Custom properties
 @property (nonatomic, assign) NSInteger indentation;

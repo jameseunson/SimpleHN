@@ -49,6 +49,8 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     self.childComments = [[NSMutableArray alloc] init];
     self.indentation = 0;
     
+    _sizeStatus = CommentSizeStatusNormal;
+    
     _collapseOrigin = NO;
     
     _voteStatus = StoryCommentUserVoteNoVote;
@@ -69,7 +71,8 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
              @"text":      @"text",
              @"parent":    @"parent",
              @"time":      @"time",
-             @"kids":      @"kids"
+             @"kids":      @"kids",
+             @"deleted":   @"deleted"
              };
 }
 
@@ -78,12 +81,20 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
         
         NSString * string = (NSString*)value;
         
+        if([string containsString:@"Think of strings in JavaScript"]) {
+            NSLog(@"target");
+        }
+        
         string = [[self class] completeParagraphTags:string];
         if([string containsString:@"<p></p>"]) {
             string = [string stringByReplacingOccurrencesOfString:@"<p></p>" withString:@""];
         }
         string = [[self class] wrapQuotesInBlockQuoteTags:string];
         string = [[self class] wrapMultiQuotesInBlockQuoteTags:string];
+        
+        if([string containsString:@"<pre><code>"]) {
+
+        }
         
         return [string copy];
     }];
@@ -197,7 +208,6 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
         
         if(_collapseOrigin) {
             NSInteger countForCommentsToModify = self.childCommentCount + 1; // Include self = +1
-//            NSLog(@"countForCommentsToModify: %lu", countForCommentsToModify);
             
             self.childCommentsChangedUntilComplete = countForCommentsToModify;
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
@@ -291,6 +301,9 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
 //              _childCommentsChangedUntilComplete);
         
         if(self.childCommentsChangedUntilComplete == 0) {
+            
+            NSLog(@"post kCommentCollapsedComplete");
+            
             [[NSNotificationCenter defaultCenter] removeObserver:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:
              kCommentCollapsedComplete object:self];

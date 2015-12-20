@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSDictionary < NSNumber *, ActionDrawerButton * > * buttonsLookup;
 
 @property (nonatomic, strong) CALayer * actionDrawerBorderLayer;
+@property (nonatomic, strong) CALayer * actionDrawerBottomBorderLayer;
 
 - (void)didTapActionButton:(id)sender;
 - (ActionDrawerButton*)createButtonWithType:(ActionDrawerViewButtonType)type;
@@ -41,6 +42,8 @@
 - (instancetype)init {
     self = [super init];
     if(self) {
+        
+        _contextType = ActionDrawerViewContextTypeList;
         
         self.actionDrawerContainerView = [[UIStackView alloc] init];
         _actionDrawerContainerView.axis = UILayoutConstraintAxisHorizontal;
@@ -76,6 +79,11 @@
         _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
         [self.layer insertSublayer:_actionDrawerBorderLayer atIndex:100];
         
+        self.actionDrawerBottomBorderLayer = [CALayer layer];
+        _actionDrawerBottomBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
+        _actionDrawerBottomBorderLayer.hidden = YES;
+        [self.layer insertSublayer:_actionDrawerBottomBorderLayer atIndex:101];
+        
         NSDictionary * bindings = NSDictionaryOfVariableBindings(_actionDrawerContainerView);
         
         [self addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
@@ -96,6 +104,7 @@
     [super layoutSubviews];
     
     _actionDrawerBorderLayer.frame = CGRectMake(0, 0, self.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
+    _actionDrawerBottomBorderLayer.frame = CGRectMake(0, self.frame.size.height - 1.0f, self.frame.size.width, (1.0f / [[UIScreen mainScreen] scale]));
 }
 
 #pragma mark - Property Override Methods
@@ -113,6 +122,16 @@
     }
 
     [self setNeedsLayout];
+}
+
+- (void)setContextType:(ActionDrawerViewContextType)contextType {
+    _contextType = contextType;
+    
+    if(contextType == ActionDrawerViewContextTypeList) {
+        _actionDrawerBottomBorderLayer.hidden = YES;
+    } else {
+        _actionDrawerBottomBorderLayer.hidden = NO;
+    }
 }
 
 #pragma mark - Private Methods
@@ -141,9 +160,11 @@
 - (void)updateNightMode {
     
     if([[AppConfig sharedConfig] nightModeEnabled]) {
-        _actionDrawerBorderLayer.backgroundColor = [UIColorFromRGB(0x555555) CGColor];
+        _actionDrawerBorderLayer.backgroundColor = [kNightDefaultBorderColor CGColor];
+        _actionDrawerBottomBorderLayer.backgroundColor = [kNightDefaultBorderColor CGColor];
     } else {
         _actionDrawerBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
+        _actionDrawerBottomBorderLayer.backgroundColor = [RGBCOLOR(203, 203, 203) CGColor];
     }
 }
 

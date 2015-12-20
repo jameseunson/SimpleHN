@@ -10,8 +10,16 @@
 
 #define kActionDrawerViewHeight 65.0f
 
+// Bottom border only visible in detail context
+typedef NS_ENUM(NSInteger, ActionDrawerViewContextType) {
+    ActionDrawerViewContextTypeList,
+    ActionDrawerViewContextTypeDetail
+};
+
 @protocol ActionDrawerViewDelegate;
 @interface ActionDrawerView : UIView
+
+@property (nonatomic, assign) ActionDrawerViewContextType contextType;
 
 @property (nonatomic, assign) __unsafe_unretained
     id<ActionDrawerViewDelegate> delegate;

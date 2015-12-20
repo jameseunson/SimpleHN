@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, UserHeaderViewVisibleData) {
 
 @property (nonatomic, assign) UserHeaderViewVisibleData visibleData;
 
++ (CGFloat)heightWithUser:(User*)user forWidth:(CGFloat)width;
+
 @end
 
 @protocol UserHeaderViewDelegate <NSObject>

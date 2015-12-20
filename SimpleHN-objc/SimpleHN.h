@@ -27,7 +27,11 @@
 #import "HNSessionAPIManager.h"
 #import "UIViewController+ErrorAlert.h"
 
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
 #define kNightDefaultColor UIColorFromRGB(0x000000)
+#define kNightDefaultBorderColor UIColorFromRGB(0x555555)
 
 // Three20 RGBColor macro
 #define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]

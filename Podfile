@@ -15,10 +15,10 @@ pod 'TTTAttributedLabel'
 pod 'InAppSettingsKit'
 pod 'DKNightVersion', '~> 0.9.1'
 pod 'MCSwipeTableViewCell', '~> 2.1.4'
-pod 'Fabric'
-pod 'Crashlytics'
 pod 'DZReadability'
 pod 'VTAcknowledgementsViewController'
+pod 'Fabric'
+pod 'Crashlytics'
 
 pre_install do |installer|
     # workaround for https://github.com/CocoaPods/CocoaPods/issues/3289

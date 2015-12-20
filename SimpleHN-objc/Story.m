@@ -42,6 +42,7 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     self.comments = [[NSMutableArray alloc] init];
     self.flatDisplayComments = [[NSMutableArray alloc] init];
+    self.flatDisplayCommentsWithoutCollapsed = [[NSMutableArray alloc] init];
     
     _algoliaResult = NO;
     

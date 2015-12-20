@@ -79,6 +79,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    [[Crashlytics sharedInstance] crash];
+    
     self.tableView.tableHeaderView = self.searchController.searchBar;
     [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
     
@@ -102,6 +104,8 @@
     self.navigationItem.rightBarButtonItem = _timePeriodItem;
     
     self.splitViewController.delegate = self;
+    
+//    [[Crashlytics sharedInstance] crash];    
 }
 
 #pragma mark - UISplitViewControllerDelegate Methods

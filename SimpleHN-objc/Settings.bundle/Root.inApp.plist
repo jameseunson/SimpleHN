@@ -10,20 +10,6 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Account Settings</string>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>loginToAccount</string>
-			<key>Title</key>
-			<string>Login to Account</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
 			<string>Story Settings</string>
 		</dict>
 		<dict>

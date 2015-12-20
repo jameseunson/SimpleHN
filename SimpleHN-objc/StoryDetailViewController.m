@@ -35,7 +35,7 @@
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
 //@property (nonatomic, assign) BOOL initialLoadDone;
-@property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
+//@property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
 
 //@property (nonatomic, strong) ContentLoadingView * loadingView;
 
@@ -81,7 +81,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedComplete:)
                                                  name:kCommentCollapsedComplete object:nil];
     
-    _displayMode = StoryDetailViewControllerDisplayModeStory;
+//    _displayMode = StoryDetailViewControllerDisplayModeStory;
 //    _initialLoadDone = NO;
     
     self.refreshDateFormatter = [[NSDateFormatter alloc] init];
@@ -97,6 +97,8 @@
 
 - (void)loadView {
     [super loadView];
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
     [self.tableView registerClass:[StoryCell class]
            forCellReuseIdentifier:kStoryCellReuseIdentifier];
@@ -154,7 +156,8 @@
         
         _detailComment = [newDetailComment copy];
         self.loadStatus = StoryDetailViewControllerLoadStatusLoadingStory;
-        _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
+        
+//        _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
         
         [self.tableView reloadData];
         [self configureViewForComment];
@@ -173,43 +176,23 @@
 - (void)configureViewForStory {
     
     self.title = _detailItem.title;
-    
-    if(_displayMode == StoryDetailViewControllerDisplayModeStory) {
-        if([_detailItem.flatDisplayComments count] == 0) {
-            [self loadContent];
-            
-        } else {
-            self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
-            [self.tableView reloadData];
-        }
+    if([_detailItem.flatDisplayComments count] == 0) {
+        [self loadContent];
+        
+    } else {
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
+        [self.tableView reloadData];
     }
-
 }
 
 - (void)configureViewForComment {
     NSLog(@"configureViewForComment stub");
     
-    // Find root comment by traversing upwards
+    // Find root item (the story) by traversing upwards
     [self.detailComment findStoryForComment:^(Story *story) {
         NSLog(@"root: %@", story);
-        
-//        self.loadingProgress = [NSProgress progressWithTotalUnitCount:1];
-//        [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
-//                                  options:NSKeyValueObservingOptionNew context:NULL];
-//        
-//        NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
-//                                                       delegate]).masterProgress;
-//        masterProgress.completedUnitCount = 0;
-//        masterProgress.totalUnitCount = 1;
-//        
-//        [masterProgress addChild:self.loadingProgress withPendingUnitCount:1];
-        
         self.detailItem = story;
-        [self.detailItem loadSpecificCommentForStory:
-            self.detailComment.parent];
     }];
-    
-    // Find and instantiate immediate parent comment
 }
 
 - (void)viewDidLoad {
@@ -217,16 +200,6 @@
     
     self.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
     self.navigationItem.leftItemsSupplementBackButton = YES;
-    
-//    self.contentSelectSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[ @"Comments", @"Story" ]];
-//    _contentSelectSegmentedControl.selectedSegmentIndex = 0;
-//    [_contentSelectSegmentedControl addTarget:self action:@selector(didSelectContentSegment:)
-//                             forControlEvents:UIControlEventValueChanged];
-//    
-//    UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithCustomView:_contentSelectSegmentedControl];
-//    self.navigationItem.rightBarButtonItem = item;
-    
-//    self.initialLoadDone = NO;
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -716,6 +689,25 @@
         
         Story * detailStory = (Story*)_detailItem;
         [detailStory finishLoadingCommentsForStory];
+        
+        if(self.detailComment) {
+            NSLog(@"snap to specified comment");
+            
+            NSArray * loadedTargetCommentArray = [self.detailItem.flatDisplayComments filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:
+                                                                              @"commentId == %@", self.detailComment.commentId]];
+            if([loadedTargetCommentArray count] > 0) {
+                Comment * targetComment = [loadedTargetCommentArray firstObject];
+                NSInteger targetCommentIndex = [self.detailItem.flatDisplayComments indexOfObject:targetComment];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    targetComment.sizeStatus = CommentSizeStatusExpanded;
+                    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:targetCommentIndex inSection:1]]
+                                          withRowAnimation:UITableViewRowAnimationAutomatic];
+                    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:targetCommentIndex inSection:1]
+                                          atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+                });
+            }
+        }
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
         if([[AppConfig sharedConfig] nightModeEnabled]) {

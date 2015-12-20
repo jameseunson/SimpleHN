@@ -155,9 +155,17 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
                       options:NSKeyValueObservingOptionNew context:NULL];
 
     
-    if([[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
+//    if([[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
+//        
+//        
+//
+//    }
+    
+    if(self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact
+       || [[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
         self.navigationController.hidesBarsOnSwipe = YES;
     }
+    
     self.navigationController.toolbarHidden = NO;
     
     self.flexibleSpaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
