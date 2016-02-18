@@ -70,11 +70,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    if(self.author) {
-//        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
-//            self.user = user;
-//        }];
-//    }
+    if(self.author) {
+        [User createUserFromItemIdentifier:self.author completion:^(User *user) {
+            self.user = user;
+        }];
+    }
     
 //    [User createUserFromItemIdentifier:@"markmassie" completion:^(User *user) {
 //        self.user = user;
@@ -88,9 +88,9 @@
 //        self.user = user;
 //    }];
     
-    [User createUserFromItemIdentifier:@"graue" completion:^(User *user) {
-        self.user = user;
-    }];
+//    [User createUserFromItemIdentifier:@"graue" completion:^(User *user) {
+//        self.user = user;
+//    }];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {

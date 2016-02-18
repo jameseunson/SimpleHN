@@ -43,12 +43,16 @@
 
 @property (nonatomic, strong) UIColor * defaultSeparatorColor;
 
+@property (nonatomic, assign) BOOL commentCollapseBeginUpdatesOpen;
+
 - (void)loadContent;
 
 - (void)reloadContent:(id)sender;
 - (void)didSelectContentSegment:(id)sender;
 
 - (void)commentCreated:(NSNotification*)notification;
+- (void)commentCollapsedStarted:(NSNotification*)notification;
+- (void)commentCollapsedChanged:(NSNotification*)notification;
 - (void)commentCollapsedComplete:(NSNotification*)notification;
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
@@ -73,11 +77,17 @@
 
 - (void)awakeFromNib {
     
+    _commentCollapseBeginUpdatesOpen = NO;
+    
     self.loadStatus = StoryDetailViewControllerLoadStatusNotLoaded;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedStarted:)
+                                                 name:kCommentCollapsedStarted object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
+                                                 name:kCommentCollapsedChanged object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedComplete:)
                                                  name:kCommentCollapsedComplete object:nil];
     
@@ -213,7 +223,8 @@
             
         } else {
             
-            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
             if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
                 return 1;
                 
@@ -256,7 +267,8 @@
             
         } else {
             
-            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
             
             if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
                 StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
@@ -264,7 +276,8 @@
                 
             } else {
                 
-                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+//                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+                Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
                 
                 CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
                                                                      forIndexPath:indexPath];
@@ -304,7 +317,9 @@
             
         } else {
             
-            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
+            
             if(commentCount == 0 && (_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
                                            || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
                 
@@ -313,7 +328,9 @@
                 return self.tableView.frame.size.height - headerHeight - self.tabBarController.tabBar.frame.size.height - self.navigationController.navigationBar.frame.size.height;
                 
             } else {
-                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+//                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+                
+                Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
                 return [CommentCell heightForCommentCell:comment
                                                    width:tableView.frame.size.width];
             }
@@ -363,13 +380,17 @@
         || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
         
         if(indexPath.section == 0 && indexPath.row == 0) {
-//            self.contentSelectSegmentedControl.selectedSegmentIndex = 1;
-//            [self didSelectContentSegment:self.contentSelectSegmentedControl];
             
-            [self performSegueWithIdentifier:@"showWeb" sender:nil];
+            if(self.detailItem.url) {
+                [self performSegueWithIdentifier:@"showWeb" sender:nil];
+            }
             
         } else {
-            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
+//            if(commentCount > 0) {
+//                [self expandCollapseCommentForRow:indexPath];
+//            }
+            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
             if(commentCount > 0) {
                 [self expandCollapseCommentForRow:indexPath];
             }
@@ -485,12 +506,93 @@
     }
 }
 
+- (void)commentCollapsedStarted:(NSNotification*)notification {
+    
+    NSDictionary * userInfo = notification.userInfo;
+    if([[userInfo allKeys] containsObject:kCommentCollapsedStartedChangedCompleteComment]) {
+        Comment * comment = userInfo[kCommentCollapsedStartedChangedCompleteComment];
+        
+        if([comment.storyId isEqual: self.detailItem.storyId]) {
+            
+            NSLog(@"commentCollapseStarted: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
+            NSLog(@"commentCollapseStarted, beginUpdates");
+            
+            [self.tableView beginUpdates];
+            _commentCollapseBeginUpdatesOpen = YES;
+        }
+    }
+}
+
+- (void)commentCollapsedChanged:(NSNotification*)notification {
+    
+    NSDictionary * userInfo = notification.userInfo;
+    if([[userInfo allKeys] containsObject:kCommentCollapsedStartedChangedCompleteComment]) {
+        Comment * comment = userInfo[kCommentCollapsedStartedChangedCompleteComment];
+        
+        if([comment.storyId isEqual: self.detailItem.storyId]) {
+            NSLog(@"commentCollapsedChanged: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
+            
+            if([[userInfo allKeys] containsObject:kCommentCollapsedPreviousState]) {
+                CommentSizeStatus previousState = [userInfo[kCommentCollapsedPreviousState] integerValue];
+                
+                // No change
+                if(previousState == comment.sizeStatus) {
+                    return;
+                }
+                if(previousState == CommentSizeStatusExpanded) {
+                    return;
+                }
+            }
+            
+            NSInteger commentIndex = [self.detailItem.flatDisplayComments indexOfObject:comment];
+            
+            // Comment is on public display
+            if(commentIndex != NSNotFound) {
+                
+                NSIndexPath * commentIndexPath = [NSIndexPath indexPathForRow:commentIndex inSection:1];
+                if(comment.collapseOrigin) { // Collapse origin cells are never actually removed or inserted, only their children
+                    
+                    NSLog(@"commentCollapsedChanged, reloadRowsAtIndexPaths: %@", commentIndexPath);
+                    [self.tableView reloadRowsAtIndexPaths:@[ commentIndexPath ]
+                                          withRowAnimation:UITableViewRowAnimationAutomatic];
+                } else {
+                    
+                    if(comment.sizeStatus == CommentSizeStatusCollapsed) {
+                        
+                        NSLog(@"commentCollapsedChanged, deleteRowsAtIndexPaths: %@", commentIndexPath);
+                        [self.tableView deleteRowsAtIndexPaths:@[ commentIndexPath ]
+                                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                        
+                    } else {
+                        NSLog(@"commentCollapsedChanged, insertRowsAtIndexPaths: %@", commentIndexPath);
+                        [self.tableView insertRowsAtIndexPaths:@[ commentIndexPath ]
+                                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                    }
+                }
+            }
+        }
+    }
+}
+
 - (void)commentCollapsedComplete:(NSNotification*)notification {
     
-    NSLog(@"commentCollapsedComplete");
-    
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
+    NSDictionary * userInfo = notification.userInfo;
+    if([[userInfo allKeys] containsObject:kCommentCollapsedStartedChangedCompleteComment]) {
+        Comment * comment = userInfo[kCommentCollapsedStartedChangedCompleteComment];
+        
+        if([comment.storyId isEqual: self.detailItem.storyId]) {
+            NSLog(@"commentCollapsedComplete: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
+            
+            if(_commentCollapseBeginUpdatesOpen) {
+                
+                NSLog(@"commentCollapsedComplete, endUpdates");
+                
+                [self.tableView endUpdates];
+                _commentCollapseBeginUpdatesOpen = NO;
+            }
+        }
+    }
+//    [self.tableView reloadData];
 }
 
 - (void)loadContent {
@@ -581,7 +683,8 @@
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
     
-    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+//    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+    Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
     
     NSArray * expandedCommentArray = [_detailItem.flatDisplayComments filteredArrayUsingPredicate:
         [NSPredicate predicateWithFormat:@"sizeStatus == %lu", CommentSizeStatusExpanded]];

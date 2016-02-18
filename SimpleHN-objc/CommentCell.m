@@ -179,6 +179,13 @@
     } else if(actionType == ActionDrawerViewButtonTypeContext) {
         [controller performSegueWithIdentifier:@"showDetail" sender:comment];
         
+    } else if(actionType == ActionDrawerViewButtonTypeLink) {
+        
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:
+                                                @[ comment.hnPublicLink ] applicationActivities:nil];
+        activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+        [controller presentViewController:activityVC animated:YES completion:nil];
+        
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         NSLog(@"ActionDrawerViewButtonTypeMore");
         

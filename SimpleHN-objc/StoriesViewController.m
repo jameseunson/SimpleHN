@@ -239,6 +239,10 @@
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    if(!self.initialLoadDone) {
+        return;
+    }
+    
     Story * selectedStory = nil;
     
     if(self.selectedTimePeriod == StoriesTimePeriodsNow) {

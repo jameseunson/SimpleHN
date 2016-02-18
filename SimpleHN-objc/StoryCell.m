@@ -312,6 +312,12 @@
     } else {
         _storyAboutLabel.hidden = YES;
     }
+    
+    if(story.url) {
+        self.selectionStyle = UITableViewCellSelectionStyleDefault;
+    } else {
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
 
     [self setNeedsUpdateConstraints];
     [self invalidateIntrinsicContentSize];

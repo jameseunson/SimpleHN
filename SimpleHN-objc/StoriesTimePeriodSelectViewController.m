@@ -32,15 +32,15 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    @weakify(self);
-    [self addColorChangedBlock:^{
-        @strongify(self);
-        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
+        self.view.backgroundColor = kNightDefaultColor;
         
+    } else {
+        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
         self.view.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.nightBackgroundColor = kNightDefaultColor;
-    }];
+    }
 }
 
 - (void)viewDidLoad {
@@ -76,15 +76,14 @@
     
     cell.textLabel.text = kTimePeriodsLookup[kTimePeriods[indexPath.row]];
     
-    @weakify(cell);
-    [self addColorChangedBlock:^{
-        @strongify(cell);
-        cell.backgroundColor = UIColorFromRGB(0xffffff);
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
         cell.nightBackgroundColor = kNightDefaultColor;
-        
-        cell.textLabel.textColor = UIColorFromRGB(0x000000);
         cell.textLabel.nightTextColor = UIColorFromRGB(0xffffff);
-    }];
+        
+    } else {
+        cell.backgroundColor = UIColorFromRGB(0xffffff);
+        cell.textLabel.textColor = UIColorFromRGB(0x000000);
+    }
     
     if(_selectedPeriodIndex == [indexPath row]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;

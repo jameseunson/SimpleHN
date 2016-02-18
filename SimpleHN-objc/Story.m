@@ -30,6 +30,8 @@ static NSDateFormatter * _timeDateFormatter = nil;
 @synthesize attributedText = _attributedText;
 @synthesize nightAttributedText = _nightAttributedText;
 
+@synthesize flatVisibleDisplayComments = _flatVisibleDisplayComments;
+
 @synthesize linksLookup = _linksLookup;
 
 - (void)dealloc {
@@ -42,7 +44,6 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     self.comments = [[NSMutableArray alloc] init];
     self.flatDisplayComments = [[NSMutableArray alloc] init];
-    self.flatDisplayCommentsWithoutCollapsed = [[NSMutableArray alloc] init];
     
     _algoliaResult = NO;
     
@@ -353,6 +354,19 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (NSURL*)hnPublicLink {
     return [NSURL URLWithString: [NSString stringWithFormat:@"https://news.ycombinator.com/item?id=%@", self.storyId]];
+}
+
+- (NSArray*)flatVisibleDisplayComments {
+    
+    NSArray * visibleDisplayComments = [self.flatDisplayComments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        
+        Comment * comment = (Comment*)evaluatedObject;
+        if(comment.deleted || comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+            return NO;
+        }
+        return YES;
+    }]];
+    return visibleDisplayComments;
 }
 
 + (NSDateFormatter*)timeDateFormatter {

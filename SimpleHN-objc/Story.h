@@ -53,7 +53,7 @@ typedef void (^StoryBlock)(Story* story);
 
 @property (nonatomic, strong) NSMutableArray * comments;
 @property (nonatomic, strong) NSMutableArray * flatDisplayComments;
-@property (nonatomic, strong) NSMutableArray * flatDisplayCommentsWithoutCollapsed;
+@property (nonatomic, strong, readonly) NSArray * flatVisibleDisplayComments; // No collapsed
 
 @property (nonatomic, assign) StoryCommentUserVote voteStatus;
 

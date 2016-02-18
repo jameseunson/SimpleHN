@@ -14,6 +14,8 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self) {
         
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         self.loadingView = [[ContentLoadingView alloc] init];
         _loadingView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:_loadingView];

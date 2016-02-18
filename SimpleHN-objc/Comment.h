@@ -20,11 +20,19 @@ typedef NS_ENUM(NSInteger, CommentSizeStatus) {
 };
 
 #define kCommentCreated @"commentCreated"
+#define kCommentCollapsedStarted @"commentCollapsedStarted"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"
 #define kCommentCollapsedComplete @"commentCollapsedComplete"
 
 // Key for userInfo dict sent back with kCommentCreated notification
 #define kCommentCreatedStoryIdentifier @"commentCreatedStoryIdentifier"
+
+// Key for userInfo dict sent back with kCommentCollapsedStarted, kCommentCollapsedChanged, kCommentCollapsedComplete
+#define kCommentCollapsedStartedChangedCompleteComment @"commentCollapsedStartedChangedCompleteComment"
+
+// Key for userInfo dict sent back with kCommentCollapsedChanged, used
+// to filter out Expanded -> Normal as a collapse in receiver of notification
+#define kCommentCollapsedPreviousState @"commentCollapsedPreviousState"
 
 @class Comment;
 typedef void (^CommentBlock)(Comment* comment);
@@ -43,6 +51,8 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, assign, readonly) BOOL deleted;
 
 // Custom properties
+@property (nonatomic, strong) NSNumber * storyId;
+
 @property (nonatomic, assign) NSInteger indentation;
 
 @property (nonatomic, strong) NSMutableArray * childComments;
