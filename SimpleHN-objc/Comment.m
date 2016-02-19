@@ -18,10 +18,12 @@
 
 static NSString * _commentCSS = nil;
 static NSRegularExpression * _leadingTrailingRegex = nil;
+static Comment * _currentCollapseExpandOrigin = nil;
 
 @interface Comment ()
 
 - (void)commentCollapsedChanged:(NSNotification*)notification;
+- (void)commentExpandedChanged:(NSNotification*)notification;
 
 @property (nonatomic, assign) NSInteger childCommentsChangedUntilComplete;
 
@@ -55,7 +57,7 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     
     _sizeStatus = CommentSizeStatusNormal;
     
-    _collapseOrigin = NO;
+    _collapseExpandOrigin = NO;
     
     _voteStatus = StoryCommentUserVoteNoVote;
     
@@ -144,34 +146,45 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     NSError * error = nil;
     Comment * obj = [MTLJSONAdapter modelOfClass:Comment.class
                               fromJSONDictionary:snapshot.value error:&error];
-    completion(obj);
-    
-    NSDictionary * userInfo = @{};
-    if(story) {
-        obj.storyId = story.storyId;
+    if(!obj.deleted) {
         
-    } else {
-        // Manually propagate storyId from parent to child,
-        // because the story object won't be present in subsequent recursive
-        // level invocations of this method, to the first
-        if(obj.parentComment && obj.parentComment.storyId) {
-            obj.storyId = obj.parentComment.storyId;
+        if([obj.text containsString:@"Irrelevant"]) {
+            NSLog(@"found");
         }
-    }
-    if(obj.storyId) {
-        userInfo = @{ kCommentCreatedStoryIdentifier: obj.storyId };
-    }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCreated
-                                                        object:obj userInfo:userInfo];
-    // load child comments into comment
-    for(NSNumber * child in obj.kids) {
         
-        __block Comment * blockObj = obj;
-        [Comment createCommentFromItemIdentifier:child completion:^(Comment *comment) {
-            comment.parentComment = blockObj;
-            [blockObj.childComments addObject:comment];
-        }];
+        completion(obj);        
+        
+        NSDictionary * userInfo = @{};
+        if(story) {
+            obj.storyId = story.storyId;
+            
+        } else {
+            // Manually propagate storyId from parent to child,
+            // because the story object won't be present in subsequent recursive
+            // level invocations of this method, to the first
+            if(obj.parentComment && obj.parentComment.storyId) {
+                obj.storyId = obj.parentComment.storyId;
+            }
+        }
+        if(obj.storyId) {
+            userInfo = @{ kCommentCreatedStoryIdentifier: obj.storyId,
+                          kCommentCreatedComment: obj };
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCreated
+                                                            object:obj userInfo:userInfo];
+        
+        // load child comments into comment
+        for(NSNumber * child in obj.kids) {
+            
+            __block Comment * blockObj = obj;
+            [Comment createCommentFromItemIdentifier:child completion:^(Comment *comment) {
+                if(comment) {
+                    comment.parentComment = blockObj;
+                    [blockObj.childComments addObject:comment];
+                }
+            }];
+        }
+        
     }
 }
 
@@ -215,27 +228,22 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
 
 #pragma mark - Property Override Methods
 - (void)setSizeStatus:(CommentSizeStatus)sizeStatus {
-    
-    CommentSizeStatus previousSize = _sizeStatus;
+
     _sizeStatus = sizeStatus;
     
     // Propagate collapse/normalize to child comments
-    if(sizeStatus == CommentSizeStatusCollapsed || sizeStatus == CommentSizeStatusNormal) {
+    if(sizeStatus == CommentSizeStatusCollapsedVisible || sizeStatus == CommentSizeStatusCollapsed) {
         
-        if(_collapseOrigin) {
+        if(sizeStatus == CommentSizeStatusCollapsedVisible) {
             
             // Send beginUpdate to associated StoryDetailViewController
             NSLog(@"Comment, postNotificationName: kCommentCollapsedStarted");
             [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCollapsedStarted
                                                                 object:self
-                                                              userInfo:@{ kCommentCollapsedStartedChangedCompleteComment: self, kCommentCollapsedPreviousState: @(previousSize) }];
+                                                              userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self}];
             
             NSInteger countForCommentsToModify = self.childCommentCount + 1; // Include self = +1
             self.childCommentsChangedUntilComplete = countForCommentsToModify;
-            
-//            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
-//                                                         name:kCommentCollapsedChanged
-//                                                       object:@{ kCommentCollapsedPreviousState: @(previousSize) }];
             
             [[NSNotificationCenter defaultCenter] addObserver:self selector:
              @selector(commentCollapsedChanged:) name:kCommentCollapsedChanged object:nil];
@@ -244,10 +252,36 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
         NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
         
         [[NSNotificationCenter defaultCenter] postNotificationName:
-            kCommentCollapsedChanged object:self userInfo:@{ kCommentCollapsedStartedChangedCompleteComment: self,
-                                                             kCommentCollapsedPreviousState: @(previousSize)  }];
+         kCommentCollapsedChanged object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self  }];
         
-        // Recursively set collapsed value
+        // Recursively set collapsed/normal value
+        for(Comment * comment in _childComments) {
+            comment.sizeStatus = CommentSizeStatusCollapsed;
+        }
+        
+    } else if(sizeStatus == CommentSizeStatusNormal) {
+        
+        if(_collapseExpandOrigin) {
+            
+            // Send beginUpdate to associated StoryDetailViewController
+            NSLog(@"Comment, postNotificationName: kCommentExpandedStarted");
+            [[NSNotificationCenter defaultCenter] postNotificationName:kCommentExpandedStarted
+                                                                object:self
+                                                              userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
+            
+            NSInteger countForCommentsToModify = self.childCommentCount + 1; // Include self = +1
+            self.childCommentsChangedUntilComplete = countForCommentsToModify;
+            
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:
+             @selector(commentExpandedChanged:) name:kCommentExpandedChanged object:nil];
+        }
+        
+        NSLog(@"postNotification kCommentExpandedChanged for comment with id: %@", self.commentId);
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:
+         kCommentExpandedChanged object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self  }];
+        
+        // Recursively set collapsed/normal value
         for(Comment * comment in _childComments) {
             comment.sizeStatus = sizeStatus;
         }
@@ -324,21 +358,41 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
-    
     NSLog(@"commentCollapsedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
     
     if(self.childCommentsChangedUntilComplete != -1) {
         self.childCommentsChangedUntilComplete--;
         
-        if(_collapseOrigin && self.childCommentsChangedUntilComplete == 0) {
+        if(_collapseExpandOrigin && self.childCommentsChangedUntilComplete == 0) {
             
             NSLog(@"post kCommentCollapsedComplete");
             
             [[NSNotificationCenter defaultCenter] removeObserver:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:
-             kCommentCollapsedComplete object:self userInfo:@{ kCommentCollapsedStartedChangedCompleteComment: self }];
+             kCommentCollapsedComplete object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
             
-//            _collapseOrigin = NO;
+//            _collapseExpandOrigin = NO;
+//            [Comment setCurrentCollapseExpandOrigin:nil];
+        }
+    }
+}
+
+- (void)commentExpandedChanged:(NSNotification*)notification {
+    NSLog(@"commentExpandedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
+    
+    if(self.childCommentsChangedUntilComplete != -1) {
+        self.childCommentsChangedUntilComplete--;
+        
+        if(_collapseExpandOrigin && self.childCommentsChangedUntilComplete == 0) {
+            
+            NSLog(@"post kCommentExpandedComplete");
+            
+            [[NSNotificationCenter defaultCenter] removeObserver:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             kCommentExpandedComplete object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
+            
+            //            _collapseExpandOrigin = NO;
+            //            [Comment setCurrentCollapseExpandOrigin:nil];
         }
     }
 }
@@ -616,6 +670,14 @@ static NSRegularExpression * _leadingTrailingRegex = nil;
     }
     
     return lookup;
+}
+
+#pragma mark - Static Property Methods
++ (Comment*) currentCollapseExpandOrigin {
+    return _currentCollapseExpandOrigin;
+}
++ (void) setCurrentCollapseExpandOrigin:(Comment*)comment {
+    _currentCollapseExpandOrigin = comment;
 }
 
 @end

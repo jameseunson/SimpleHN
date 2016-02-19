@@ -16,23 +16,32 @@
 typedef NS_ENUM(NSInteger, CommentSizeStatus) {
     CommentSizeStatusNormal = 0,
     CommentSizeStatusExpanded = 1,
-    CommentSizeStatusCollapsed = 2
+    CommentSizeStatusCollapsed = 2,
+    CommentSizeStatusCollapsedVisible = 3
 };
 
 #define kCommentCreated @"commentCreated"
+#define kCommentCreatedComment @"commentCreatedComment"
+
+// Represents transition from Normal -> Collapsed
 #define kCommentCollapsedStarted @"commentCollapsedStarted"
 #define kCommentCollapsedChanged @"commentCollapsedChanged"
 #define kCommentCollapsedComplete @"commentCollapsedComplete"
+
+// Represents transition from Collapsed -> Normal
+#define kCommentExpandedStarted @"commentExpandedStarted"
+#define kCommentExpandedChanged @"commentExpandedChanged"
+#define kCommentExpandedComplete @"commentExpandedComplete"
 
 // Key for userInfo dict sent back with kCommentCreated notification
 #define kCommentCreatedStoryIdentifier @"commentCreatedStoryIdentifier"
 
 // Key for userInfo dict sent back with kCommentCollapsedStarted, kCommentCollapsedChanged, kCommentCollapsedComplete
-#define kCommentCollapsedStartedChangedCompleteComment @"commentCollapsedStartedChangedCompleteComment"
+#define kCommentCollapsedExpandedStartedChangedCompleteComment @"commentCollapsedExpandedStartedChangedCompleteComment"
 
 // Key for userInfo dict sent back with kCommentCollapsedChanged, used
 // to filter out Expanded -> Normal as a collapse in receiver of notification
-#define kCommentCollapsedPreviousState @"commentCollapsedPreviousState"
+#define kCommentCollapsedExpandedPreviousState @"commentCollapsedExpandedPreviousState"
 
 @class Comment;
 typedef void (^CommentBlock)(Comment* comment);
@@ -61,7 +70,8 @@ typedef void (^CommentBlock)(Comment* comment);
 @property (nonatomic, assign) StoryCommentUserVote voteStatus;
 
 @property (nonatomic, assign) CommentSizeStatus sizeStatus;
-@property (nonatomic, assign) BOOL collapseOrigin;
+@property (nonatomic, assign) BOOL collapseExpandOrigin;
+@property (nonatomic, strong) NSMutableDictionary* collapseExpandOriginIndexes;
 
 @property (nonatomic, assign) CGFloat cachedCommentExpandedTextHeight;
 @property (nonatomic, assign) CGFloat cachedCommentTextHeight;
@@ -100,5 +110,8 @@ typedef void (^CommentBlock)(Comment* comment);
 + (NSAttributedString*)createNightAttributedStringFromAttributedString:(NSAttributedString*)string;
 
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string;
+
++ (Comment*) currentCollapseExpandOrigin;
++ (void) setCurrentCollapseExpandOrigin:(Comment*)comment;
 
 @end

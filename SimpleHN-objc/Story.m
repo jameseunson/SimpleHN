@@ -120,7 +120,9 @@ static NSDateFormatter * _timeDateFormatter = nil;
         for(FDataSnapshot * child in snapshot.children) {
             
             [Comment createCommentFromItemIdentifier:child.value story:self completion:^(Comment *comment) {
-                [blockSelf.comments addObject:comment];
+                if(comment) {
+                    [blockSelf.comments addObject:comment];                    
+                }
             }];
         }
     }];
@@ -147,12 +149,15 @@ static NSDateFormatter * _timeDateFormatter = nil;
     
     [commentsRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         [Comment createCommentFromSnapshot:snapshot completion:^(Comment *comment) {
-            [blockSelf.comments addObject:comment];
+            if(comment) {
+                [blockSelf.comments addObject:comment];                
+            }
         }];
     }];
 }
 
 - (void)finishLoadingCommentsForStory {
+    _totalCommentCount = @([self.flatDisplayComments count]);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -170,6 +175,12 @@ static NSDateFormatter * _timeDateFormatter = nil;
                 return;
             }
         }
+//        if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
+//            Comment * comment = userInfo[kCommentCreatedComment];
+//            if([comment.commentId integerValue] == 11131721) {
+//                NSLog(@"Story, commentCreated: found");
+//            }
+//        }
     }
     
     // Create flat representation of comments
@@ -358,15 +369,23 @@ static NSDateFormatter * _timeDateFormatter = nil;
 
 - (NSArray*)flatVisibleDisplayComments {
     
+    if(_flatVisibleDisplayComments) {
+        return _flatVisibleDisplayComments;
+    }
     NSArray * visibleDisplayComments = [self.flatDisplayComments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
         
-        Comment * comment = (Comment*)evaluatedObject;
-        if(comment.deleted || comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+        if(((Comment*)evaluatedObject).sizeStatus == CommentSizeStatusCollapsed) {
             return NO;
         }
         return YES;
     }]];
+    _flatVisibleDisplayComments = visibleDisplayComments;
     return visibleDisplayComments;
+}
+
+- (void)refreshVisibleDisplayComments {
+    _flatVisibleDisplayComments = nil;
+    _flatVisibleDisplayComments = self.flatVisibleDisplayComments;
 }
 
 + (NSDateFormatter*)timeDateFormatter {

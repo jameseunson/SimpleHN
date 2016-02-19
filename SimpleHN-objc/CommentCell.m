@@ -93,24 +93,23 @@
 //        self.votingEnabled = YES;
         
     } else if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
+        
+        _actionDrawerView.hidden = YES;
+        _commentLabel.hidden = YES;
+        _headerView.hidden = YES;
+        
+//        self.votingEnabled = NO;
+        
+    } else if(_comment.sizeStatus == CommentSizeStatusCollapsedVisible) {
         _actionDrawerView.hidden = YES;
         
         _commentLabel.hidden = YES;
-        
-        if(self.comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
-            _headerView.hidden = YES;
-        } else {
-            _headerView.hidden = NO;
-            _headerView.collapsed = YES;
-        }
-//        self.votingEnabled = NO;
+        _headerView.hidden = NO;
+        _headerView.collapsed = YES;
     }
     
     if(_comment.sizeStatus == CommentSizeStatusCollapsed) {
-        if(_comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
-//            NSLog(@"comment and comment parent are collapsed, return early");
-            return;
-        }
+        return;
     }
     
     _headerView.frame = CGRectMake(0, 0, self.frame.size.width, _headerView.intrinsicContentSize.height);
@@ -298,12 +297,14 @@
 - (void)didTapBackgroundView:(id)sender {
     NSLog(@"CommentCell, didTapBackgroundView:");
     
-    self.comment.collapseOrigin = YES;
-    if(self.comment.sizeStatus == CommentSizeStatusCollapsed) {
+    self.comment.collapseExpandOrigin = YES;
+    [Comment setCurrentCollapseExpandOrigin:self.comment];
+    
+    if(self.comment.sizeStatus == CommentSizeStatusCollapsedVisible) {
         self.comment.sizeStatus = CommentSizeStatusNormal;
         
     } else {
-        self.comment.sizeStatus = CommentSizeStatusCollapsed;
+        self.comment.sizeStatus = CommentSizeStatusCollapsedVisible;
     }
 }
 

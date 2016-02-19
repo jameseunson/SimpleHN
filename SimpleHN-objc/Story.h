@@ -87,4 +87,6 @@ typedef void (^StoryBlock)(Story* story);
 
 - (void)loadUserForStory:(UserBlock)completion;
 
+- (void)refreshVisibleDisplayComments;
+
 @end
