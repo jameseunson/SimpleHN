@@ -247,7 +247,7 @@
     } else {
         
         // Collapsed has no comment size
-        if(comment.parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+        if(comment.sizeStatus == CommentSizeStatusCollapsed) {
             return 0;
             
         } else {

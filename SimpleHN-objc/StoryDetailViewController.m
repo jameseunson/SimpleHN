@@ -59,6 +59,8 @@
 - (void)commentExpandedChanged:(NSNotification*)notification;
 - (void)commentExpandedComplete:(NSNotification*)notification;
 
+- (void)storyCommentsUpdated:(NSNotification*)notification;
+
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath;
 
 - (Comment*)checkCorrectStoryForCollapseExpandNotification:(NSNotification*)notification;
@@ -87,9 +89,11 @@
     
     self.loadStatus = StoryDetailViewControllerLoadStatusNotLoaded;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self];    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCreated:)
                                                  name:kCommentCreated object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(storyCommentsUpdated:)
+                                                 name:kStoryCommentsUpdated object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedStarted:)
                                                  name:kCommentCollapsedStarted object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentCollapsedChanged:)
@@ -496,28 +500,42 @@
 
 - (void)commentCreated:(NSNotification*)notification {
     
-    NSDictionary * userInfo = notification.userInfo;
-    
-    if([[userInfo allKeys] containsObject:kCommentCreatedStoryIdentifier]) {
-        NSNumber * storyId = userInfo[kCommentCreatedStoryIdentifier];
-        if(![self.detailItem.storyId isEqual: storyId]) {
-            return;
-        }
-    }
-    
-//    if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
-//        Comment * comment = userInfo[kCommentCreatedComment];
-//        if([comment.commentId integerValue] == 11131721) {
-//            NSLog(@"found");
+//    NSDictionary * userInfo = notification.userInfo;
+//    
+//    if([[userInfo allKeys] containsObject:kCommentCreatedStoryIdentifier]) {
+//        NSNumber * storyId = userInfo[kCommentCreatedStoryIdentifier];
+//        if(![self.detailItem.storyId isEqual: storyId]) {
+//            return;
 //        }
 //    }
     
-    [self.detailItem refreshVisibleDisplayComments];
-    [self.tableView reloadData];
-    
+//    if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
+//        Comment * comment = userInfo[kCommentCreatedComment];
+//        if([comment.commentId integerValue] == 11131352) {
+//            NSLog(@"StoryDetailViewController, commentCreated, found: %@", comment.commentId);
+//        }
+//    }
+//    
+//    [self.detailItem refreshVisibleDisplayComments];
+//    [self.tableView reloadData];
+//    
+//    if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
+//        self.loadingProgress.completedUnitCount++;
+//    }
     if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
         self.loadingProgress.completedUnitCount++;
     }
+}
+
+- (void)storyCommentsUpdated:(NSNotification*)notification {
+    Story * story = notification.object;
+    if(![story.storyId isEqual:self.detailItem.storyId]) {
+        return;
+    }
+    NSLog(@"storyCommentsUpdated");
+
+    [self.detailItem refreshVisibleDisplayComments];
+    [self.tableView reloadData];
 }
 
 - (void)commentCollapsedStarted:(NSNotification*)notification {
@@ -525,9 +543,6 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-    
-    NSLog(@"commentCollapseStarted: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
-    NSLog(@"commentCollapseStarted, beginUpdates");
     
     NSMutableDictionary * indexes = [[NSMutableDictionary alloc] init];
     
@@ -551,7 +566,7 @@
             NSInteger index = [visibleDisplayComments indexOfObject:currentComment];
             if(index == NSNotFound) {
                 NSLog(@"SHOULD NEVER HAPPEN, %@", indexes);
-//                abort();
+                //                abort();
                 continue;
             }
             indexes[currentComment.commentId] = @(index);
@@ -564,22 +579,8 @@
         }
     }
     
-//    NSInteger baseIndex = [self.detailItem.flatVisibleDisplayComments indexOfObject:comment];
-//    int i = 0;
-//    while([queue count] > 0) {
-//        Comment * currentComment = [queue firstObject];
-//        [queue removeObject:currentComment];
-//        
-//        if(!currentComment.collapseExpandOrigin) {
-//            indexes[currentComment.commentId] = @(baseIndex + i);
-//        }
-//        
-//        for(Comment * child in [currentComment childComments]) {
-//            [queue addObject:child];
-//        }
-//        i++;
-//    }
-
+    NSLog(@"%@", indexes);
+    
     NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     
@@ -592,7 +593,7 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-//    NSLog(@"commentCollapsedChanged: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
+    //    NSLog(@"commentCollapsedChanged: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
     
     if(comment.collapseExpandOrigin) {
         // TODO
@@ -605,10 +606,10 @@
         if(![[indexes allKeys] containsObject:comment.commentId]) {
             NSLog(@"SHOULD NEVER HAPPEN");
             return;
-//            abort();
+            //            abort();
         }
         
-//        NSInteger commentIndex = [self.detailItem.flatDisplayComments indexOfObject:comment];
+        //        NSInteger commentIndex = [self.detailItem.flatDisplayComments indexOfObject:comment];
         
         NSInteger commentIndex = [indexes[comment.commentId] integerValue];
         NSLog(@"deleteRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
@@ -631,7 +632,6 @@
         [self.tableView endUpdates];
         _commentCollapseExpandBeginUpdatesOpen = NO;
     }
-//    [self.tableView reloadData];
 }
 
 - (void)commentExpandedStarted:(NSNotification*)notification {
@@ -648,17 +648,17 @@
     [queue addObject:comment];
     
 //    NSArray * visibleDisplayComments = [self.detailItem.flatDisplayComments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-//        
-//        if(((Comment*)evaluatedObject).parentComment.sizeStatus == CommentSizeStatusCollapsed) {
+//
+//        if(((Comment*)evaluatedObject).sizeStatus == CommentSizeStatusCollapsed) {
 //            return NO;
 //        }
 //        return YES;
 //    }]];
-
+//
 //    while([queue count] > 0) {
 //        Comment * currentComment = [queue firstObject];
 //        [queue removeObject:currentComment];
-//        
+//
 //        if(!currentComment.collapseExpandOrigin) {
 //            NSInteger index = [visibleDisplayComments indexOfObject:currentComment];
 //            if(index == NSNotFound) {
@@ -668,7 +668,7 @@
 //            }
 //            indexes[currentComment.commentId] = @(index);
 //        }
-//        
+//
 //        for(Comment * child in [currentComment childComments]) {
 //            [queue addObject:child];
 //        }
@@ -679,17 +679,17 @@
     while([queue count] > 0) {
         Comment * currentComment = [queue firstObject];
         [queue removeObject:currentComment];
-
+        
         if(!currentComment.collapseExpandOrigin) {
             indexes[currentComment.commentId] = @(baseIndex + i);
         }
-
+        
         for(Comment * child in [currentComment childComments]) {
             [queue addObject:child];
         }
         i++;
     }
-
+    
     NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     

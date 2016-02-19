@@ -13,6 +13,7 @@
 #import "TimeAgoInWords-Swift.h"
 
 static NSDateFormatter * _timeDateFormatter = nil;
+static NSInteger _storyItemsToProcess = -1;
 
 @interface Story ()
 
@@ -175,16 +176,36 @@ static NSDateFormatter * _timeDateFormatter = nil;
                 return;
             }
         }
-//        if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
-//            Comment * comment = userInfo[kCommentCreatedComment];
-//            if([comment.commentId integerValue] == 11131721) {
-//                NSLog(@"Story, commentCreated: found");
-//            }
-//        }
+        if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
+            Comment * comment = userInfo[kCommentCreatedComment];
+            if([comment.commentId integerValue] == 11131352) {
+                NSLog(@"Story, commentCreated: found: %@", comment.commentId);
+            }
+        }
     }
     
     // Create flat representation of comments
     [_flatDisplayComments removeAllObjects];
+    
+    NSMutableArray * queue = [[NSMutableArray alloc] init];
+    NSMutableSet * seen = [[NSMutableSet alloc] init];
+    
+    for(Comment * comment in _comments) {
+        [queue addObject:comment];
+    }
+    
+    while([queue count] > 0) {
+        Comment * currentComment = [queue firstObject];
+        [queue removeObject:currentComment];
+        
+        [seen addObject:currentComment.commentId];
+        
+        for(Comment * child in [currentComment childComments]) {
+            [queue addObject:child];
+        }
+    }
+    
+    _storyItemsToProcess = [seen count];
     
     for(Comment * comment in _comments) {
         [_flatDisplayComments addObject:comment];
@@ -193,6 +214,15 @@ static NSDateFormatter * _timeDateFormatter = nil;
 }
 
 - (void)commentCreatedAux:(Comment*)comment indentation:(NSInteger)indentation {
+
+    if(_storyItemsToProcess > 0) {
+        _storyItemsToProcess--;
+        if(_storyItemsToProcess == 0) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCommentsUpdated
+                                                                object:self];
+            _storyItemsToProcess = -1;
+        }
+    }
     
     // Base case
     if(!comment || ![comment childComments]
@@ -380,6 +410,12 @@ static NSDateFormatter * _timeDateFormatter = nil;
         return YES;
     }]];
     _flatVisibleDisplayComments = visibleDisplayComments;
+
+//    if([_flatVisibleDisplayComments count] == 7) {
+//        NSLog(@"FUCK");
+//    }
+    
+    NSLog(@"_flatVisibleDisplayComments count]: %lu", [_flatVisibleDisplayComments count]);
     return visibleDisplayComments;
 }
 

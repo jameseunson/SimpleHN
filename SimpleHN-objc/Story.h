@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, StoryType) {
 typedef void (^StoryBlock)(Story* story);
 
 #define kStoryCreated @"storyCreated"
+#define kStoryCommentsUpdated @"storyCommentsUpdated"
 
 @interface Story : MTLModel <MTLJSONSerializing>
 
