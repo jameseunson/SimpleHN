@@ -371,8 +371,8 @@ static Comment * _currentCollapseExpandOrigin = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:
              kCommentCollapsedComplete object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
             
-//            _collapseExpandOrigin = NO;
-//            [Comment setCurrentCollapseExpandOrigin:nil];
+            _collapseExpandOrigin = NO;
+            [Comment setCurrentCollapseExpandOrigin:nil];
         }
     }
 }
@@ -391,8 +391,8 @@ static Comment * _currentCollapseExpandOrigin = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:
              kCommentExpandedComplete object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
             
-            //            _collapseExpandOrigin = NO;
-            //            [Comment setCurrentCollapseExpandOrigin:nil];
+            _collapseExpandOrigin = NO;
+            [Comment setCurrentCollapseExpandOrigin:nil];
         }
     }
 }
