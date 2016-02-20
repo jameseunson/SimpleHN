@@ -54,6 +54,7 @@ PODS:
   - Mantle (2.0.5):
     - Mantle/extobjc (= 2.0.5)
   - Mantle/extobjc (2.0.5)
+  - MBProgressHUD (0.9.2)
   - MCSwipeTableViewCell (2.1.4)
   - RegexKitLite (4.0)
   - TimeAgoInWords (2.0.0)
@@ -72,6 +73,7 @@ DEPENDENCIES:
   - InAppSettingsKit
   - JBNSLayoutConstraint (~> 1.0.0)
   - Mantle
+  - MBProgressHUD (~> 0.9.2)
   - MCSwipeTableViewCell (~> 2.1.4)
   - RegexKitLite (~> 4.0)
   - TimeAgoInWords (~> 2.0.0)
@@ -101,6 +103,7 @@ SPEC CHECKSUMS:
   InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   JBNSLayoutConstraint: bbde3519c4baa0f0f13a1d17b1b4ba08e25bf006
   Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
+  MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   MCSwipeTableViewCell: 1b303e16c3a26b1982f3a68386e9b8c5fc8344c3
   RegexKitLite: c0e4c12e6e7de0769f3a3ed679f0f61604170661
   TimeAgoInWords: be1144596814c8de5d2fe51a60977ec98115e4fb

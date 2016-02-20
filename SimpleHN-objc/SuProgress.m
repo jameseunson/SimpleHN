@@ -234,7 +234,7 @@ enum SuProgressBarViewState {
 }
 
 - (void)dealloc {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)finished {   // delegate method TODO name better dumbo
@@ -259,7 +259,7 @@ enum SuProgressBarViewState {
                 self.frame = (CGRect){self.frame.origin, 0, self.frame.size.height};
         }];
 
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     }];
 }
 
@@ -277,7 +277,7 @@ enum SuProgressBarViewState {
         self.frame = (CGRect){self.frame.origin, 0, self.frame.size.height};
     }
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 
     CGSize sz = self.superview.bounds.size;
     NSTimeInterval duration = 0.3;

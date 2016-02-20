@@ -31,6 +31,7 @@ typedef void (^StoryBlock)(Story* story);
 
 #define kStoryCreated @"storyCreated"
 #define kStoryCommentsUpdated @"storyCommentsUpdated"
+#define kStoryCommentsUpdatedComment @"storyCommentsUpdatedComment"
 
 @interface Story : MTLModel <MTLJSONSerializing>
 
@@ -84,6 +85,7 @@ typedef void (^StoryBlock)(Story* story);
 - (void)loadCommentsForStory;
 - (void)loadSpecificCommentForStory:(NSNumber*)identifier;
 
+- (void)stopLoadingCommentsForStory;
 - (void)finishLoadingCommentsForStory;
 
 - (void)loadUserForStory:(UserBlock)completion;

@@ -19,6 +19,7 @@ pod 'DZReadability'
 pod 'VTAcknowledgementsViewController'
 pod 'Fabric'
 pod 'Crashlytics'
+pod 'MBProgressHUD', '~> 0.9.2'
 
 pre_install do |installer|
     # workaround for https://github.com/CocoaPods/CocoaPods/issues/3289

@@ -87,9 +87,9 @@ static Comment * _currentCollapseExpandOrigin = nil;
         
         NSString * string = (NSString*)value;
         
-        if([string containsString:@"Think of strings in JavaScript"]) {
-            NSLog(@"target");
-        }
+//        if([string containsString:@"Think of strings in JavaScript"]) {
+//            NSLog(@"target");
+//        }
         
         string = [[self class] completeParagraphTags:string];
         if([string containsString:@"<p></p>"]) {
@@ -148,9 +148,9 @@ static Comment * _currentCollapseExpandOrigin = nil;
                               fromJSONDictionary:snapshot.value error:&error];
     if(!obj.deleted) {
         
-        if([obj.text containsString:@"Irrelevant"]) {
-            NSLog(@"found");
-        }
+//        if([obj.text containsString:@"Irrelevant"]) {
+//            NSLog(@"found");
+//        }
         
         completion(obj);        
         
@@ -237,7 +237,7 @@ static Comment * _currentCollapseExpandOrigin = nil;
         if(sizeStatus == CommentSizeStatusCollapsedVisible) {
             
             // Send beginUpdate to associated StoryDetailViewController
-            NSLog(@"Comment, postNotificationName: kCommentCollapsedStarted");
+//            NSLog(@"Comment, postNotificationName: kCommentCollapsedStarted");
             [[NSNotificationCenter defaultCenter] postNotificationName:kCommentCollapsedStarted
                                                                 object:self
                                                               userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self}];
@@ -249,7 +249,7 @@ static Comment * _currentCollapseExpandOrigin = nil;
              @selector(commentCollapsedChanged:) name:kCommentCollapsedChanged object:nil];
         }
         
-        NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
+//        NSLog(@"postNotification kCommentCollapsedChanged for comment with id: %@", self.commentId);
         
         [[NSNotificationCenter defaultCenter] postNotificationName:
          kCommentCollapsedChanged object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self  }];
@@ -264,7 +264,7 @@ static Comment * _currentCollapseExpandOrigin = nil;
         if(_collapseExpandOrigin) {
             
             // Send beginUpdate to associated StoryDetailViewController
-            NSLog(@"Comment, postNotificationName: kCommentExpandedStarted");
+//            NSLog(@"Comment, postNotificationName: kCommentExpandedStarted");
             [[NSNotificationCenter defaultCenter] postNotificationName:kCommentExpandedStarted
                                                                 object:self
                                                               userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self }];
@@ -276,7 +276,7 @@ static Comment * _currentCollapseExpandOrigin = nil;
              @selector(commentExpandedChanged:) name:kCommentExpandedChanged object:nil];
         }
         
-        NSLog(@"postNotification kCommentExpandedChanged for comment with id: %@", self.commentId);
+//        NSLog(@"postNotification kCommentExpandedChanged for comment with id: %@", self.commentId);
         
         [[NSNotificationCenter defaultCenter] postNotificationName:
          kCommentExpandedChanged object:self userInfo:@{ kCommentCollapsedExpandedStartedChangedCompleteComment: self  }];
@@ -358,14 +358,14 @@ static Comment * _currentCollapseExpandOrigin = nil;
 }
 
 - (void)commentCollapsedChanged:(NSNotification*)notification {
-    NSLog(@"commentCollapsedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
+//    NSLog(@"commentCollapsedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
     
     if(self.childCommentsChangedUntilComplete != -1) {
         self.childCommentsChangedUntilComplete--;
         
         if(_collapseExpandOrigin && self.childCommentsChangedUntilComplete == 0) {
             
-            NSLog(@"post kCommentCollapsedComplete");
+//            NSLog(@"post kCommentCollapsedComplete");
             
             [[NSNotificationCenter defaultCenter] removeObserver:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:
@@ -378,14 +378,14 @@ static Comment * _currentCollapseExpandOrigin = nil;
 }
 
 - (void)commentExpandedChanged:(NSNotification*)notification {
-    NSLog(@"commentExpandedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
+//    NSLog(@"commentExpandedChanged, self.childCommentsChangedUntilComplete: %lu", self.childCommentsChangedUntilComplete);
     
     if(self.childCommentsChangedUntilComplete != -1) {
         self.childCommentsChangedUntilComplete--;
         
         if(_collapseExpandOrigin && self.childCommentsChangedUntilComplete == 0) {
             
-            NSLog(@"post kCommentExpandedComplete");
+//            NSLog(@"post kCommentExpandedComplete");
             
             [[NSNotificationCenter defaultCenter] removeObserver:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:
@@ -536,10 +536,10 @@ static Comment * _currentCollapseExpandOrigin = nil;
         if(![[preComponents lastObject] isEqualToString:@"</p>"]) {
             NSString * subsequentComment = [NSString stringWithFormat:@"<p>%@",
                                             [preComponents lastObject]];
-            NSLog(@"%@", subsequentComment);
+//            NSLog(@"%@", subsequentComment);
             commentRaw = [commentRaw stringByAppendingString:subsequentComment];
         }
-        NSLog(@"%@", preComponents);
+//        NSLog(@"%@", preComponents);
         
         string = commentRaw;
     }
@@ -577,10 +577,6 @@ static Comment * _currentCollapseExpandOrigin = nil;
 }
 
 + (NSAttributedString*)createAttributedStringFromHTMLString:(NSString*)string {
-    
-    if([string containsString:@"were going with blocking at the router"]) {
-        NSLog(@"target");
-    }
     
     NSMutableAttributedString *text = [[[NSAttributedString alloc] initWithHTMLData:[string dataUsingEncoding:NSUTF8StringEncoding] options:@{ DTUseiOS6Attributes: @YES } documentAttributes:nil] mutableCopy];
     

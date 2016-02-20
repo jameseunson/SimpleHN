@@ -30,6 +30,9 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 
+#define kProgressBarTag 51381
+#define kProgressBarHeight 2.0f
+
 #define kNightDefaultColor UIColorFromRGB(0x000000)
 #define kNightDefaultBorderColor UIColorFromRGB(0x555555)
 

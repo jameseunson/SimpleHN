@@ -61,8 +61,8 @@
     // diff to associate with a story that has been updated by Firebase
     self.storiesList = [[NSMutableArray alloc] init];
     
-    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
-                                                   delegate]).masterProgress;
+//    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
+//                                                   delegate]).masterProgress;
     
     [self.loadingProgress removeObserver:self
                               forKeyPath:@"fractionCompleted"];
@@ -71,9 +71,9 @@
     [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                           options:NSKeyValueObservingOptionNew context:NULL];
     
-    masterProgress.completedUnitCount = 0;
-    masterProgress.totalUnitCount = 21;
-    [masterProgress addChild:self.loadingProgress withPendingUnitCount:21];
+//    masterProgress.completedUnitCount = 0;
+//    masterProgress.totalUnitCount = 21;
+//    [masterProgress addChild:self.loadingProgress withPendingUnitCount:21];
 }
 
 - (void)viewDidLoad {
@@ -106,6 +106,18 @@
     self.splitViewController.delegate = self;
     
 //    [[Crashlytics sharedInstance] crash];    
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.view addSubview:[ProgressBarView sharedProgressBarView]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[ProgressBarView sharedProgressBarView] removeFromSuperview];
 }
 
 #pragma mark - UISplitViewControllerDelegate Methods
@@ -486,6 +498,9 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+
+    [ProgressBarView sharedProgressBarView].progress = [fractionCompleted floatValue];
+    
     if([fractionCompleted floatValue] == 1.0f) {
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];

@@ -10,6 +10,7 @@
 #import "JBNSLayoutConstraint+Install.h"
 #import "ActionDrawerButton.h"
 #import "RegexKitLite.h"
+#import "ProgressHUDHelper.h"
 
 @import SafariServices;
 
@@ -178,12 +179,31 @@
     } else if(actionType == ActionDrawerViewButtonTypeContext) {
         [controller performSegueWithIdentifier:@"showDetail" sender:comment];
         
-    } else if(actionType == ActionDrawerViewButtonTypeLink) {
+    } else if(actionType == ActionDrawerViewButtonTypeShare) {
         
-        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:
-                                                @[ comment.hnPublicLink ] applicationActivities:nil];
+        NSString * title = comment.shareTitle;
+        NSURL * url = comment.hnPublicLink;
+        
+        // Don't double up if the contents are the same
+        NSArray *activityItems = nil;
+        if([title isEqualToString:url.absoluteString]) {
+            activityItems = @[ url ];
+            
+        } else {
+            activityItems = @[ [NSString stringWithFormat:@"%@ - %@", title, url] ];
+        }
+        
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
         activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
         [controller presentViewController:activityVC animated:YES completion:nil];
+        
+    } else if(actionType == ActionDrawerViewButtonTypeLink) {
+        
+        [ProgressHUDHelper showConfirmationHUDWithImage:[UIImage imageNamed:@"tick"]
+                                          withLabelText:@"Link Copied" withDetailsLabelText:nil];
+        
+        UIPasteboard *pb = [UIPasteboard generalPasteboard];
+        [pb setString:[comment.hnPublicLink absoluteString]];
         
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         NSLog(@"ActionDrawerViewButtonTypeMore");
@@ -295,7 +315,6 @@
 
 #pragma mark - Private Methods
 - (void)didTapBackgroundView:(id)sender {
-    NSLog(@"CommentCell, didTapBackgroundView:");
     
     self.comment.collapseExpandOrigin = YES;
     [Comment setCurrentCollapseExpandOrigin:self.comment];
@@ -314,21 +333,6 @@
 + (void)createShareActionSheetInController:(UIViewController*)controller title:(NSString*)title url:(NSURL*)url text:(NSString*)text {
     
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        // Don't double up if the contents are the same
-        NSArray *activityItems = nil;
-        if([title isEqualToString:url.absoluteString]) {
-            activityItems = @[ url ];
-            
-        } else {
-            activityItems = @[ [NSString stringWithFormat:@"%@ - %@", title, url] ];
-        }
-        
-        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-        activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
-        [controller presentViewController:activityVC animated:YES completion:nil];
-    }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         [[UIApplication sharedApplication] openURL:url];

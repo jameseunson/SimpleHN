@@ -11,6 +11,7 @@
 #import "ActionDrawerButton.h"
 #import "TimeAgoInWords-Swift.h"
 #import "TTTAttributedLabel.h"
+#import "ProgressHUDHelper.h"
 
 @interface StoryCell ()
 
@@ -92,13 +93,13 @@
         self.storyCommentsAreaView = [[UIView alloc] init];
         _storyCommentsAreaView.userInteractionEnabled = YES;
         _storyCommentsAreaView.backgroundColor = [UIColor clearColor];
-//        [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
-//                                                      self action:@selector(didTapStoryCommentsAreaView:)]];
+        [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
+                                                      self action:@selector(didTapStoryCommentsAreaView:)]];
         
-        UILongPressGestureRecognizer * recognizer = [[UILongPressGestureRecognizer alloc]
-                                                                     initWithTarget:self action:@selector(didTapStoryCommentsAreaView:)];
-        recognizer.minimumPressDuration = .001;
-        [_storyCommentsAreaView addGestureRecognizer:recognizer];
+//        UILongPressGestureRecognizer * recognizer = [[UILongPressGestureRecognizer alloc]
+//                                                                     initWithTarget:self action:@selector(didTapStoryCommentsAreaView:)];
+//        recognizer.minimumPressDuration = .001;
+//        [_storyCommentsAreaView addGestureRecognizer:recognizer];
         
         [self.contentView addSubview:_storyCommentsAreaView];
         
@@ -108,11 +109,6 @@
                                                      name:DKNightVersionDawnComingNotification object:nil];
         
         [self updateNightMode];
-//        @weakify(self);
-//        [self addColorChangedBlock:^{
-//            @strongify(self);
-//
-//        }];
     }
     return self;
 }
@@ -192,8 +188,14 @@
     CGFloat storyCommentsAreaViewWidth = roundf(self.frame.size.width / 4);
     
     if(_contextType == StoryCellContextTypeList) {
+        
+        CGFloat storyCommentsAreaViewHeight = self.frame.size.height;
+        if(_story.sizeStatus == StorySizeStatusExpanded) {
+            storyCommentsAreaViewHeight = self.frame.size.height -_actionDrawerView.frame.size.height;
+        }
+        
         _storyCommentsAreaView.frame = CGRectMake(self.frame.size.width - storyCommentsAreaViewWidth,
-                                                  0, storyCommentsAreaViewWidth, self.frame.size.height);
+                                                  0, storyCommentsAreaViewWidth, storyCommentsAreaViewHeight);
         _storyCommentsAreaView.hidden = NO;
         
     } else {
@@ -212,19 +214,25 @@
     if(actionType == ActionDrawerViewButtonTypeUser) {
         [controller performSegueWithIdentifier:@"showUser" sender:story.author];
         
+    } else if(actionType == ActionDrawerViewButtonTypeShare) {
+        NSArray *activityItems = @[ [NSString stringWithFormat:@"%@ - %@", story.title, story.url] ];
+        
+        UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+        [controller presentViewController:activityVC animated:YES completion:nil];
+    
+    } else if(actionType == ActionDrawerViewButtonTypeLink) {
+        
+        [ProgressHUDHelper showConfirmationHUDWithImage:[UIImage imageNamed:@"tick"]
+                                          withLabelText:@"Link Copied" withDetailsLabelText:nil];
+        
+        UIPasteboard *pb = [UIPasteboard generalPasteboard];
+        [pb setString:[story.hnPublicLink absoluteString]];
+        
     } else if(actionType == ActionDrawerViewButtonTypeMore) {
         
         UIAlertController * alertController = [UIAlertController alertControllerWithTitle:story.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [alertController addAction:[UIAlertAction actionWithTitle:@"Share" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-            NSArray *activityItems = @[ [NSString stringWithFormat:@"%@ - %@", story.title, story.url] ];
-            
-            UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-            activityVC.excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
-            [controller presentViewController:activityVC animated:YES completion:nil];
-            
-        }]];
         [alertController addAction:[UIAlertAction actionWithTitle:@"Open in Safari" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [[UIApplication sharedApplication] openURL:story.url];

@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerUserButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerFlagButton;
+@property (nonatomic, strong) ActionDrawerButton * actionDrawerShareButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerLinkButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerMoreButton;
 @property (nonatomic, strong) ActionDrawerButton * actionDrawerContextButton;
@@ -59,6 +60,9 @@
         self.actionDrawerFlagButton = [self createButtonWithType:ActionDrawerViewButtonTypeFlag];
         buttonsLookupMutable[@(ActionDrawerViewButtonTypeFlag)] = _actionDrawerFlagButton;
         
+        self.actionDrawerShareButton = [self createButtonWithType:ActionDrawerViewButtonTypeShare];
+        buttonsLookupMutable[@(ActionDrawerViewButtonTypeShare)] = _actionDrawerShareButton;
+        
         self.actionDrawerLinkButton = [self createButtonWithType:ActionDrawerViewButtonTypeLink];
         buttonsLookupMutable[@(ActionDrawerViewButtonTypeLink)] = _actionDrawerLinkButton;
         
@@ -72,7 +76,7 @@
         
         self.buttonsLookup = [buttonsLookupMutable copy];
         
-        self.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeUser), @(ActionDrawerViewButtonTypeFlag),
+        self.activeButtonTypes = @[ @(ActionDrawerViewButtonTypeUser), @(ActionDrawerViewButtonTypeShare),
                                     @(ActionDrawerViewButtonTypeLink), @(ActionDrawerViewButtonTypeMore)];
         
         self.actionDrawerBorderLayer = [CALayer layer];

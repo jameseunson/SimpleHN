@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, StoryDetailViewControllerDisplayMode) {
     StoryDetailViewControllerDisplayModeCommentContext = 1
 };
 
-@interface StoryDetailViewController : UITableViewController <CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
+@interface StoryDetailViewController : UITableViewController <UINavigationControllerDelegate, CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
 
 @property (nonatomic, strong) Story * detailItem;
 

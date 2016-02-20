@@ -93,6 +93,18 @@
 //    }];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.headerView addSubview:[ProgressBarView sharedProgressBarView]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[ProgressBarView sharedProgressBarView] removeFromSuperview];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([[segue identifier] isEqualToString:@"showDetail"]) {
@@ -486,6 +498,7 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    [ProgressBarView sharedProgressBarView].progress = [fractionCompleted floatValue];
     
     if([fractionCompleted floatValue] > 0.0f && !self.initialLoadDone) {
         self.initialLoadDone = YES;

@@ -8,7 +8,7 @@
 
 #import "StoriesCommentsBaseViewController.h"
 #import "StoriesCommentsSearchResultsViewController.h"
-#import "SuProgress.h"
+//#import "SuProgress.h"
 #import "SimpleHNWebViewController.h"
 
 //@import SafariServices;
@@ -98,14 +98,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self SuProgressForProgress:((AppDelegate *)[[UIApplication sharedApplication]
-                                                 delegate]).masterProgress];
+//    if (self.navigationController && self.navigationController.navigationBar) {
+//        UINavigationBar *navbar = self.navigationController.navigationBar;
+//        NSArray * existingProgressBarViews = [[navbar subviews] filteredArrayUsingPredicate:
+//                                              [NSPredicate predicateWithFormat:@"tag==%d", kProgressBarTag]];
+//        if([existingProgressBarViews count] > 0) {
+//            NSLog(@"Found existing progress bar");
+//            self.progressBarView = [existingProgressBarViews firstObject];
+//        } else {
+//            self.progressBarView = [ProgressBarView addToNavBar:navbar];
+//        }
+//    }
+    
     self.initialLoadDone = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+//    if (self.navigationController && self.navigationController.navigationBar) {
+//        [ProgressBarView addToNavBar:self.navigationController.navigationBar];
+//    }
 }
 
 // Stub method, to be overridden in subclass

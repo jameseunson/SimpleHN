@@ -157,6 +157,12 @@ static NSInteger _storyItemsToProcess = -1;
     }];
 }
 
+// Interrupt load when navigating away from page
+- (void)stopLoadingCommentsForStory {
+//    StoryLoadStatusCancelled
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)finishLoadingCommentsForStory {
     _totalCommentCount = @([self.flatDisplayComments count]);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -219,7 +225,7 @@ static NSInteger _storyItemsToProcess = -1;
         _storyItemsToProcess--;
         if(_storyItemsToProcess == 0) {
             [[NSNotificationCenter defaultCenter] postNotificationName:kStoryCommentsUpdated
-                                                                object:self];
+                                                                object:self userInfo:@{ kStoryCommentsUpdatedComment: comment } ];
             _storyItemsToProcess = -1;
         }
     }
@@ -415,7 +421,7 @@ static NSInteger _storyItemsToProcess = -1;
 //        NSLog(@"FUCK");
 //    }
     
-    NSLog(@"_flatVisibleDisplayComments count]: %lu", [_flatVisibleDisplayComments count]);
+//    NSLog(@"_flatVisibleDisplayComments count]: %lu", [_flatVisibleDisplayComments count]);
     return visibleDisplayComments;
 }
 

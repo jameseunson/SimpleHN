@@ -10,6 +10,8 @@
 #import "SimpleHNWebTitleSubtitleView.h"
 #import "DZReadability.h"
 #import "ContentLoadingView.h"
+#import "StoryCommentsEmptyView.h"
+#import "ProgressBarView.h"
 
 #define kLoadingText @"Loading..."
 
@@ -23,7 +25,10 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 @property (nonatomic, strong) WKWebView * webView;
 @property (nonatomic, strong) WKWebView * readerWebView;
 
-@property (nonatomic, strong) ContentLoadingView * readerContentLoadingView;
+@property (nonatomic, strong) StoryCommentsEmptyView * readerNoContentEmptyView;
+@property (nonatomic, assign) BOOL readabilityAvailable;
+
+//@property (nonatomic, strong) ContentLoadingView * readerContentLoadingView;
 
 @property (nonatomic, strong) UIBarButtonItem * backButtonItem;
 @property (nonatomic, strong) UIBarButtonItem * forwardButtonItem;
@@ -75,6 +80,8 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 - (void)loadView {
     [super loadView];
     
+    _readabilityAvailable = YES;
+    
     self.webView = [[WKWebView alloc] init];
     _webView.translatesAutoresizingMaskIntoConstraints = NO;
     _webView.navigationDelegate = self;
@@ -88,17 +95,27 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 
     [self.view addSubview:_readerWebView];
     
-    self.readerContentLoadingView = [[ContentLoadingView alloc] init];
-    _readerContentLoadingView.translatesAutoresizingMaskIntoConstraints = NO;
-    _readerContentLoadingView.hidden = YES;
-    [self.view addSubview:_readerContentLoadingView];
+    self.readerNoContentEmptyView = [[StoryCommentsEmptyView alloc] init];
+    _readerNoContentEmptyView.translatesAutoresizingMaskIntoConstraints = NO;
+    _readerNoContentEmptyView.titleLabel.text = @"Reader version not available";
+    _readerNoContentEmptyView.backgroundColor = [UIColor whiteColor];
+    _readerNoContentEmptyView.hidden = YES;
+    [self.view addSubview:_readerNoContentEmptyView];
+    
+//    self.readerContentLoadingView = [[ContentLoadingView alloc] init];
+//    _readerContentLoadingView.translatesAutoresizingMaskIntoConstraints = NO;
+//    _readerContentLoadingView.hidden = YES;
+//    [self.view addSubview:_readerContentLoadingView];
 
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"V:|[_webView]|;H:|[_webView]|" options:0 metrics:nil views:
                                NSDictionaryOfVariableBindings(_webView)]];
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-                               @"V:|[_readerContentLoadingView]|;H:|[_readerContentLoadingView]|" options:0 metrics:nil views:
-                               NSDictionaryOfVariableBindings(_readerContentLoadingView)]];
+                               @"V:|[_readerNoContentEmptyView]|;H:|[_readerNoContentEmptyView]|" options:0 metrics:nil views:
+                               NSDictionaryOfVariableBindings(_readerNoContentEmptyView)]];
+//    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+//                               @"V:|[_readerContentLoadingView]|;H:|[_readerContentLoadingView]|" options:0 metrics:nil views:
+//                               NSDictionaryOfVariableBindings(_readerContentLoadingView)]];
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"V:|[_readerWebView]|;H:|[_readerWebView]|" options:0 metrics:nil views:
                                NSDictionaryOfVariableBindings(_readerWebView)]];
@@ -220,6 +237,7 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
             } else {
                 // Could not parse, convert to normal
                 self.displayMode = SimpleHNWebViewControllerDisplayModeNormal;
+                _readabilityAvailable = NO;
             }
             
             // handle returned content
@@ -227,6 +245,7 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
         else {
             // handle error
             self.displayMode = SimpleHNWebViewControllerDisplayModeNormal;
+            _readabilityAvailable = NO;
         }
     }];
     [self.readability start];
@@ -236,6 +255,13 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
                                                               0, self.tabBarController.tabBar.frame.size.height + self.navigationController.toolbar.frame.size.height, 0);
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [ProgressBarView sharedProgressBarView].verticalOffset = ([[UIApplication sharedApplication] statusBarFrame].size.height + self.navigationController.navigationBar.frame.size.height);
+    [self.view addSubview:[ProgressBarView sharedProgressBarView]];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
@@ -243,11 +269,22 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     self.navigationController.toolbarHidden = YES;
     
     self.navigationController.toolbarItems = nil;
+
+    if([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
+    if([self.readerWebView isLoading]) {
+        [self.readerWebView stopLoading];
+    }
     
     NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
                                                    delegate]).masterProgress;
+    
     masterProgress.completedUnitCount = 0;
     masterProgress.totalUnitCount = 0;
+    
+    [ProgressBarView sharedProgressBarView].verticalOffset = 0;
+    [[ProgressBarView sharedProgressBarView] removeFromSuperview];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -266,7 +303,8 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     } else if([keyPath isEqualToString:@"estimatedProgress"]) {
      
         NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
-        NSLog(@"observeValueForKeyPath, change: %@", change);
+        [ProgressBarView sharedProgressBarView].progress = [fractionCompleted floatValue];
+//        NSLog(@"observeValueForKeyPath, change: %@", change);
         
         NSInteger unitsCompleted = (NSInteger)roundf([fractionCompleted floatValue] * 100);
         if(unitsCompleted > 100) {
@@ -337,9 +375,9 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
     NSLog(@"webView, didFinishNavigation: %@", navigation);
     
-    if(webView == _readerWebView && !_readerContentLoadingView.hidden) {
-        _readerContentLoadingView.hidden = YES;
-    }
+//    if(webView == _readerWebView && !_readerContentLoadingView.hidden) {
+//        _readerContentLoadingView.hidden = YES;
+//    }
     
     if(webView == _webView && webView.title && (!_titleView.titleString || [_titleView.titleString isEqualToString:kLoadingText])) {
         _titleView.titleString = webView.title;
@@ -366,14 +404,21 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     if(displayMode == SimpleHNWebViewControllerDisplayModeNormal) {
         _webView.hidden = NO;
         _readerWebView.hidden = YES;
-        _readerContentLoadingView.hidden = YES;
+//        _readerContentLoadingView.hidden = YES;
+        _readerNoContentEmptyView.hidden = YES;
+        
         [_readerToggleSegmentedControl setSelectedSegmentIndex:0];
         
     } else {
         
         _webView.hidden = YES;
         _readerWebView.hidden = NO;
-        _readerContentLoadingView.hidden = NO;
+//        _readerContentLoadingView.hidden = NO;
+        
+        if(!_readabilityAvailable) {
+            _readerNoContentEmptyView.hidden = NO;
+        }
+        
         [_readerToggleSegmentedControl setSelectedSegmentIndex:1];
     }
 }

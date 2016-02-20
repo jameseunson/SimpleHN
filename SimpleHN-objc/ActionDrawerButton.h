@@ -11,6 +11,7 @@
 typedef NS_ENUM(NSInteger, ActionDrawerViewButtonType) {
     ActionDrawerViewButtonTypeUser,
     ActionDrawerViewButtonTypeFlag,
+    ActionDrawerViewButtonTypeShare,
     ActionDrawerViewButtonTypeLink,
     ActionDrawerViewButtonTypeContext,
     ActionDrawerViewButtonTypeMore

@@ -12,6 +12,7 @@
 #import "StoryCell.h"
 #import "CommentCell.h"
 #import "StoryCommentsContentLoadingCell.h"
+#import "ProgressBarView.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"

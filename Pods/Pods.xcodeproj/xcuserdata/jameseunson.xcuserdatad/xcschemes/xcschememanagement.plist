@@ -54,6 +54,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>MBProgressHUD.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>MCSwipeTableViewCell.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -107,16 +112,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1F688E9D95C18D12BCEA8C4F70496500</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>26792428AD521627F88D353E6C9D7A28</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>4878C70B21CA37D7CB8A476BF986741B</key>
 		<dict>
 			<key>primary</key>
@@ -127,12 +122,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>670A44E63C52448D7E5F0FBAC32FA7AC</key>
+		<key>4CC3B72BC7D5CF09A15BD4B23788E2B5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6F94A79E09EABF8FF27E77485BFFB6D3</key>
+		<key>670A44E63C52448D7E5F0FBAC32FA7AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -142,7 +137,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7BBE49203FC5D4E48F03BE054941747A</key>
+		<key>78A2E79ECB342D5B7EEA44879586A243</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,7 +147,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>9AD8B350B9380354C41677AD4CA801AC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>AA73AC63B71544008C7BD900564A8A4C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>ADB4F0B9D2FED58A95DCF0B7110DCB59</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -162,12 +167,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B7AC9326D819482593FE118E915409D7</key>
+		<key>B584EDF0C2ADD335C35CBA0C42E74C98</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BEE8E95F0173D3E07A86A49A76BF0033</key>
+		<key>B7AC9326D819482593FE118E915409D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -178,6 +183,11 @@
 			<true/>
 		</dict>
 		<key>DAE300BFCB196ED7F72727FFA274790D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E61CE3B6DFA1FE6B3E296965C76C0E10</key>
 		<dict>
 			<key>primary</key>
 			<true/>

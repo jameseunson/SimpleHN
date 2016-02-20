@@ -9,7 +9,6 @@
 #import "StoryDetailViewController.h"
 #import "Story.h"
 #import "UserViewController.h"
-#import "SuProgress.h"
 #import "ActionDrawerButton.h"
 #import "RegexKitLite.h"
 #import "StoryCommentsNoCommentsCell.h"
@@ -124,6 +123,8 @@
 - (void)loadView {
     [super loadView];
     
+    self.navigationController.delegate = self;
+    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
     [self.tableView registerClass:[StoryCell class]
@@ -202,13 +203,7 @@
 - (void)configureViewForStory {
     
     self.title = _detailItem.title;
-    if([_detailItem.flatDisplayComments count] == 0) {
-        [self loadContent];
-        
-    } else {
-        self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
-        [self.tableView reloadData];
-    }
+    [self loadContent];
 }
 
 - (void)configureViewForComment {
@@ -226,6 +221,20 @@
     
     self.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
     self.navigationItem.leftItemsSupplementBackButton = YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.view addSubview:[ProgressBarView sharedProgressBarView]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[ProgressBarView sharedProgressBarView] removeFromSuperview];
+    
+    
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -418,7 +427,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([[segue identifier] isEqualToString:@"showUser"]) {
-        NSLog(@"prepareForSegue, showUser");
+//        NSLog(@"prepareForSegue, showUser");
         
         __block UserViewController *controller = nil;
         if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
@@ -532,9 +541,30 @@
     if(![story.storyId isEqual:self.detailItem.storyId]) {
         return;
     }
+    
+//    Comment * comment = notification.userInfo[kStoryCommentsUpdatedComment];
+    
     NSLog(@"storyCommentsUpdated");
-
+    
+//    [self.tableView beginUpdates];
+//    
     [self.detailItem refreshVisibleDisplayComments];
+//    NSInteger commentIndex = [self.detailItem.flatVisibleDisplayComments indexOfObject:comment];
+//    
+//    if([self.detailItem.flatVisibleDisplayComments count] == 1) {
+//        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+//        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+//    }
+//    
+//    if(commentIndex != NSNotFound) {
+//        [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
+//                              withRowAnimation:UITableViewRowAnimationFade];
+//    } else {
+//        NSLog(@"COMMENT NOT FOUND: %@", comment);
+//    }
+//    
+//    [self.tableView endUpdates];
+    
     [self.tableView reloadData];
 }
 
@@ -570,18 +600,19 @@
                 continue;
             }
             indexes[currentComment.commentId] = @(index);
-        } else {
-            NSLog(@"asdf");
         }
+//        else {
+//            NSLog(@"asdf");
+//        }
         
         for(Comment * child in [currentComment childComments]) {
             [queue addObject:child];
         }
     }
     
-    NSLog(@"%@", indexes);
+//    NSLog(@"%@", indexes);
     
-    NSLog(@"indexes: %@", indexes);
+//    NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     
     [self.tableView beginUpdates];
@@ -612,9 +643,9 @@
         //        NSInteger commentIndex = [self.detailItem.flatDisplayComments indexOfObject:comment];
         
         NSInteger commentIndex = [indexes[comment.commentId] integerValue];
-        NSLog(@"deleteRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
+//        NSLog(@"deleteRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
         [self.tableView deleteRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                              withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -626,7 +657,7 @@
     }
     
     if(_commentCollapseExpandBeginUpdatesOpen) {
-        NSLog(@"commentCollapsedComplete, endUpdates");
+//        NSLog(@"commentCollapsedComplete, endUpdates");
         [self.detailItem refreshVisibleDisplayComments];
         
         [self.tableView endUpdates];
@@ -639,7 +670,7 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-    NSLog(@"commentExpandedStarted");
+//    NSLog(@"commentExpandedStarted");
     
     NSMutableDictionary * indexes = [[NSMutableDictionary alloc] init];
     
@@ -690,7 +721,7 @@
         i++;
     }
     
-    NSLog(@"indexes: %@", indexes);
+//    NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     
     [self.tableView beginUpdates];
@@ -702,7 +733,7 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-    NSLog(@"commentExpandedChanged");
+//    NSLog(@"commentExpandedChanged");
     
     if(comment.collapseExpandOrigin) {
         return;
@@ -718,9 +749,9 @@
         }
         
         NSInteger commentIndex = [indexes[comment.commentId] integerValue];
-        NSLog(@"insertRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
+//        NSLog(@"insertRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
         [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                              withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -729,10 +760,10 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-    NSLog(@"commentExpandedComplete");
+//    NSLog(@"commentExpandedComplete");
     
     if(_commentCollapseExpandBeginUpdatesOpen) {
-        NSLog(@"commentExpandedComplete, endUpdates");
+//        NSLog(@"commentExpandedComplete, endUpdates");
         [self.detailItem refreshVisibleDisplayComments];
         
         [self.tableView endUpdates];
@@ -795,7 +826,7 @@
 }
 
 - (void)reloadContent:(id)sender {
-    NSLog(@"reloadContent:");
+//    NSLog(@"reloadContent:");
     
     [self loadContent];
 }
@@ -884,7 +915,7 @@
 - (void)setLoadStatus:(StoryDetailViewControllerLoadStatus)loadStatus {
     _loadStatus = loadStatus;
     
-    NSLog(@"StoryDetailViewControllerLoadStatus: %lu", loadStatus);
+//    NSLog(@"StoryDetailViewControllerLoadStatus: %lu", loadStatus);
     
     if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
         || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
@@ -923,18 +954,7 @@
 }
 
 - (void)commentCell:(CommentCell*)cell didTapActionWithType:(NSNumber*)type {
-    ActionDrawerViewButtonType actionType = [type intValue];
-
-    if(actionType == ActionDrawerViewButtonTypeUser) {
-        
-        [self performSegueWithIdentifier:@"showUser"
-                                  sender:cell.comment.author];
-        
-    } else if(actionType == ActionDrawerViewButtonTypeMore) {
-        
-        [CommentCell createShareActionSheetInController:self title:
-            cell.comment.shareTitle url:cell.comment.hnPublicLink text:nil];
-    }
+    [CommentCell handleActionForComment:cell.comment withType:type inController:self];
 }
 
 #pragma mark - KVO Callback Methods
@@ -942,8 +962,17 @@
                         change:(NSDictionary *)change context:(void *)context {
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
+    
+//    if (self.navigationController && self.navigationController.navigationBar) {
+//        [ProgressBarView addToNavBar:self.navigationController.navigationBar];
+//    }
+    
+    [ProgressBarView sharedProgressBarView].progress = [fractionCompleted floatValue];
+    
     if([fractionCompleted floatValue] > 0.0f && _loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
         self.loadStatus = StoryDetailViewControllerLoadStatusLoadingComments;
+        
+//        self.progressBarView.progress = [fractionCompleted floatValue];
     }
     
     if([fractionCompleted floatValue] == 1.0f) {
@@ -955,6 +984,8 @@
             Story * detailStory = (Story*)_detailItem;
             [detailStory finishLoadingCommentsForStory];
         });
+        
+//        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
         
         if(self.detailComment) {
             NSLog(@"snap to specified comment");

@@ -517,13 +517,13 @@
         <image name="stories-top-tab-bar-icon-selected" width="28" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ejg-HJ-q4M"/>
+        <segue reference="g7Q-3Q-ajt"/>
+        <segue reference="Rsz-7G-ItI"/>
         <segue reference="Viw-na-itg"/>
         <segue reference="Hty-hv-MEp"/>
         <segue reference="1Rm-ai-C0Z"/>
         <segue reference="bbp-NZ-Hdx"/>
-        <segue reference="g7Q-3Q-ajt"/>
-        <segue reference="tsB-BR-xsZ"/>
         <segue reference="zg7-lk-R3M"/>
+        <segue reference="tsB-BR-xsZ"/>
     </inferredMetricsTieBreakers>
 </document>

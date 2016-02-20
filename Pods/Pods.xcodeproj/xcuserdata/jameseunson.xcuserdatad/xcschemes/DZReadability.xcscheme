@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '48C719838A3980DA5D38463E'
+               BlueprintIdentifier = '0DF4D7284A0F043BCBD53176'
                BlueprintName = 'DZReadability'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'DZReadability.framework'>

@@ -97,6 +97,10 @@
         [self setImage:[[UIImage imageNamed:@"story-action-flag-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
         
+    } else if(drawerButtonType == ActionDrawerViewButtonTypeShare) {
+        [self setImage:[[UIImage imageNamed:@"story-action-share-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+              forState:UIControlStateNormal];
+        
     } else if(drawerButtonType == ActionDrawerViewButtonTypeLink) {
         [self setImage:[[UIImage imageNamed:@"story-action-link-icon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               forState:UIControlStateNormal];
