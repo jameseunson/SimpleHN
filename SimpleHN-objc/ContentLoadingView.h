@@ -10,4 +10,6 @@
 
 @interface ContentLoadingView : UIView
 
+@property (nonatomic, strong) UIActivityIndicatorView * loadingView;
+
 @end

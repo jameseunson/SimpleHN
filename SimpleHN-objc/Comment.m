@@ -143,6 +143,10 @@ static Comment * _currentCollapseExpandOrigin = nil;
 + (void)createCommentFromSnapshot:(FDataSnapshot*)snapshot story:(Story*)story
                        completion:(CommentBlock)completion {
     
+    if([snapshot.value isKindOfClass:[NSNull class]]) {
+        return;
+    }
+    
     NSError * error = nil;
     Comment * obj = [MTLJSONAdapter modelOfClass:Comment.class
                               fromJSONDictionary:snapshot.value error:&error];

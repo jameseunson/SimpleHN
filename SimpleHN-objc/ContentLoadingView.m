@@ -15,9 +15,7 @@
 @interface ContentLoadingView ()
 
 @property (nonatomic, strong) UIStackView * stackView;
-
 @property (nonatomic, strong) UILabel * loadingLabel;
-@property (nonatomic, strong) UIActivityIndicatorView * loadingView;
 
 - (void)nightModeEvent:(NSNotification*)notification;
 

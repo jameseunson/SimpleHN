@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		311107E5FF8D104CED301173 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5294386F028D553C3FAE5107 /* Pods.framework */; };
 		5AF00876D758B0B140200725 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5294386F028D553C3FAE5107 /* Pods.framework */; };
+		9802E6791C859BBF000188D5 /* StoryLoadingMoreCommentsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9802E6781C859BBF000188D5 /* StoryLoadingMoreCommentsCell.m */; };
 		98052DAA1BB68BB7004A0D3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DA91BB68BB7004A0D3A /* main.m */; };
 		98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DAC1BB68BB7004A0D3A /* AppDelegate.m */; };
 		98052DB31BB68BB7004A0D3A /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98052DB21BB68BB7004A0D3A /* StoryDetailViewController.m */; };
@@ -48,7 +49,6 @@
 		98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB7E1BE4BAE40059E5F2 /* NSString+HTML.m */; };
 		98B0FB841BE4BAEE0059E5F2 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB811BE4BAEE0059E5F2 /* GTMNSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B0FB861BE4BF7B0059E5F2 /* StoryCommentsButton.m */; };
-		98B7FC071C78097B00D88999 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984DCC471BFAEFEB00BA5B86 /* Reveal.framework */; };
 		98B841391C0EDC9200FC80F6 /* AppConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B841381C0EDC9200FC80F6 /* AppConfig.m */; };
 		98B8413B1C0EDEFC00FC80F6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 98B8413A1C0EDEFC00FC80F6 /* Settings.bundle */; };
 		98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B8413D1C0EE01600FC80F6 /* AppConfigBase.m */; };
@@ -114,6 +114,8 @@
 /* Begin PBXFileReference section */
 		4AAB6B5253773133B2A656EB /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		5294386F028D553C3FAE5107 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9802E6771C859BBF000188D5 /* StoryLoadingMoreCommentsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadingMoreCommentsCell.h; sourceTree = "<group>"; };
+		9802E6781C859BBF000188D5 /* StoryLoadingMoreCommentsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadingMoreCommentsCell.m; sourceTree = "<group>"; };
 		98052DA51BB68BB7004A0D3A /* SimpleHN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleHN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		98052DA91BB68BB7004A0D3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		98052DAB1BB68BB7004A0D3A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -269,7 +271,6 @@
 			files = (
 				98D700201C26768600105170 /* libz.tbd in Frameworks */,
 				311107E5FF8D104CED301173 /* Pods.framework in Frameworks */,
-				98B7FC071C78097B00D88999 /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,6 +407,8 @@
 				98F49A4D1C23F97000F1DF4E /* SettingsVersionTableViewCell.m */,
 				98CD63A21C251510005D8D16 /* StoryDetailNoContentSelectedTableViewCell.h */,
 				98CD63A31C251510005D8D16 /* StoryDetailNoContentSelectedTableViewCell.m */,
+				9802E6771C859BBF000188D5 /* StoryLoadingMoreCommentsCell.h */,
+				9802E6781C859BBF000188D5 /* StoryLoadingMoreCommentsCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -864,6 +867,7 @@
 				98E96C351C2001F400AD1A2F /* LoginFieldTableViewCell.m in Sources */,
 				98F5EBDB1BF086A400B1BA08 /* User.m in Sources */,
 				98052DAD1BB68BB7004A0D3A /* AppDelegate.m in Sources */,
+				9802E6791C859BBF000188D5 /* StoryLoadingMoreCommentsCell.m in Sources */,
 				98E96C281C1FFB6800AD1A2F /* LoginViewController.m in Sources */,
 				989E97F61C16863D009A4400 /* NSURL+HNInternalURL.m in Sources */,
 				981953E91C23DB2400E571B4 /* SimpleHNWebTitleSubtitleView.m in Sources */,

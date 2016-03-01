@@ -15,33 +15,26 @@
 #import "StoryCommentsContentLoadingCell.h"
 #import "SimpleHNWebViewController.h"
 #import "StoryDetailNoContentSelectedTableViewCell.h"
+#import "StoryLoadingMoreCommentsCell.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
 #define kNoCommentsReuseIdentifier @"noCommentsReuseIdentifier"
+
 #define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
+
+#define kStoryLoadingMoreCommentsCellReuseIdentifier @"storyLoadingMoreCommentsCellReuseIdentifier"
 #define kNoContentSelectedCellReuseIdentifier @"noContentSelectedCellReuseIdentifier"
 
 //@import WebKit;
 
 @interface StoryDetailViewController ()
 
-//@property (nonatomic, strong) UISegmentedControl * contentSelectSegmentedControl;
-//@property (nonatomic, strong) SFSafariViewController * webViewController;
-
 @property (nonatomic, assign) StoryDetailViewControllerLoadStatus loadStatus;
-
 @property (nonatomic, strong) NSProgress * loadingProgress;
-
-//@property (nonatomic, assign) BOOL initialLoadDone;
-//@property (nonatomic, assign) StoryDetailViewControllerDisplayMode displayMode;
-
-//@property (nonatomic, strong) ContentLoadingView * loadingView;
-
 @property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
 
 @property (nonatomic, strong) UIColor * defaultSeparatorColor;
-
 @property (nonatomic, assign) BOOL commentCollapseExpandBeginUpdatesOpen;
 
 - (void)loadContent;
@@ -66,8 +59,6 @@
 
 - (void)configureViewForStory;
 - (void)configureViewForComment;
-
-//- (void)setCellColor:(UIColor *)color forCell:(UITableViewCell *)cell;
 
 - (void)nightModeEvent:(NSNotification*)notification;
 - (void)updateNightMode;
@@ -106,9 +97,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentExpandedComplete:)
                                                  name:kCommentExpandedComplete object:nil];
     
-//    _displayMode = StoryDetailViewControllerDisplayModeStory;
-//    _initialLoadDone = NO;
-    
     self.refreshDateFormatter = [[NSDateFormatter alloc] init];
     [_refreshDateFormatter setDateFormat:@"MMM d, h:mm a"];
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
@@ -138,6 +126,9 @@
 
     [self.tableView registerClass:[StoryCommentsContentLoadingCell class]
            forCellReuseIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier];
+    
+    [self.tableView registerClass:[StoryLoadingMoreCommentsCell class]
+           forCellReuseIdentifier:kStoryLoadingMoreCommentsCellReuseIdentifier];
     
     [self.tableView registerClass:[StoryDetailNoContentSelectedTableViewCell class]
            forCellReuseIdentifier:kNoContentSelectedCellReuseIdentifier];
@@ -183,8 +174,6 @@
         
         _detailComment = [newDetailComment copy];
         self.loadStatus = StoryDetailViewControllerLoadStatusLoadingStory;
-        
-//        _displayMode = StoryDetailViewControllerDisplayModeCommentContext;
         
         [self.tableView reloadData];
         [self configureViewForComment];
@@ -233,14 +222,13 @@
     [super viewWillDisappear:animated];
     
     [[ProgressBarView sharedProgressBarView] removeFromSuperview];
-    
-    
 }
 
 #pragma mark - UITableViewDataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
+       || _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded
        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
         
         if(section == 0) {
@@ -248,15 +236,23 @@
             
         } else {
             
-//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
-            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
-            if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
+            if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
                 return 1;
                 
+            } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
+                return 2;
+                
             } else {
-                return commentCount;
+                
+                NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
+                if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+                    return commentCount;
+                } else {
+                    return 1;
+                }
             }
         }
+        
     } else {
         return 1;
     }
@@ -266,21 +262,23 @@
     if(_loadStatus == StoryDetailViewControllerLoadStatusNotLoaded) {
         return 1;
         
-    } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-              || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+    } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments ||
+              _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded ||
+              _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
         return 2;
         
-    } else { // StoryDetailViewControllerLoadStatusLoadingStory, loading view
+    } else { // StoryDetailViewControllerLoadStatusLoadingStory, StoryDetailViewControllerLoadStatusLoadingComments, loading view
         return 1;
     }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
     
-        if(indexPath.section == 0) {
+    if(indexPath.section == 0) {
+        if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded ||
+           _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded ||
+           _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
+            
             StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
                                kStoryCellReuseIdentifier forIndexPath:indexPath];
             
@@ -290,18 +288,26 @@
             
             return cell;
             
+        } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
+            
+            StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                                      kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+            [cell.loadingView.loadingView startAnimating];
+            return cell;
+            
         } else {
             
-//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
-            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
+            StoryDetailNoContentSelectedTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                                                kNoContentSelectedCellReuseIdentifier forIndexPath:indexPath];
+            return cell;
+        }
+        
+    } else if(indexPath.section == 1) {
+     
+        if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded ||
+           (_loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded && indexPath.row == 0)) {
             
-            if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
-                StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
-                return cell;
-                
-            } else {
-                
-//                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
+            if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
                 Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
                 
                 CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
@@ -310,22 +316,45 @@
                 cell.commentCellDelegate = self;
                 
                 return cell;
+                
+            } else {
+             
+                NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
+                
+                if(commentCount == 0 && _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
+                    StoryCommentsNoCommentsCell * cell = [tableView dequeueReusableCellWithIdentifier:kNoCommentsReuseIdentifier forIndexPath:indexPath];
+                    return cell;
+                    
+                } else {
+                    
+                    Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
+                    
+                    CommentCell * cell = [tableView dequeueReusableCellWithIdentifier:kCommentCellReuseIdentifier
+                                                                         forIndexPath:indexPath];
+                    cell.comment = comment;
+                    cell.commentCellDelegate = self;
+                    
+                    return cell;
+                }
             }
+            
+        } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded && indexPath.row == 1) {
+
+            StoryLoadingMoreCommentsCell *cell = [tableView dequeueReusableCellWithIdentifier:
+                                       kStoryLoadingMoreCommentsCellReuseIdentifier forIndexPath:indexPath];
+            [cell.loadingView startAnimating];
+            return cell;
+            
+        } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
+            
+            StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
+                                                      kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
+            [cell.loadingView.loadingView startAnimating];            
+            return cell;
         }
-    
-    
-    } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
-        
-        StoryCommentsContentLoadingCell * cell = [tableView dequeueReusableCellWithIdentifier:
-                                                  kStoryCommentsContentLoadingCellReuseIdentifier forIndexPath:indexPath];
-        return cell;
-        
-    } else {
-        StoryDetailNoContentSelectedTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:
-                                  kNoContentSelectedCellReuseIdentifier forIndexPath:indexPath];
-    
-        return cell;
     }
+    
+    return [[UITableViewCell alloc] init];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
@@ -334,42 +363,58 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
-    if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
-        if(indexPath.section == 0) {
+    if(indexPath.section == 0) {
+        if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded ||
+           _loadStatus == StoryDetailViewControllerLoadStatusLoadingComments ||
+           _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
+            
             return [StoryCell heightForStoryCellWithStory:self.detailItem
                                                     width:tableView.frame.size.width context:StoryCellContextTypeDetail];
-            
         } else {
-            
-//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
-            NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
-            
-            if(commentCount == 0 && (_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-                                           || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
-                
-                CGFloat headerHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
-                                                                        width:tableView.frame.size.width];
-                return self.tableView.frame.size.height - headerHeight - self.tabBarController.tabBar.frame.size.height - self.navigationController.navigationBar.frame.size.height;
-                
-            } else {
-//                Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
-                
-                Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
-                return [CommentCell heightForCommentCell:comment
-                                                   width:tableView.frame.size.width];
-            }
+            return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom;
         }
         
-    } else {
-        return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom;
+    } else if(indexPath.section == 1) {
+        if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded ||
+           _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
+            
+            if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+                NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
+                if(commentCount == 0) {
+                    CGFloat headerHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
+                                                                            width:tableView.frame.size.width];
+                    return self.tableView.frame.size.height - headerHeight - self.tabBarController.tabBar.frame.size.height - self.navigationController.navigationBar.frame.size.height;
+                    
+                } else {
+                    Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
+                    return [CommentCell heightForCommentCell:comment
+                                                       width:tableView.frame.size.width];
+                }
+                
+            } else {
+                if(indexPath.row == 0) {
+                    Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
+                    return [CommentCell heightForCommentCell:comment
+                                                       width:tableView.frame.size.width];
+                } else {
+                    return 44.0f;
+                }
+            }
+            
+        } else if(_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments) {
+            
+            CGFloat storyDetailHeight = [StoryCell heightForStoryCellWithStory:self.detailItem
+                                                                         width:tableView.frame.size.width context:StoryCellContextTypeDetail];
+            return tableView.frame.size.height - tableView.contentInset.top - tableView.contentInset.bottom - storyDetailHeight;
+        }
     }
+    
+    return 0;
 }
 
 - (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-       || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
         
         CommentCell * cell = [tableView cellForRowAtIndexPath:indexPath];
 
@@ -384,8 +429,7 @@
 
 - (void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
+    if((_loadStatus == StoryDetailViewControllerLoadStatusLoaded) && indexPath.section == 1) {
         CommentCell * cell = [tableView cellForRowAtIndexPath:indexPath];
         
         if([[AppConfig sharedConfig] nightModeEnabled]) {
@@ -401,8 +445,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
         
         if(indexPath.section == 0 && indexPath.row == 0) {
             
@@ -411,10 +454,6 @@
             }
             
         } else {
-//            NSInteger commentCount = [_detailItem.flatDisplayComments count];
-//            if(commentCount > 0) {
-//                [self expandCollapseCommentForRow:indexPath];
-//            }
             NSInteger commentCount = [_detailItem.flatVisibleDisplayComments count];
             if(commentCount > 0) {
                 [self expandCollapseCommentForRow:indexPath];
@@ -423,11 +462,15 @@
     }
 }
 
+#pragma mark - UIScrollViewDelegate Methods
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [[ProgressBarView sharedProgressBarView] enclosingScrollViewDidScroll:scrollView];
+}
+
 #pragma mark - Private Methods
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([[segue identifier] isEqualToString:@"showUser"]) {
-//        NSLog(@"prepareForSegue, showUser");
         
         __block UserViewController *controller = nil;
         if([[segue destinationViewController] isKindOfClass:[UINavigationController class]]) {
@@ -509,28 +552,6 @@
 
 - (void)commentCreated:(NSNotification*)notification {
     
-//    NSDictionary * userInfo = notification.userInfo;
-//    
-//    if([[userInfo allKeys] containsObject:kCommentCreatedStoryIdentifier]) {
-//        NSNumber * storyId = userInfo[kCommentCreatedStoryIdentifier];
-//        if(![self.detailItem.storyId isEqual: storyId]) {
-//            return;
-//        }
-//    }
-    
-//    if([[userInfo allKeys] containsObject:kCommentCreatedComment]) {
-//        Comment * comment = userInfo[kCommentCreatedComment];
-//        if([comment.commentId integerValue] == 11131352) {
-//            NSLog(@"StoryDetailViewController, commentCreated, found: %@", comment.commentId);
-//        }
-//    }
-//    
-//    [self.detailItem refreshVisibleDisplayComments];
-//    [self.tableView reloadData];
-//    
-//    if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
-//        self.loadingProgress.completedUnitCount++;
-//    }
     if(self.loadingProgress.completedUnitCount < self.loadingProgress.totalUnitCount) {
         self.loadingProgress.completedUnitCount++;
     }
@@ -541,31 +562,16 @@
     if(![story.storyId isEqual:self.detailItem.storyId]) {
         return;
     }
-    
-//    Comment * comment = notification.userInfo[kStoryCommentsUpdatedComment];
-    
-    NSLog(@"storyCommentsUpdated");
-    
-//    [self.tableView beginUpdates];
-//    
+
     [self.detailItem refreshVisibleDisplayComments];
-//    NSInteger commentIndex = [self.detailItem.flatVisibleDisplayComments indexOfObject:comment];
-//    
-//    if([self.detailItem.flatVisibleDisplayComments count] == 1) {
-//        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-//        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-//    }
-//    
-//    if(commentIndex != NSNotFound) {
-//        [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
-//                              withRowAnimation:UITableViewRowAnimationFade];
-//    } else {
-//        NSLog(@"COMMENT NOT FOUND: %@", comment);
-//    }
-//    
-//    [self.tableView endUpdates];
     
-    [self.tableView reloadData];
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+        [self.tableView reloadData];
+    }
+    
+    NSLog(@"storyCommentsUpdated, %lu of %@ expected",
+          [self.detailItem.flatVisibleDisplayComments count],
+          self.detailItem.totalCommentCount);
 }
 
 - (void)commentCollapsedStarted:(NSNotification*)notification {
@@ -601,18 +607,11 @@
             }
             indexes[currentComment.commentId] = @(index);
         }
-//        else {
-//            NSLog(@"asdf");
-//        }
-        
+
         for(Comment * child in [currentComment childComments]) {
             [queue addObject:child];
         }
     }
-    
-//    NSLog(@"%@", indexes);
-    
-//    NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     
     [self.tableView beginUpdates];
@@ -624,7 +623,6 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-    //    NSLog(@"commentCollapsedChanged: commentId, %@, storyId, %@", comment.commentId, comment.storyId);
     
     if(comment.collapseExpandOrigin) {
         // TODO
@@ -637,13 +635,9 @@
         if(![[indexes allKeys] containsObject:comment.commentId]) {
             NSLog(@"SHOULD NEVER HAPPEN");
             return;
-            //            abort();
         }
         
-        //        NSInteger commentIndex = [self.detailItem.flatDisplayComments indexOfObject:comment];
-        
         NSInteger commentIndex = [indexes[comment.commentId] integerValue];
-//        NSLog(@"deleteRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
         [self.tableView deleteRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
                               withRowAnimation:UITableViewRowAnimationFade];
     }
@@ -657,7 +651,6 @@
     }
     
     if(_commentCollapseExpandBeginUpdatesOpen) {
-//        NSLog(@"commentCollapsedComplete, endUpdates");
         [self.detailItem refreshVisibleDisplayComments];
         
         [self.tableView endUpdates];
@@ -670,40 +663,12 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-//    NSLog(@"commentExpandedStarted");
     
     NSMutableDictionary * indexes = [[NSMutableDictionary alloc] init];
     
     // No cycles so we don't need seen array
     NSMutableArray * queue = [[NSMutableArray alloc] init];
     [queue addObject:comment];
-    
-//    NSArray * visibleDisplayComments = [self.detailItem.flatDisplayComments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nonnull evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-//
-//        if(((Comment*)evaluatedObject).sizeStatus == CommentSizeStatusCollapsed) {
-//            return NO;
-//        }
-//        return YES;
-//    }]];
-//
-//    while([queue count] > 0) {
-//        Comment * currentComment = [queue firstObject];
-//        [queue removeObject:currentComment];
-//
-//        if(!currentComment.collapseExpandOrigin) {
-//            NSInteger index = [visibleDisplayComments indexOfObject:currentComment];
-//            if(index == NSNotFound) {
-//                NSLog(@"SHOULD NEVER HAPPEN, %@", indexes);
-//                //                abort();
-//                continue;
-//            }
-//            indexes[currentComment.commentId] = @(index);
-//        }
-//
-//        for(Comment * child in [currentComment childComments]) {
-//            [queue addObject:child];
-//        }
-//    }
     
     NSInteger baseIndex = [self.detailItem.flatVisibleDisplayComments indexOfObject:comment];
     int i = 0;
@@ -721,7 +686,6 @@
         i++;
     }
     
-//    NSLog(@"indexes: %@", indexes);
     comment.collapseExpandOriginIndexes = indexes;
     
     [self.tableView beginUpdates];
@@ -733,7 +697,6 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-//    NSLog(@"commentExpandedChanged");
     
     if(comment.collapseExpandOrigin) {
         return;
@@ -745,11 +708,9 @@
         if(![[indexes allKeys] containsObject:comment.commentId]) {
             NSLog(@"SHOULD NEVER HAPPEN");
             return;
-            //            abort();
         }
         
         NSInteger commentIndex = [indexes[comment.commentId] integerValue];
-//        NSLog(@"insertRowsAtIndexPaths: %@", [NSIndexPath indexPathForRow:commentIndex inSection:1]);
         [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:commentIndex inSection:1] ]
                               withRowAnimation:UITableViewRowAnimationFade];
     }
@@ -760,10 +721,8 @@
     if(!(comment = [self checkCorrectStoryForCollapseExpandNotification:notification])) {
         return;
     }
-//    NSLog(@"commentExpandedComplete");
     
     if(_commentCollapseExpandBeginUpdatesOpen) {
-//        NSLog(@"commentExpandedComplete, endUpdates");
         [self.detailItem refreshVisibleDisplayComments];
         
         [self.tableView endUpdates];
@@ -796,8 +755,6 @@
     Story * detailStory = (Story*)_detailItem;
     if(!detailStory.kids || [detailStory.kids count] == 0) {
         
-//        self.initialLoadDone = YES;
-        
         self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
         
         self.tableView.scrollEnabled = NO;
@@ -826,7 +783,6 @@
 }
 
 - (void)reloadContent:(id)sender {
-//    NSLog(@"reloadContent:");
     
     [self loadContent];
 }
@@ -875,7 +831,6 @@
 
 - (void)expandCollapseCommentForRow:(NSIndexPath *)indexPath {
     
-//    Comment * comment = _detailItem.flatDisplayComments[indexPath.row];
     Comment * comment = _detailItem.flatVisibleDisplayComments[indexPath.row];
     
     NSArray * expandedCommentArray = [_detailItem.flatDisplayComments filteredArrayUsingPredicate:
@@ -901,24 +856,18 @@
 }
 
 #pragma mark - Property Override Methods
-//- (void)setInitialLoadDone:(BOOL)initialLoadDone {
-//    _initialLoadDone = initialLoadDone;
-//    
-//    if(_initialLoadDone) {
-//        self.tableView.scrollEnabled = YES;
-//        
-//    } else {
-//        self.tableView.scrollEnabled = NO;
-//    }
-//}
-
 - (void)setLoadStatus:(StoryDetailViewControllerLoadStatus)loadStatus {
     _loadStatus = loadStatus;
     
 //    NSLog(@"StoryDetailViewControllerLoadStatus: %lu", loadStatus);
     
-    if((_loadStatus == StoryDetailViewControllerLoadStatusLoadingComments
-        || _loadStatus == StoryDetailViewControllerLoadStatusLoaded)) {
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded) {
+        NSLog(@"StoryDetailViewControllerLoadStatus: StoryDetailViewControllerLoadStatusLoaded");
+    }
+    
+    if(_loadStatus == StoryDetailViewControllerLoadStatusLoaded ||
+       _loadStatus == StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
+        
         self.tableView.scrollEnabled = YES;
 
     } else {
@@ -963,19 +912,28 @@
     
     NSNumber * fractionCompleted = change[NSKeyValueChangeNewKey];
     
-//    if (self.navigationController && self.navigationController.navigationBar) {
-//        [ProgressBarView addToNavBar:self.navigationController.navigationBar];
-//    }
-    
     [ProgressBarView sharedProgressBarView].progress = [fractionCompleted floatValue];
     
     if([fractionCompleted floatValue] > 0.0f && _loadStatus == StoryDetailViewControllerLoadStatusLoadingStory) {
-        self.loadStatus = StoryDetailViewControllerLoadStatusLoadingComments;
         
-//        self.progressBarView.progress = [fractionCompleted floatValue];
+        if([self.detailItem.comments count] >= 1) {
+            if(self.loadStatus != StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded) {
+                self.loadStatus = StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded;
+                [self.tableView reloadData];
+            }
+            
+        } else {
+            if(self.loadStatus != StoryDetailViewControllerLoadStatusLoadingComments) {
+                self.loadStatus = StoryDetailViewControllerLoadStatusLoadingComments;
+                [self.tableView reloadData];
+            }
+        }
     }
     
     if([fractionCompleted floatValue] == 1.0f) {
+        
+        self.loadStatus = StoryDetailViewControllerLoadStatusLoaded;
+        [self.tableView reloadData];
         
         [self.loadingProgress removeObserver:self
                                   forKeyPath:@"fractionCompleted"];
@@ -984,8 +942,6 @@
             Story * detailStory = (Story*)_detailItem;
             [detailStory finishLoadingCommentsForStory];
         });
-        
-//        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
         
         if(self.detailComment) {
             NSLog(@"snap to specified comment");

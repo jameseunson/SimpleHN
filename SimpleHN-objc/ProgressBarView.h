@@ -18,4 +18,6 @@
 
 + (ProgressBarView*)sharedProgressBarView;
 
+- (void)enclosingScrollViewDidScroll:(UIScrollView*)scrollView;
+
 @end

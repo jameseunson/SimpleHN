@@ -21,7 +21,8 @@ typedef NS_ENUM(NSInteger, StoryDetailViewControllerLoadStatus) {
     StoryDetailViewControllerLoadStatusNotLoaded = 0,
     StoryDetailViewControllerLoadStatusLoadingStory = 1,
     StoryDetailViewControllerLoadStatusLoadingComments = 2,
-    StoryDetailViewControllerLoadStatusLoaded = 3
+    StoryDetailViewControllerLoadStatusLoadingCommentsFirstCommentLoaded = 3,
+    StoryDetailViewControllerLoadStatusLoaded = 4
 };
 
 typedef NS_ENUM(NSInteger, StoryDetailViewControllerDisplayMode) {

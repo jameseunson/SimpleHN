@@ -10,6 +10,12 @@
 
 static ProgressBarView * _sharedProgressBarView = nil;
 
+@interface ProgressBarView ()
+
+@property (nonatomic, assign) CGFloat insertionVerticalPosition;
+
+@end
+
 @implementation ProgressBarView
 
 + (ProgressBarView*)sharedProgressBarView {
@@ -38,14 +44,13 @@ static ProgressBarView * _sharedProgressBarView = nil;
     _progress = progress;
     
     if(!self.superview) {
-//        NSLog(@"ProgressBarView: Not attached to a superview");
         return;
     }
     
     [self.superview bringSubviewToFront:self];
     
-    NSLog(@"self.superview.frame = %@", NSStringFromCGRect(self.superview.frame));
-    NSLog(@"self.frame = %@", NSStringFromCGRect(self.frame));
+//    NSLog(@"self.superview.frame = %@", NSStringFromCGRect(self.superview.frame));
+//    NSLog(@"self.frame = %@", NSStringFromCGRect(self.frame));
     
     [UIView animateWithDuration:0.1 animations:^{
         
@@ -59,12 +64,28 @@ static ProgressBarView * _sharedProgressBarView = nil;
         }
         self.frame = CGRectMake(0, verticalPosition,
                                 progress * self.superview.frame.size.width, kProgressBarHeight);
+        _insertionVerticalPosition = verticalPosition;
         
     } completion:^(BOOL finished) {
         if(finished && progress == 1.0f) {
             self.frame = CGRectMake(0, 0, 0, kProgressBarHeight);
         }
     }];
+}
+
+- (void)enclosingScrollViewDidScroll:(UIScrollView*)scrollView {
+    
+//    [self.layer removeAllAnimations];
+//    
+//    CGFloat verticalBaseline = scrollView.contentOffset.y + scrollView.contentInset.top;
+//    CGFloat verticalPositionDiff = _insertionVerticalPosition - verticalBaseline;
+//    
+//    NSLog(@"enclosingScrollViewDidScroll, contentOffset: %@, contentInset: %@, diff: %f", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), (_insertionVerticalPosition - scrollView.contentOffset.y));
+//    NSLog(@"enclosingScrollViewDidScroll, verticalBaseline: %f, verticalPositionDiff: %f", verticalBaseline, verticalPositionDiff);
+//    
+//    // Compensate for diff
+//    self.frame = CGRectMake(0, _insertionVerticalPosition + -(verticalPositionDiff),
+//                            _progress * self.superview.frame.size.width, kProgressBarHeight);
 }
 
 @end
