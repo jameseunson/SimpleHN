@@ -10,9 +10,6 @@
 
 @interface LoginFieldTableViewCell ()
 
-@property (nonatomic, strong) UIBarButtonItem * prevBarButtonItem;
-@property (nonatomic, strong) UIBarButtonItem * nextBarButtonItem;
-
 - (void)textFieldValueChanged:(id)sender;
 
 - (void)didTapInputAccessoryPrevItem:(id)sender;
@@ -103,23 +100,38 @@
 }
 
 - (void)textFieldValueChanged:(id)sender {
-    NSLog(@"textFieldValueChanged content: %@", self.field.text);
-    
     if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didChangeText:)]) {
         [self.delegate performSelector:@selector(loginFieldTableViewCell:didChangeText:)
                             withObject:self withObject:self.field.text];
     }
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didStartEditing:)]) {
+        [self.delegate performSelector:@selector(loginFieldTableViewCell:didStartEditing:) withObject:self withObject:textField];
+    }
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didEndEditing:)]) {
+        [self.delegate performSelector:@selector(loginFieldTableViewCell:didEndEditing:) withObject:self withObject:textField];
+    }
+}
+
 #pragma mark - Private Methods
 - (void)didTapInputAccessoryPrevItem:(id)sender {
-    
+    if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didTapPreviousButton:)]) {
+        [self.delegate performSelector:@selector(loginFieldTableViewCell:didTapPreviousButton:) withObject:self withObject:sender];
+    }
 }
 - (void)didTapInputAccessoryNextItem:(id)sender {
-    
+    if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didTapNextButton:)]) {
+        [self.delegate performSelector:@selector(loginFieldTableViewCell:didTapNextButton:) withObject:self withObject:sender];
+    }
 }
 - (void)didTapInputAccessoryDoneItem:(id)sender {
-    
+    if([self.delegate respondsToSelector:@selector(loginFieldTableViewCell:didTapDoneButton:)]) {
+        [self.delegate performSelector:@selector(loginFieldTableViewCell:didTapDoneButton:) withObject:self withObject:sender];
+    }
 }
 
 @end

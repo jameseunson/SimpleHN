@@ -22,6 +22,9 @@
 @property (nonatomic, strong) NSString * username;
 @property (nonatomic, strong) NSString * password;
 
+@property (nonatomic, strong) UITextField * activeField;
+@property (nonatomic, strong) NSMutableDictionary * fieldsLookup;
+
 @end
 
 @implementation LoginViewController
@@ -31,6 +34,8 @@
     
     _username = @"";
     _password = @"";
+    
+    self.fieldsLookup = [[NSMutableDictionary alloc] init];
 }
 
 - (void)loadView {
@@ -118,6 +123,7 @@
         if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
             [cell setLayoutMargins:UIEdgeInsetsZero];
         }
+        _fieldsLookup[cell.field.placeholder] = cell.field;
         
         return cell;
         
@@ -152,6 +158,7 @@
 }
 
 - (void)processLogin {
+    NSLog(@"processLogin");
     
     [[HNSessionAPIManager sharedManager] performLoginWithUsername:self.username password:self.password completion:^(NSDictionary *result) {
         NSLog(@"processLogin, result: %@", result);
@@ -160,14 +167,36 @@
 
 #pragma mark - LoginFieldTableViewCell Delegate
 - (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didChangeText:(NSString*)text {
-    NSLog(@"text: %@", text);
     
     if(cell.type == LoginFieldTableViewCellTypeUsername) {
         self.username = text;
-        
     } else {
         self.password = text;
     }
+}
+
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapNextButton:(UIButton*)button {
+    if(_activeField == _fieldsLookup[@"Username"]) {
+        [_fieldsLookup[@"Password"] becomeFirstResponder];
+    }
+}
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapPreviousButton:(UIButton*)button {
+    if(_activeField == _fieldsLookup[@"Password"]) {
+        [_fieldsLookup[@"Username"] becomeFirstResponder];
+    }
+}
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapDoneButton:(UIButton*)button {
+    [_activeField resignFirstResponder];
+}
+
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didStartEditing:(UITextField*)field {
+    self.activeField = field;
+    
+    cell.prevBarButtonItem.enabled = ([cell.field.placeholder isEqualToString:@"Password"]);
+    cell.nextBarButtonItem.enabled = ([cell.field.placeholder isEqualToString:@"Username"]);
+}
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didEndEditing:(UITextField*)field {
+    [_activeField resignFirstResponder];
 }
 
 @end

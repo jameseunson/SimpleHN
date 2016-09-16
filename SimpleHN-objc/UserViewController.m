@@ -227,7 +227,6 @@
 }
 
 - (void)loadMoreItems {
-    NSLog(@"UserViewController, loadMoreItems");
     [super loadMoreItems];
     
 //    self.loadingProgress.completedUnitCount = 0;
@@ -324,7 +323,6 @@
             if(i < self.currentVisibleItemMax) {
                 
                 NSString * itemUrl = [NSString stringWithFormat: @"https://hacker-news.firebaseio.com/v0/item/%@", item];
-                NSLog(@"UserViewController, itemURL (%d): %@", i, itemUrl);
 
                 __block Firebase * itemRef = [[Firebase alloc] initWithUrl:itemUrl];
                 [itemRef observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
@@ -466,13 +464,10 @@
 
 #pragma mark - UserHeaderViewDelegate Methods
 - (void)userHeaderView:(UserHeaderView*)view didChangeVisibleData:(NSNumber*)data {
-    NSLog(@"UserViewController, userHeaderView, didChangeVisibleData");
     [self applyFiltering];
 }
 
 - (void)userHeaderView:(UserHeaderView *)view didTapLink:(NSURL *)link {
-    NSLog(@"UserViewController, userHeaderView, didTapLink");
-    
     if([link isHNInternalLink]) {
         
         if([link isHNInternalItemLink]) {
@@ -488,8 +483,6 @@
             }
         }
     } // Catches two else cases implicitly
-    
-    NSLog(@"%@", link);
     [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 

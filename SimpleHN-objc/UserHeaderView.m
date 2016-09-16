@@ -230,8 +230,6 @@
 }
 
 - (void)didChangeSegment:(id)sender {
-    NSLog(@"didChangeSegment:");
-    
     self.visibleData = (int)self.sectionSegmentedControl.selectedSegmentIndex;
     
     if([self.delegate respondsToSelector:@selector(userHeaderView:didChangeVisibleData:)]) {

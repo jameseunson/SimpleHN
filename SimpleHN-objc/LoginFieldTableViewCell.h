@@ -19,10 +19,19 @@ typedef NS_ENUM(NSInteger, LoginFieldTableViewCellType) {
 @property (nonatomic, strong) UITextField * field;
 @property (nonatomic, assign) LoginFieldTableViewCellType type;
 
+@property (nonatomic, strong) UIBarButtonItem * prevBarButtonItem;
+@property (nonatomic, strong) UIBarButtonItem * nextBarButtonItem;
+
 @property (nonatomic, assign) __unsafe_unretained id<LoginFieldTableViewCellDelegate> delegate;
 
 @end
 
 @protocol LoginFieldTableViewCellDelegate <NSObject>
 - (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didChangeText:(NSString*)text;
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapNextButton:(UIButton*)button;
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapPreviousButton:(UIButton*)button;
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didTapDoneButton:(UIButton*)button;
+
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didStartEditing:(UITextField*)field;
+- (void)loginFieldTableViewCell:(LoginFieldTableViewCell*)cell didEndEditing:(UITextField*)field;
 @end
