@@ -27,8 +27,9 @@
 		983401401C04110800A85638 /* CommentTest-input-1.html in Resources */ = {isa = PBXBuildFile; fileRef = 9834013F1C04110800A85638 /* CommentTest-input-1.html */; };
 		983401411C0412DA00A85638 /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 984844D91BB6A83C00C1EB7A /* Comment.m */; };
 		983A19D71C07F93A00072B40 /* CommentTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 983A19D61C07F93A00072B40 /* CommentTextView.m */; };
-		983DDED41D8A7F7900885673 /* AccountTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 983DDED31D8A7F7900885673 /* AccountTableViewController.m */; };
+		983DDED41D8A7F7900885673 /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 983DDED31D8A7F7900885673 /* AccountViewController.m */; };
 		983DDED71D8BB23700885673 /* UserEmptyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 983DDED61D8BB23700885673 /* UserEmptyView.m */; };
+		983DDEDA1D8BB96400885673 /* UserLoginButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 983DDED91D8BB96400885673 /* UserLoginButton.m */; };
 		984418B51BB696FA00F66A02 /* Story.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B41BB696FA00F66A02 /* Story.m */; };
 		984418B81BB69BCC00F66A02 /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 984418B71BB69BCC00F66A02 /* StoryCell.m */; };
 		9844CAF91C041CD000413F8D /* LabelHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F5EBE11BF09EF100B1BA08 /* LabelHelper.m */; };
@@ -148,10 +149,12 @@
 		9834013F1C04110800A85638 /* CommentTest-input-1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "CommentTest-input-1.html"; sourceTree = "<group>"; };
 		983A19D51C07F93A00072B40 /* CommentTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTextView.h; sourceTree = "<group>"; };
 		983A19D61C07F93A00072B40 /* CommentTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTextView.m; sourceTree = "<group>"; };
-		983DDED21D8A7F7900885673 /* AccountTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountTableViewController.h; sourceTree = "<group>"; };
-		983DDED31D8A7F7900885673 /* AccountTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountTableViewController.m; sourceTree = "<group>"; };
+		983DDED21D8A7F7900885673 /* AccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountViewController.h; sourceTree = "<group>"; };
+		983DDED31D8A7F7900885673 /* AccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountViewController.m; sourceTree = "<group>"; };
 		983DDED51D8BB23700885673 /* UserEmptyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserEmptyView.h; sourceTree = "<group>"; };
 		983DDED61D8BB23700885673 /* UserEmptyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserEmptyView.m; sourceTree = "<group>"; };
+		983DDED81D8BB96400885673 /* UserLoginButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLoginButton.h; sourceTree = "<group>"; };
+		983DDED91D8BB96400885673 /* UserLoginButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLoginButton.m; sourceTree = "<group>"; };
 		984418B31BB696FA00F66A02 /* Story.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Story.h; sourceTree = "<group>"; };
 		984418B41BB696FA00F66A02 /* Story.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Story.m; sourceTree = "<group>"; };
 		984418B61BB69BCC00F66A02 /* StoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCell.h; sourceTree = "<group>"; };
@@ -393,6 +396,7 @@
 		980C6DB51BE7229000D4318C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				983DDEDE1D8BC59400885673 /* Login */,
 				984418B61BB69BCC00F66A02 /* StoryCell.h */,
 				984418B71BB69BCC00F66A02 /* StoryCell.m */,
 				980C6DB81BE7252400D4318C /* CommentCell.h */,
@@ -446,6 +450,8 @@
 				989CB4341C7714D8005AB2BD /* ProgressBarView.m */,
 				983DDED51D8BB23700885673 /* UserEmptyView.h */,
 				983DDED61D8BB23700885673 /* UserEmptyView.m */,
+				983DDED81D8BB96400885673 /* UserLoginButton.h */,
+				983DDED91D8BB96400885673 /* UserLoginButton.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -476,6 +482,13 @@
 				98F7D62B1C043E2C00E1D752 /* CommentTest-input-5.html */,
 			);
 			name = CommentTest;
+			sourceTree = "<group>";
+		};
+		983DDEDE1D8BC59400885673 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Login;
 			sourceTree = "<group>";
 		};
 		988C10221BF1E4F700FA36B9 /* 3rd Party */ = {
@@ -561,8 +574,8 @@
 				98ED2CA11C2253A800BD8BA6 /* SimpleHNWebViewController.m */,
 				981953E41C22C2B700E571B4 /* StoryPastDiscussionsViewController.h */,
 				981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */,
-				983DDED21D8A7F7900885673 /* AccountTableViewController.h */,
-				983DDED31D8A7F7900885673 /* AccountTableViewController.m */,
+				983DDED21D8A7F7900885673 /* AccountViewController.h */,
+				983DDED31D8A7F7900885673 /* AccountViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -854,7 +867,7 @@
 				98C22D581C1564AF00809299 /* StoryCommentsEmptyView.m in Sources */,
 				98E43D8F1C08094B0041CC6F /* NSString+EscapedURLString.m in Sources */,
 				985219591C11234700A183A6 /* CommentCellHeaderView.m in Sources */,
-				983DDED41D8A7F7900885673 /* AccountTableViewController.m in Sources */,
+				983DDED41D8A7F7900885673 /* AccountViewController.m in Sources */,
 				988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */,
 				984DCC6C1BFC6FFD00BA5B86 /* StoriesCommentsSearchResultsViewController.m in Sources */,
 				98E725BC1BF19A7200607CBC /* ShowHNViewController.m in Sources */,
@@ -901,6 +914,7 @@
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,
 				9849D0AF1C0699E000A23212 /* StoriesTimePeriodSelectViewController.m in Sources */,
 				98ED2CA21C2253A800BD8BA6 /* SimpleHNWebViewController.m in Sources */,
+				983DDEDA1D8BB96400885673 /* UserLoginButton.m in Sources */,
 				98F5EBE21BF09EF100B1BA08 /* LabelHelper.m in Sources */,
 				98052DAA1BB68BB7004A0D3A /* main.m in Sources */,
 				983A19D71C07F93A00072B40 /* CommentTextView.m in Sources */,

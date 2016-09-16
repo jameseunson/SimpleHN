@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '8A258E9B48EB389B7EFEA425'
+               BlueprintIdentifier = '177C6B01431C23DAD6C0F8B3'
                BlueprintName = 'hpple'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'Hpple.framework'>

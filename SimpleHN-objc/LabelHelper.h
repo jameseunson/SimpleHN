@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-//#import "KILabel.h"
-#import "TTTAttributedLabel.h"
 
 @interface LabelHelper : NSObject
 
 + (UILabel*)labelWithFont:(UIFont*)font;
-//+ (KILabel*)kiLabelWithFont:(UIFont*)font;
++ (UILabel*)labelWithFont:(UIFont*)font color:(UIColor*)color;
++ (UILabel*)labelWithFont:(UIFont*)font color:(UIColor*)color alignment:(NSTextAlignment)alignment;
+
 + (TTTAttributedLabel*)tttLabelWithFont:(UIFont*)font;
 
 // Dynamic type body font adjusted from the

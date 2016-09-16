@@ -38,21 +38,17 @@
     
     [self.tableView registerClass:[LoginFieldTableViewCell class]
            forCellReuseIdentifier:kLoginFieldTableViewCellReuseIdentifier];
+    
     [self.tableView registerClass:[LoginButtonTableViewCell class]
            forCellReuseIdentifier:kLoginButtonTableViewCellReuseIdentifier];
     
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    @weakify(self);
-    [self addColorChangedBlock:^{
-        @strongify(self);
-        self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
-        self.navigationController.navigationBar.nightBarTintColor = kNightDefaultColor;
-        
-        self.view.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.nightBackgroundColor = kNightDefaultColor;
-    }];
+    self.tableView.separatorInset = UIEdgeInsetsZero;
+    
+    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xffffff);
+    self.view.backgroundColor = RGBCOLOR(238, 238, 238);
 }
 
 - (void)viewDidLoad {
@@ -95,9 +91,20 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    cell.backgroundColor = [UIColor whiteColor];
+}
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if(indexPath.section == 0) {
+        
+        if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+            [tableView setSeparatorInset:UIEdgeInsetsZero];
+        }
+        
+        if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+            [tableView setLayoutMargins:UIEdgeInsetsZero];
+        }
         
         LoginFieldTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:
                                           kLoginFieldTableViewCellReuseIdentifier forIndexPath:indexPath];
@@ -107,6 +114,10 @@
             cell.type = LoginFieldTableViewCellTypePassword;
         }
         cell.delegate = self;
+        
+        if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+            [cell setLayoutMargins:UIEdgeInsetsZero];
+        }
         
         return cell;
         

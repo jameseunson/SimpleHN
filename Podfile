@@ -20,6 +20,7 @@ pod 'VTAcknowledgementsViewController'
 pod 'Fabric'
 pod 'Crashlytics'
 pod 'MBProgressHUD', '~> 0.9.2'
+pod 'Reveal-iOS-SDK', :configurations => ['Debug']
 
 pre_install do |installer|
     # workaround for https://github.com/CocoaPods/CocoaPods/issues/3289

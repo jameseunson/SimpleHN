@@ -9,7 +9,16 @@
 #import "LoginFieldTableViewCell.h"
 
 @interface LoginFieldTableViewCell ()
+
+@property (nonatomic, strong) UIBarButtonItem * prevBarButtonItem;
+@property (nonatomic, strong) UIBarButtonItem * nextBarButtonItem;
+
 - (void)textFieldValueChanged:(id)sender;
+
+- (void)didTapInputAccessoryPrevItem:(id)sender;
+- (void)didTapInputAccessoryNextItem:(id)sender;
+- (void)didTapInputAccessoryDoneItem:(id)sender;
+
 @end
 
 @implementation LoginFieldTableViewCell
@@ -46,6 +55,24 @@
                                           @"V:|-[_field]-|;H:|-[_field]-|" options:0 metrics:nil views:
                                           NSDictionaryOfVariableBindings(_field)]];
         
+        UIToolbar * inputAccessoryToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 44.0f)];
+        inputAccessoryToolbar.tintColor = [UIColor orangeColor];
+        inputAccessoryToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        self.nextBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:
+                                  UIBarButtonItemStylePlain target:self action:@selector(didTapInputAccessoryNextItem:)];
+        self.prevBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Previous" style:
+                                  UIBarButtonItemStylePlain target:self action:@selector(didTapInputAccessoryPrevItem:)];
+        
+        UIBarButtonItem * flexibleSpaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
+                                               UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        
+        UIBarButtonItem * doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
+                                      UIBarButtonSystemItemDone target:self action:@selector(didTapInputAccessoryDoneItem:)];
+        
+        [inputAccessoryToolbar setItems:@[ _prevBarButtonItem, _nextBarButtonItem, flexibleSpaceItem, doneItem ]];
+        _field.inputAccessoryView = inputAccessoryToolbar;
+        
         @weakify(self);
         [self addColorChangedBlock:^{
             @strongify(self);
@@ -54,8 +81,6 @@
             
             self.field.textColor = UIColorFromRGB(0x000000);
             self.field.nightTextColor = UIColorFromRGB(0xffffff);
-            
-//            self.field.attributedPlaceholder
         }];
     }
     return self;
@@ -84,6 +109,17 @@
         [self.delegate performSelector:@selector(loginFieldTableViewCell:didChangeText:)
                             withObject:self withObject:self.field.text];
     }
+}
+
+#pragma mark - Private Methods
+- (void)didTapInputAccessoryPrevItem:(id)sender {
+    
+}
+- (void)didTapInputAccessoryNextItem:(id)sender {
+    
+}
+- (void)didTapInputAccessoryDoneItem:(id)sender {
+    
 }
 
 @end

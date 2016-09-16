@@ -57,6 +57,7 @@ PODS:
   - MBProgressHUD (0.9.2)
   - MCSwipeTableViewCell (2.1.4)
   - RegexKitLite (4.0)
+  - Reveal-iOS-SDK (1.6.2)
   - TimeAgoInWords (2.0.0)
   - TTTAttributedLabel (1.13.4)
   - VTAcknowledgementsViewController (0.17)
@@ -76,6 +77,7 @@ DEPENDENCIES:
   - MBProgressHUD (~> 0.9.2)
   - MCSwipeTableViewCell (~> 2.1.4)
   - RegexKitLite (~> 4.0)
+  - Reveal-iOS-SDK
   - TimeAgoInWords (~> 2.0.0)
   - TTTAttributedLabel
   - VTAcknowledgementsViewController
@@ -106,6 +108,7 @@ SPEC CHECKSUMS:
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   MCSwipeTableViewCell: 1b303e16c3a26b1982f3a68386e9b8c5fc8344c3
   RegexKitLite: c0e4c12e6e7de0769f3a3ed679f0f61604170661
+  Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
   TimeAgoInWords: be1144596814c8de5d2fe51a60977ec98115e4fb
   TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
   VTAcknowledgementsViewController: 6056f5f5e5ed995bbf0581bed6ddd29355ca9a80

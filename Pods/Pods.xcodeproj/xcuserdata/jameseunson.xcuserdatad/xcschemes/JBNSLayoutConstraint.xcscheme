@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'E58641EA500380C460487E25'
+               BlueprintIdentifier = 'E671C021D67D652C73CBD843'
                BlueprintName = 'JBNSLayoutConstraint'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'JBNSLayoutConstraint.framework'>

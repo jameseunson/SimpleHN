@@ -7,13 +7,20 @@
 //
 
 #import "LabelHelper.h"
-//#import "UIFont+SSTextSize.h"
 
 #define kBaseFontSize 17.0f
 
 @implementation LabelHelper
 
 + (UILabel*)labelWithFont:(UIFont*)font {
+    return [[self class] labelWithFont:font color:[UIColor blackColor] alignment:NSTextAlignmentNatural];
+}
+
++ (UILabel*)labelWithFont:(UIFont*)font color:(UIColor*)color {
+    return [[self class] labelWithFont:font color:color alignment:NSTextAlignmentNatural];
+}
+
++ (UILabel*)labelWithFont:(UIFont*)font color:(UIColor*)color alignment:(NSTextAlignment)alignment {
     
     UILabel * label = [[UILabel alloc] init];
     
@@ -24,9 +31,11 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.textColor = [UIColor blackColor];
     
+    label.textAlignment = alignment;
+    label.textColor = color;
+    
     return label;
 }
-
 + (TTTAttributedLabel*)tttLabelWithFont:(UIFont*)font {
     
     TTTAttributedLabel * label = [[TTTAttributedLabel alloc] initWithFrame:CGRectZero];
@@ -42,41 +51,18 @@
     return label;
 }
 
-//+ (KILabel*)kiLabelWithFont:(UIFont*)font {
-//    
-//    KILabel * label = [[KILabel alloc] init];
-//    
-//    label.backgroundColor = [UIColor clearColor];
-//    label.font = font;
-//    
-//    label.lineBreakMode = NSLineBreakByWordWrapping;
-//    label.numberOfLines = 0;
-//    label.textColor = [UIColor blackColor];
-//    label.automaticLinkDetectionEnabled = YES;
-//    
-//    return label;
-//}
-
 + (UIFont*)adjustedBodyFont {
-//    NSString * systemFontName = [[UIFont preferredFontForTextStyle:
-//                                  UIFontTextStyleBody] fontName];
-//    return [UIFont dynamicFontWithName:systemFontName baseSize:kBaseFontSize];
     return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 + (UIFont*)adjustedItalicBodyFont {
-//    return [UIFont dynamicFontWithName:[[UIFont italicSystemFontOfSize:
-//                                         kBaseFontSize] fontName] baseSize:kBaseFontSize];
-    
     UIFontDescriptor * descriptor = [[self adjustedBodyFont].fontDescriptor
-                                fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+                                     fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
     UIFont * font = [UIFont fontWithDescriptor:descriptor size:0];
     return font;
 }
 
 + (UIFont*)adjustedBoldBodyFont {
-//    return [UIFont dynamicFontWithName:[[UIFont boldSystemFontOfSize:
-//                                         kBaseFontSize] fontName] baseSize:kBaseFontSize];
     UIFontDescriptor * descriptor = [[self adjustedBodyFont].fontDescriptor
                                      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
     UIFont * font = [UIFont fontWithDescriptor:descriptor size:0];
@@ -84,9 +70,6 @@
 }
 
 + (UIFont*)adjustedMonospacedBodyFont {
-    
-//    return [UIFont dynamicFontWithName:@"Menlo" baseSize:kBaseFontSize];    
-    
     UIFontDescriptor * descriptor = [[self adjustedBodyFont].fontDescriptor
                                      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitMonoSpace];
     UIFont * font = [UIFont fontWithDescriptor:descriptor size:0];

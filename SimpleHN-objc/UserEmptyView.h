@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol UserEmptyViewDelegate;
 @interface UserEmptyView : UIView
 
+@property (nonatomic, assign) __unsafe_unretained id<UserEmptyViewDelegate> delegate;
 
+@end
 
+@protocol UserEmptyViewDelegate <NSObject>
+- (void)userEmptyView:(UserEmptyView*)view didTapLoginButton:(UIButton*)button;
 @end
