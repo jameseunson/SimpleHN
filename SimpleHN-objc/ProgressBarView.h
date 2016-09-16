@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#define kProgressBarHeight 2.0f
 
 @interface ProgressBarView : UIView
 
@@ -17,7 +18,5 @@
 @property (nonatomic, assign) CGFloat verticalOffset;
 
 + (ProgressBarView*)sharedProgressBarView;
-
-- (void)enclosingScrollViewDidScroll:(UIScrollView*)scrollView;
 
 @end

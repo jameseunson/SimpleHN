@@ -99,9 +99,9 @@
 //    self.detailViewController = ((SimpleHNSplitViewController*)
 //                                 self.splitViewController).storyDetailViewController;
     
-    self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
-                           UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
-    self.navigationItem.rightBarButtonItem = _timePeriodItem;
+//    self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
+//                           UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
+//    self.navigationItem.rightBarButtonItem = _timePeriodItem;
     
     self.splitViewController.delegate = self;
     
@@ -321,13 +321,37 @@
         
         return cell;
         
+    } else if([specifier.specifierDict[@"Key"] isEqualToString:@"webCell"]) {
+        
+        UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+        cell.textLabel.text = @"Web";
+        cell.detailTextLabel.text = @"http://jeon.com.au/simple-hn";
+        
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        return cell;
+        
+    } else if([specifier.specifierDict[@"Key"] isEqualToString:@"authorCell"]) {
+        
+        UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+        cell.textLabel.text = @"Author";
+        cell.detailTextLabel.text = @"James Eunson";
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        return cell;
+        
     } else {
         return [[SettingsVersionTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     }
 }
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender tableView:(UITableView *)tableView didSelectCustomViewSpecifier:(IASKSpecifier*)specifier {
-    if([specifier.specifierDict[@"Key"] isEqualToString:@"acknowledgementsCell"]) {
+    
+    if([specifier.specifierDict[@"Key"] isEqualToString:@"webCell"]) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://jeon.com.au/simple-hn"]];
+        
+    } else if([specifier.specifierDict[@"Key"] isEqualToString:@"acknowledgementsCell"]) {
         
         VTAcknowledgementsViewController *viewController = [VTAcknowledgementsViewController acknowledgementsViewController];
         [sender.navigationController pushViewController:viewController animated:YES];

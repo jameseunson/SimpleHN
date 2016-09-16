@@ -95,12 +95,6 @@
         _storyCommentsAreaView.backgroundColor = [UIColor clearColor];
         [_storyCommentsAreaView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:
                                                       self action:@selector(didTapStoryCommentsAreaView:)]];
-        
-//        UILongPressGestureRecognizer * recognizer = [[UILongPressGestureRecognizer alloc]
-//                                                                     initWithTarget:self action:@selector(didTapStoryCommentsAreaView:)];
-//        recognizer.minimumPressDuration = .001;
-//        [_storyCommentsAreaView addGestureRecognizer:recognizer];
-        
         [self.contentView addSubview:_storyCommentsAreaView];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)

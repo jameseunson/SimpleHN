@@ -101,11 +101,6 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     _readerNoContentEmptyView.backgroundColor = [UIColor whiteColor];
     _readerNoContentEmptyView.hidden = YES;
     [self.view addSubview:_readerNoContentEmptyView];
-    
-//    self.readerContentLoadingView = [[ContentLoadingView alloc] init];
-//    _readerContentLoadingView.translatesAutoresizingMaskIntoConstraints = NO;
-//    _readerContentLoadingView.hidden = YES;
-//    [self.view addSubview:_readerContentLoadingView];
 
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"V:|[_webView]|;H:|[_webView]|" options:0 metrics:nil views:
@@ -113,9 +108,6 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"V:|[_readerNoContentEmptyView]|;H:|[_readerNoContentEmptyView]|" options:0 metrics:nil views:
                                NSDictionaryOfVariableBindings(_readerNoContentEmptyView)]];
-//    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
-//                               @"V:|[_readerContentLoadingView]|;H:|[_readerContentLoadingView]|" options:0 metrics:nil views:
-//                               NSDictionaryOfVariableBindings(_readerContentLoadingView)]];
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"V:|[_readerWebView]|;H:|[_readerWebView]|" options:0 metrics:nil views:
                                NSDictionaryOfVariableBindings(_readerWebView)]];

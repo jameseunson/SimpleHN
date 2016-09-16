@@ -33,9 +33,8 @@ static ProgressBarView * _sharedProgressBarView = nil;
         self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         self.backgroundColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
         
-        self.frame = CGRectMake(0, self.superview.frame.size.height - kProgressBarHeight, 0, kProgressBarHeight);
-        
-        self.tag = kProgressBarTag;
+        self.frame = CGRectMake(0, self.superview.frame.size.height
+                                - kProgressBarHeight, 0, kProgressBarHeight);
     }
     return self;
 }
@@ -48,9 +47,6 @@ static ProgressBarView * _sharedProgressBarView = nil;
     }
     
     [self.superview bringSubviewToFront:self];
-    
-//    NSLog(@"self.superview.frame = %@", NSStringFromCGRect(self.superview.frame));
-//    NSLog(@"self.frame = %@", NSStringFromCGRect(self.frame));
     
     [UIView animateWithDuration:0.1 animations:^{
         
@@ -71,21 +67,6 @@ static ProgressBarView * _sharedProgressBarView = nil;
             self.frame = CGRectMake(0, 0, 0, kProgressBarHeight);
         }
     }];
-}
-
-- (void)enclosingScrollViewDidScroll:(UIScrollView*)scrollView {
-    
-//    [self.layer removeAllAnimations];
-//    
-//    CGFloat verticalBaseline = scrollView.contentOffset.y + scrollView.contentInset.top;
-//    CGFloat verticalPositionDiff = _insertionVerticalPosition - verticalBaseline;
-//    
-//    NSLog(@"enclosingScrollViewDidScroll, contentOffset: %@, contentInset: %@, diff: %f", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), (_insertionVerticalPosition - scrollView.contentOffset.y));
-//    NSLog(@"enclosingScrollViewDidScroll, verticalBaseline: %f, verticalPositionDiff: %f", verticalBaseline, verticalPositionDiff);
-//    
-//    // Compensate for diff
-//    self.frame = CGRectMake(0, _insertionVerticalPosition + -(verticalPositionDiff),
-//                            _progress * self.superview.frame.size.width, kProgressBarHeight);
 }
 
 @end

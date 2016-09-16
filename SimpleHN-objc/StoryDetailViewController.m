@@ -462,11 +462,6 @@
     }
 }
 
-#pragma mark - UIScrollViewDelegate Methods
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    [[ProgressBarView sharedProgressBarView] enclosingScrollViewDidScroll:scrollView];
-}
-
 #pragma mark - Private Methods
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
@@ -483,7 +478,7 @@
             controller.author = sender;
             
         } else if(sender && [sender isKindOfClass:[User class]]) {
-            controller.user = sender;
+            controller.author = ((User*)sender).name;
         }
         
         controller.navigationItem.leftBarButtonItem =

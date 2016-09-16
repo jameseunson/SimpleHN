@@ -64,6 +64,22 @@
 			<key>Type</key>
 			<string>IASKCustomViewSpecifier</string>
 		</dict>
+		<dict>
+			<key>Key</key>
+			<string>authorCell</string>
+			<key>Title</key>
+			<string>Author</string>
+			<key>Type</key>
+			<string>IASKCustomViewSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>webCell</string>
+			<key>Title</key>
+			<string>Web</string>
+			<key>Type</key>
+			<string>IASKCustomViewSpecifier</string>
+		</dict>
 	</array>
 </dict>
 </plist>
