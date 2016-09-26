@@ -60,52 +60,22 @@
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
     self.storiesList = [[NSMutableArray alloc] init];
-    
-//    NSProgress * masterProgress = ((AppDelegate *)[[UIApplication sharedApplication]
-//                                                   delegate]).masterProgress;
-    
+
     [self.loadingProgress removeObserver:self
                               forKeyPath:@"fractionCompleted"];
     
     self.loadingProgress = [NSProgress progressWithTotalUnitCount:21];
     [self.loadingProgress addObserver:self forKeyPath:@"fractionCompleted"
                           options:NSKeyValueObservingOptionNew context:NULL];
-    
-//    masterProgress.completedUnitCount = 0;
-//    masterProgress.totalUnitCount = 21;
-//    [masterProgress addChild:self.loadingProgress withPendingUnitCount:21];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [[Crashlytics sharedInstance] crash];
-    
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    [self.tableView setContentOffset:CGPointMake(0, 44.0f)];
-    
-    if([[AppConfig sharedConfig] nightModeEnabled]) {
-        self.searchController.searchBar.barTintColor = UIColorFromRGB(0x222222);
-        self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        
-    } else {
-        self.searchController.searchBar.barTintColor = nil;
-        self.searchController.searchBar.searchBarStyle = UISearchBarStyleDefault;
-    }
-    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings-icon"] style:
                                              UIBarButtonItemStylePlain target:self action:@selector(didTapSettingsIcon:)];
     
-//    self.detailViewController = ((SimpleHNSplitViewController*)
-//                                 self.splitViewController).storyDetailViewController;
-    
-//    self.timePeriodItem = [[UIBarButtonItem alloc] initWithTitle:@"Now" style:
-//                           UIBarButtonItemStylePlain target:self action:@selector(didTapTimePeriodItem:)];
-//    self.navigationItem.rightBarButtonItem = _timePeriodItem;
-    
     self.splitViewController.delegate = self;
-    
-//    [[Crashlytics sharedInstance] crash];    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -530,13 +500,13 @@
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
         
         if([[AppConfig sharedConfig] nightModeEnabled]) {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
         } else {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
         }
-        [self.refreshControl endRefreshing];
+        [self.tableViewController.refreshControl endRefreshing];
     }
 }
 

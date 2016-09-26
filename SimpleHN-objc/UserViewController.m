@@ -501,13 +501,13 @@
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
         if([[AppConfig sharedConfig] nightModeEnabled]) {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
         } else {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
         }
-        [self.refreshControl endRefreshing];
+        [self.tableViewController.refreshControl endRefreshing];
     }
 }
 

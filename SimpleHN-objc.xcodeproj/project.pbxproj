@@ -43,6 +43,10 @@
 		985219591C11234700A183A6 /* CommentCellHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 985219581C11234700A183A6 /* CommentCellHeaderView.m */; };
 		985936211C782E4100F05D5D /* ProgressHUDHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 985936201C782E4100F05D5D /* ProgressHUDHelper.m */; };
 		9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */; };
+		9870E3E41D9124810069F207 /* HNLoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9870E3E31D9124810069F207 /* HNLoginParser.m */; };
+		987E93B71D990BE20030D9B5 /* SimpleHNNightModeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 987E93B61D990BE20030D9B5 /* SimpleHNNightModeViewController.m */; };
+		987E93BA1D991D600030D9B5 /* StoriesSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 987E93B91D991D600030D9B5 /* StoriesSearchViewController.m */; };
+		987E93BD1D9924690030D9B5 /* SimpleHNNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 987E93BC1D9924690030D9B5 /* SimpleHNNavigationController.m */; };
 		988C10251BF1E53300FA36B9 /* SuProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 988C10241BF1E53300FA36B9 /* SuProgress.m */; };
 		9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9899FAB31BF1BE490097530C /* SimpleHNSplitViewController.m */; };
 		989CB4351C7714D9005AB2BD /* ProgressBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 989CB4341C7714D8005AB2BD /* ProgressBarView.m */; };
@@ -178,6 +182,14 @@
 		985936201C782E4100F05D5D /* ProgressHUDHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUDHelper.m; sourceTree = "<group>"; };
 		9865A64D1BE8B03700FE35F3 /* StoryLoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryLoadMoreCell.h; sourceTree = "<group>"; };
 		9865A64E1BE8B03700FE35F3 /* StoryLoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryLoadMoreCell.m; sourceTree = "<group>"; };
+		9870E3E21D9124810069F207 /* HNLoginParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HNLoginParser.h; sourceTree = "<group>"; };
+		9870E3E31D9124810069F207 /* HNLoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HNLoginParser.m; sourceTree = "<group>"; };
+		987E93B51D990BE20030D9B5 /* SimpleHNNightModeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNNightModeViewController.h; sourceTree = "<group>"; };
+		987E93B61D990BE20030D9B5 /* SimpleHNNightModeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNNightModeViewController.m; sourceTree = "<group>"; };
+		987E93B81D991D600030D9B5 /* StoriesSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesSearchViewController.h; sourceTree = "<group>"; };
+		987E93B91D991D600030D9B5 /* StoriesSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesSearchViewController.m; sourceTree = "<group>"; };
+		987E93BB1D9924690030D9B5 /* SimpleHNNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleHNNavigationController.h; sourceTree = "<group>"; };
+		987E93BC1D9924690030D9B5 /* SimpleHNNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleHNNavigationController.m; sourceTree = "<group>"; };
 		988C10231BF1E53300FA36B9 /* SuProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuProgress.h; sourceTree = "<group>"; };
 		988C10241BF1E53300FA36B9 /* SuProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuProgress.m; sourceTree = "<group>"; };
 		9892BA531C12A362008AE64B /* StoryCommentUserVote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCommentUserVote.h; sourceTree = "<group>"; };
@@ -537,6 +549,8 @@
 				98E96C311C20016B00AD1A2F /* HNAuthenticationParser.m */,
 				98E96C391C200A6900AD1A2F /* HNSessionAPIManager.h */,
 				98E96C3A1C200A6900AD1A2F /* HNSessionAPIManager.m */,
+				9870E3E21D9124810069F207 /* HNLoginParser.h */,
+				9870E3E31D9124810069F207 /* HNLoginParser.m */,
 			);
 			name = Authentication;
 			sourceTree = "<group>";
@@ -576,6 +590,12 @@
 				981953E51C22C2B700E571B4 /* StoryPastDiscussionsViewController.m */,
 				983DDED21D8A7F7900885673 /* AccountViewController.h */,
 				983DDED31D8A7F7900885673 /* AccountViewController.m */,
+				987E93B51D990BE20030D9B5 /* SimpleHNNightModeViewController.h */,
+				987E93B61D990BE20030D9B5 /* SimpleHNNightModeViewController.m */,
+				987E93B81D991D600030D9B5 /* StoriesSearchViewController.h */,
+				987E93B91D991D600030D9B5 /* StoriesSearchViewController.m */,
+				987E93BB1D9924690030D9B5 /* SimpleHNNavigationController.h */,
+				987E93BC1D9924690030D9B5 /* SimpleHNNavigationController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -881,6 +901,7 @@
 				98E96C381C20069300AD1A2F /* LoginButtonTableViewCell.m in Sources */,
 				98B8413E1C0EE01600FC80F6 /* AppConfigBase.m in Sources */,
 				98F5EBDE1BF0957800B1BA08 /* UserHeaderView.m in Sources */,
+				987E93BD1D9924690030D9B5 /* SimpleHNNavigationController.m in Sources */,
 				984844DA1BB6A83C00C1EB7A /* Comment.m in Sources */,
 				989E97FC1C16AC30009A4400 /* CommentStyle.m in Sources */,
 				98E725B31BF19A5800607CBC /* TopStoriesViewController.m in Sources */,
@@ -900,6 +921,7 @@
 				9899FAB41BF1BE490097530C /* SimpleHNSplitViewController.m in Sources */,
 				98B841411C0FD0DE00FC80F6 /* StoryCommentBaseTableViewCell.m in Sources */,
 				98B841391C0EDC9200FC80F6 /* AppConfig.m in Sources */,
+				987E93BA1D991D600030D9B5 /* StoriesSearchViewController.m in Sources */,
 				98E725B91BF19A6B00607CBC /* AskHNViewController.m in Sources */,
 				98B0FB871BE4BF7B0059E5F2 /* StoryCommentsButton.m in Sources */,
 				98F49A4E1C23F97000F1DF4E /* SettingsVersionTableViewCell.m in Sources */,
@@ -907,8 +929,10 @@
 				983DDED71D8BB23700885673 /* UserEmptyView.m in Sources */,
 				98E725B01BF1804A00607CBC /* StoriesViewController.m in Sources */,
 				989E97FF1C16AD3B009A4400 /* HNItemHelper.m in Sources */,
+				9870E3E41D9124810069F207 /* HNLoginParser.m in Sources */,
 				98E96C3B1C200A6900AD1A2F /* HNSessionAPIManager.m in Sources */,
 				9865A64F1BE8B03700FE35F3 /* StoryLoadMoreCell.m in Sources */,
+				987E93B71D990BE20030D9B5 /* SimpleHNNightModeViewController.m in Sources */,
 				98F5EBD41BF079D700B1BA08 /* ActionDrawerView.m in Sources */,
 				981953E61C22C2B700E571B4 /* StoryPastDiscussionsViewController.m in Sources */,
 				98B0FB801BE4BAE40059E5F2 /* NSString+HTML.m in Sources */,

@@ -15,6 +15,8 @@
 #import "Story.h"
 #import "StoryCell.h"
 
+#import "SimpleHNNightModeViewController.h"
+
 @import SafariServices;
 
 typedef NS_ENUM(NSInteger, StoryDetailViewControllerLoadStatus) {
@@ -30,7 +32,8 @@ typedef NS_ENUM(NSInteger, StoryDetailViewControllerDisplayMode) {
     StoryDetailViewControllerDisplayModeCommentContext = 1
 };
 
-@interface StoryDetailViewController : UITableViewController <UINavigationControllerDelegate, CommentCellDelegate, StoryCellDelegate, SFSafariViewControllerDelegate>
+@interface StoryDetailViewController : SimpleHNNightModeViewController <UINavigationControllerDelegate, CommentCellDelegate, StoryCellDelegate,
+    SFSafariViewControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) Story * detailItem;
 

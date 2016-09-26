@@ -7,20 +7,11 @@
 //
 
 #import "StoriesCommentsBaseViewController.h"
-#import "StoriesCommentsSearchResultsViewController.h"
-//#import "SuProgress.h"
 #import "SimpleHNWebViewController.h"
-
-//@import SafariServices;
 
 @interface StoriesCommentsBaseViewController ()
 
-- (void)nightModeEvent:(NSNotification*)notification;
-- (void)updateNightMode;
-
-- (void)processAlgoliaSearchResult:(NSDictionary*)result;
-
-@property (nonatomic, strong) UIColor * defaultSeparatorColor;
+- (void)didTapSearchItem:(id)sender;
 
 @end
 
@@ -51,15 +42,16 @@
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     _refreshDateFormatter.locale = locale;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
-                                                 name:DKNightVersionNightFallingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
-                                                 name:DKNightVersionDawnComingNotification object:nil];
+    self.tableViewController = [[UITableViewController alloc]
+                                initWithStyle:UITableViewStylePlain];
 }
 
 - (void)loadView {
     [super loadView];
     
+    self.tableView = _tableViewController.tableView;
+    
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
@@ -71,76 +63,47 @@
            forCellReuseIdentifier:kCommentCellReuseIdentifier];
     [self.tableView registerClass:[StoryCommentsContentLoadingCell class]
            forCellReuseIdentifier:kStoryCommentsContentLoadingCellReuseIdentifier];
-    
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.backgroundColor = [UIColor whiteColor];
-    self.refreshControl.tintColor = [UIColor grayColor];
-    [self.refreshControl addTarget:self
+
+    self.tableViewController.refreshControl = [[UIRefreshControl alloc] init];
+    self.tableViewController.refreshControl.backgroundColor = [UIColor whiteColor];
+    self.tableViewController.refreshControl.tintColor = [UIColor grayColor];
+    [self.tableViewController.refreshControl addTarget:self
                             action:@selector(loadContent:)
                   forControlEvents:UIControlEventValueChanged];
     
-    self.searchResultsController = [[StoriesCommentsSearchResultsViewController alloc] init];
-    _searchResultsController.delegate = self;
+    [self.view addSubview:_tableView];
     
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
-    self.searchController.searchResultsUpdater = self;
-    
-    [self.searchController.searchBar sizeToFit];
-    self.searchController.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
-    self.searchController.delegate = self;
-    self.searchController.dimsBackgroundDuringPresentation = NO; // default is YES
-    self.searchController.searchBar.delegate = self; // so we can monitor text changes + others
-    
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
     [self updateNightMode];
+    
+    _tableViewController.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                              [UIApplication sharedApplication].statusBarFrame.size.height,
+                                                                   
+                                                              0, self.tabBarController.tabBar.frame.size.height +
+                                                                   self.navigationController.toolbar.frame.size.height, 0);
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-//    if (self.navigationController && self.navigationController.navigationBar) {
-//        UINavigationBar *navbar = self.navigationController.navigationBar;
-//        NSArray * existingProgressBarViews = [[navbar subviews] filteredArrayUsingPredicate:
-//                                              [NSPredicate predicateWithFormat:@"tag==%d", kProgressBarTag]];
-//        if([existingProgressBarViews count] > 0) {
-//            NSLog(@"Found existing progress bar");
-//            self.progressBarView = [existingProgressBarViews firstObject];
-//        } else {
-//            self.progressBarView = [ProgressBarView addToNavBar:navbar];
-//        }
-//    }
-    
     self.initialLoadDone = NO;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
     
-//    if (self.navigationController && self.navigationController.navigationBar) {
-//        [ProgressBarView addToNavBar:self.navigationController.navigationBar];
-//    }
+    NSMutableArray * rightItemsMutable = [self.navigationItem.rightBarButtonItems mutableCopy];
+    
+    UIBarButtonItem * searchItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"search-toolbar"]
+                                                                    style:UIBarButtonItemStylePlain target:self action:@selector(didTapSearchItem:)];
+    [rightItemsMutable addObject:searchItem];
+    self.navigationItem.rightBarButtonItems = rightItemsMutable;
 }
 
 // Stub method, to be overridden in subclass
 - (void)loadMoreItems {
-    NSLog(@"StoriesCommentsBaseViewController, loadMoreItems called");
     
     // Reset to original state
     StoryLoadMoreCell * loadMoreCell = [self.tableView cellForRowAtIndexPath:
                                         [NSIndexPath indexPathForRow:self.loadMoreRowIndex inSection:0]];
     loadMoreCell.state = StoryLoadMoreCellStateNormal;
-}
-
-- (void)query:(NSString*)query {
-    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
-                                      withPage:0 withCompletion:^(NSDictionary *result) {
-        [self processAlgoliaSearchResult:result];
-    }];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -243,7 +206,7 @@
                     return 88.0f;
                 }
             } @catch(NSException * e) {
-                NSLog(@"heightForRowAtIndexPath: %@, crash", indexPath);
+                NSLog(@"ERROR: heightForRowAtIndexPath: %@, crash", indexPath);
                 return 44.0f;
             }
             
@@ -473,13 +436,10 @@
             }
         }
     } // Catches two else cases implicitly
-    
-    NSLog(@"%@", link);
     [self performSegueWithIdentifier:@"showWeb" sender:link];
 }
 
 - (void)commentCell:(CommentCell*)cell didLongPressLink:(NSURL *)link {
-    NSLog(@"commentCell:didLongPressLink:");
     [CommentCell handleLongPressForLink:link inComment:cell.comment inController:self];    
 }
 
@@ -487,186 +447,42 @@
     [CommentCell handleActionForComment:cell.comment withType:type inController:self];
 }
 
-#pragma mark - UISearchResultsUpdating Methods
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    
-    UISearchBar * searchBar = _searchController.searchBar;
-    NSString * query = searchBar.text;
-    
-    [self.searchResultsController clearAllResults];
-    
-    NSLog(@"updateSearchResultsForSearchController: %@", query);
-    
-    if([query isEqualToString:self.activeQuery]) {
-        NSLog(@"query is already activeQuery, returning early");
-        return;
-    }
-    self.activeQuery = query;
-    
-    if(_pendingSearchOperation) {
-        [NSObject cancelPreviousPerformRequestsWithTarget:
-         self selector:@selector(query:) object:_pendingSearchQuery];
-        
-        _pendingSearchQuery = nil;
-        _pendingSearchOperation = NO;
-    }
-    
-    [self performSelector:@selector(query:) withObject:query afterDelay:0.5];
-    
-    _pendingSearchOperation = YES;
-    _pendingSearchQuery = query;
-}
-
-#pragma mark - StoriesCommentsSearchResultsViewControllerDelegate
-- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
-    NSLog(@"storiesCommentsSearchResultsViewController:didSelectResult:");
-    
-    if(self.splitViewController.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-        [self.searchController setActive:NO];
-    }
-    
-    Story * story = (Story*)result;
-    if(!story.url) { // Ask HN item, or Show HN item without a url
-        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        UINavigationController * nav = (UINavigationController *)
-            [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
-        StoryDetailViewController * vc = (StoryDetailViewController *)[nav topViewController];
-        
-        vc.detailItem = story;
-        [self.splitViewController showDetailViewController:nav sender:nil];
-        
-    } else {
-        
-        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        
-        UINavigationController * nav = (UINavigationController *)
-        [sb instantiateViewControllerWithIdentifier:@"SimpleHNWebViewControllerNavController"];
-        SimpleHNWebViewController * vc = (SimpleHNWebViewController *)[nav topViewController];
-        
-        vc.selectedStory = story;
-        [self.splitViewController showDetailViewController:nav sender:nil];
-    }
-}
-
-- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
-    controller didTapCommentsForResult:(id)result {
-    
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController * nav = (UINavigationController *)
-    [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
-    StoryDetailViewController * vc = (StoryDetailViewController *)[nav topViewController];
-    
-    vc.detailItem = result;
-    [self.splitViewController showDetailViewController:nav sender:nil];
-}
-
-- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
-    controller loadResultsForPageWithNumber:(NSNumber*)pageNumber {
-    NSLog(@"storiesCommentsSearchResultsViewController:loadResultsForPageWithNumber: %@", pageNumber);
-    
-    NSString * query = self.activeQuery;
-    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
-                                      withPage:[pageNumber integerValue] withCompletion:^(NSDictionary *result) {
-        [self processAlgoliaSearchResult:result];
-    }];
-}
-
-- (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)
-    controller didChangeTimePeriod:(NSNumber*)timePeriod {
-    NSLog(@"storiesCommentsSearchResultsViewController:didChangeTimePeriod: %@", timePeriod);
-    
-    NSString * query = self.activeQuery;
-    [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
-                                      withPage:0 withCompletion:^(NSDictionary *result) {
-        [self processAlgoliaSearchResult:result];
-    }];
-}
-
 #pragma mark - Private Methods
 
 - (void)loadContent:(id)sender {
-    NSLog(@"loadContent:");
-}
-
-
-- (void)nightModeEvent:(NSNotification*)notification {
-    [self updateNightMode];
 }
 
 - (void)updateNightMode {
+    [super updateNightMode];
     
-    if(!_defaultSeparatorColor) {
-        _defaultSeparatorColor = self.tableView.separatorColor;
+    if(!self.defaultSeparatorColor) {
+        self.defaultSeparatorColor = self.tableView.separatorColor;
     }
     
     if([[AppConfig sharedConfig] nightModeEnabled]) {
         
-        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
-        self.tabBarController.tabBar.barTintColor = kNightDefaultColor;
-        
-        self.refreshControl.backgroundColor = kNightDefaultColor;
-        self.view.backgroundColor = kNightDefaultColor;
+        self.tableViewController.refreshControl.backgroundColor = kNightDefaultColor;
         self.tableView.backgroundColor = kNightDefaultColor;
-        
         self.tableView.separatorColor = UIColorFromRGB(0x555555);
-        
-        [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor whiteColor]];
-        
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
         
     } else {
         
-        self.navigationController.navigationBar.barTintColor = nil;
-        self.tabBarController.tabBar.barTintColor = nil;
-        
-        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.tableViewController.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
         self.tableView.backgroundColor = UIColorFromRGB(0xffffff);
-        
-        self.tableView.separatorColor = _defaultSeparatorColor;
-        
-        [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor blackColor]];
-        
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+        self.tableView.separatorColor = self.defaultSeparatorColor;
     }
     
     [self.tableView reloadData];
 }
 
-- (void)processAlgoliaSearchResult:(NSDictionary*)result {
-    
-    if(!result) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error"
-                                                                       message:@"Unable to contact the search server. Please try again later."
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {}];
-        [alert addAction:defaultAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else {
-        
-        if([[result allKeys] containsObject:kHNAlgoliaAPIManagerTotalHits]) {
-            _searchResultsController.totalResultsCount = [result[kHNAlgoliaAPIManagerTotalHits] integerValue];
-        }
-        if([[result allKeys] containsObject:kHNAlgoliaAPIManagerCurrentPage]) {
-            _searchResultsController.currentPage = [result[kHNAlgoliaAPIManagerCurrentPage] integerValue];
-        }
-        NSArray * results = result[kHNAlgoliaAPIManagerResults];
-        [_searchResultsController addSearchResults:results];
-    }
+- (void)didTapSearchItem:(id)sender {
+    [self performSegueWithIdentifier:@"showSearch" sender:nil];
 }
 
 #pragma mark - StoryCommentVotingTableViewCellDelegate Methods
-- (void)storyCommentCellDidUpvote:(StoryCommentBaseTableViewCell*)cell {
-    
-}
-
-- (void)storyCommentCellDidDownvote:(StoryCommentBaseTableViewCell*)cell {
-    
+- (void)storyCommentCellDidVote:(StoryCommentBaseTableViewCell*)cell
+                       voteType:(NSNumber*)voteType {
+    NSLog(@"storyCommentCellDidVote: %@", voteType);
 }
 
 @end

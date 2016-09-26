@@ -26,6 +26,8 @@
 #define kStoryLoadingMoreCommentsCellReuseIdentifier @"storyLoadingMoreCommentsCellReuseIdentifier"
 #define kNoContentSelectedCellReuseIdentifier @"noContentSelectedCellReuseIdentifier"
 
+#define COMMENTS_PER_PAGE 100
+
 //@import WebKit;
 
 @interface StoryDetailViewController ()
@@ -34,8 +36,10 @@
 @property (nonatomic, strong) NSProgress * loadingProgress;
 @property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
 
-@property (nonatomic, strong) UIColor * defaultSeparatorColor;
 @property (nonatomic, assign) BOOL commentCollapseExpandBeginUpdatesOpen;
+
+@property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) UITableViewController * tableViewController;
 
 - (void)loadContent;
 
@@ -59,9 +63,6 @@
 
 - (void)configureViewForStory;
 - (void)configureViewForComment;
-
-- (void)nightModeEvent:(NSNotification*)notification;
-- (void)updateNightMode;
 
 @end
 
@@ -102,16 +103,19 @@
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     _refreshDateFormatter.locale = locale;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
-                                                 name:DKNightVersionNightFallingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(nightModeEvent:)
-                                                 name:DKNightVersionDawnComingNotification object:nil];
+    self.tableViewController = [[UITableViewController alloc]
+                                initWithStyle:UITableViewStylePlain];
 }
 
 - (void)loadView {
     [super loadView];
     
     self.navigationController.delegate = self;
+    
+    self.tableView = _tableViewController.tableView;
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
@@ -133,14 +137,24 @@
     [self.tableView registerClass:[StoryDetailNoContentSelectedTableViewCell class]
            forCellReuseIdentifier:kNoContentSelectedCellReuseIdentifier];
     
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.backgroundColor = [UIColor whiteColor];
-    self.refreshControl.tintColor = [UIColor grayColor];
-    [self.refreshControl addTarget:self
+    self.tableViewController.refreshControl = [[UIRefreshControl alloc] init];
+    self.tableViewController.refreshControl.backgroundColor = [UIColor whiteColor];
+    self.tableViewController.refreshControl.tintColor = [UIColor grayColor];
+    [self.tableViewController.refreshControl addTarget:self
                             action:@selector(reloadContent:)
                   forControlEvents:UIControlEventValueChanged];
     
+    [self.view addSubview:_tableView];
+    
+    NSDictionary * bindings = NSDictionaryOfVariableBindings(_tableView);
+    [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
+                               @"H:|[_tableView]|;V:|[_tableView]|" options:0 metrics:nil views:bindings]];
     [self updateNightMode];
+    
+    _tableViewController.tableView.contentInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height +
+                                                                   [UIApplication sharedApplication].statusBarFrame.size.height,
+                                                                   
+                                                                   0, self.tabBarController.tabBar.frame.size.height + self.navigationController.toolbar.frame.size.height, 0);
 }
 
 - (void)setDetailItem:(Story*)newDetailItem {
@@ -596,7 +610,7 @@
         if(!currentComment.collapseExpandOrigin) {
             NSInteger index = [visibleDisplayComments indexOfObject:currentComment];
             if(index == NSNotFound) {
-                NSLog(@"SHOULD NEVER HAPPEN, %@", indexes);
+//                NSLog(@"SHOULD NEVER HAPPEN, %@", indexes);
                 //                abort();
                 continue;
             }
@@ -628,7 +642,7 @@
         NSDictionary * indexes = [Comment currentCollapseExpandOrigin].collapseExpandOriginIndexes;
         
         if(![[indexes allKeys] containsObject:comment.commentId]) {
-            NSLog(@"SHOULD NEVER HAPPEN");
+//            NSLog(@"SHOULD NEVER HAPPEN");
             return;
         }
         
@@ -701,7 +715,7 @@
         NSDictionary * indexes = [Comment currentCollapseExpandOrigin].collapseExpandOriginIndexes;
         
         if(![[indexes allKeys] containsObject:comment.commentId]) {
-            NSLog(@"SHOULD NEVER HAPPEN");
+//            NSLog(@"SHOULD NEVER HAPPEN");
             return;
         }
         
@@ -782,43 +796,24 @@
     [self loadContent];
 }
 
-- (void)nightModeEvent:(NSNotification*)notification {
-    [self updateNightMode];
-}
-
 - (void)updateNightMode {
+    [super updateNightMode];
     
-    if(!_defaultSeparatorColor) {
-        _defaultSeparatorColor = self.tableView.separatorColor;
+    if(!self.defaultSeparatorColor) {
+        self.defaultSeparatorColor = self.tableView.separatorColor;
     }
     
     if([[AppConfig sharedConfig] nightModeEnabled]) {
         
-        self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
-        self.tabBarController.tabBar.barTintColor = kNightDefaultColor;
-        
-        self.refreshControl.backgroundColor = kNightDefaultColor;
-        self.view.backgroundColor = kNightDefaultColor;
+        self.tableViewController.refreshControl.backgroundColor = kNightDefaultColor;
         self.tableView.backgroundColor = kNightDefaultColor;
-        
         self.tableView.separatorColor = UIColorFromRGB(0x555555);
-        
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor whiteColor] };
-        
+
     } else {
         
-        self.navigationController.navigationBar.barTintColor = nil;
-        self.tabBarController.tabBar.barTintColor = nil;
-        
-        self.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
-        self.view.backgroundColor = UIColorFromRGB(0xffffff);
+        self.tableViewController.refreshControl.backgroundColor = UIColorFromRGB(0xffffff);
         self.tableView.backgroundColor = UIColorFromRGB(0xffffff);
-        
-        self.tableView.separatorColor = _defaultSeparatorColor;
-        
-        self.navigationController.navigationBar.titleTextAttributes =
-            @{ NSForegroundColorAttributeName: [UIColor blackColor] };
+        self.tableView.separatorColor = self.defaultSeparatorColor;
     }
     
     [self.tableView reloadData];
@@ -959,15 +954,16 @@
         
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [self.refreshDateFormatter stringFromDate:[NSDate date]]];
         if([[AppConfig sharedConfig] nightModeEnabled]) {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
         } else {
-            self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
+            self.tableViewController.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:
                                                    @{ NSForegroundColorAttributeName: [UIColor grayColor] }];
         }
-        [self.refreshControl endRefreshing];
+        [self.tableViewController.refreshControl endRefreshing];
     }
 }
+
 
 #pragma mark - StoryCellDelegate Methods
 - (void)storyCellDidDisplayActionDrawer:(StoryCell*)cell {

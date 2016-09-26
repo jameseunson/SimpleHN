@@ -37,25 +37,31 @@ static HNSessionAPIManager * _sharedManager = nil;
     NSDictionary *cookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:cookieStorage];
     NSLog(@"%@", cookieHeaders);
     
+    if([cookieStorage count] > 0) {
+        NSHTTPCookie * cookie = [cookieStorage firstObject];
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+    }
+    
     NSDictionary * params = @{ @"acct": username, @"pw": password, @"goto": @"news" };
     NSLog(@"params: %@", params);
     
-//    [self.sessionManager POST:@"login?goto=news" parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
-//        NSLog(@"%@", responseObject);
-//        
-//        NSString * responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-//        
-//        NSArray * postRequestCookieStorage = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:
-//                                              [NSURL URLWithString:@"https://news.ycombinator.com"]];
-//        NSDictionary * postRequestCookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:postRequestCookieStorage];
-//        NSLog(@"%@", postRequestCookieHeaders);
-//        
-//        completion(responseObject);
-//        
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"%@", error);
-//        completion(nil);
-//    }];
+    [self.sessionManager POST:@"login?goto=news" parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSLog(@"%@", responseObject);
+        
+        NSString * responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"%@", responseString);
+        
+        NSArray * postRequestCookieStorage = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:
+                                              [NSURL URLWithString:@"https://news.ycombinator.com"]];
+        NSDictionary * postRequestCookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:postRequestCookieStorage];
+        NSLog(@"%@", postRequestCookieHeaders);
+        
+        completion(responseObject);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"%@", error);
+        completion(nil);
+    }];
 }
 
 #pragma mark - Property Override Methods

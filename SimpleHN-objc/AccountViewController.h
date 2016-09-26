@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SimpleHNNightModeViewController.h"
 
-@interface AccountViewController : UIViewController
+@interface AccountViewController : SimpleHNNightModeViewController
 
 @end

@@ -23,7 +23,7 @@
         
         self.layer.cornerRadius = 4.0f;
         
-        [self setBackgroundColor:RGBCOLOR(238, 238, 238)];
+        [self setBackgroundColor:[UIColor clearColor]];
         
         self.layer.borderColor = [UIColor orangeColor].CGColor;
         self.layer.borderWidth = 1.0f;
@@ -41,11 +41,17 @@
 }
 
 - (void)didTouchDown:(id)sender {
-    self.backgroundColor = [UIColor colorWithRed:221.0f/255.0f green:221.0f/255.0f
-                                            blue:221.0f/255.0f alpha:1.0f];
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.backgroundColor = RGBCOLOR(51, 51, 51);
+        
+    } else {
+        self.backgroundColor = RGBCOLOR(221, 221, 221);
+    }
 }
 - (void)didTouchUp:(id)sender {
-    self.backgroundColor = RGBCOLOR(238, 238, 238);
+    self.backgroundColor = [UIColor clearColor];
 }
+
 
 @end

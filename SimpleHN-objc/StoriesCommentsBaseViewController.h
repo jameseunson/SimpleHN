@@ -13,19 +13,17 @@
 #import "CommentCell.h"
 #import "StoryCommentsContentLoadingCell.h"
 #import "ProgressBarView.h"
+#import "SimpleHNNightModeViewController.h"
 
 #define kStoryCellReuseIdentifier @"storyCellReuseIdentifier"
 #define kStoryLoadMoreCellReuseIdentifier @"storyLoadMoreCellReuseIdentifier"
 #define kCommentCellReuseIdentifier @"commentCellReuseIdentifier"
 #define kStoryCommentsContentLoadingCellReuseIdentifier @"storyCommentsContentLoadingCellReuseIdentifier"
 
-// Enables sharing of login for pull-to-load more functionality
-// between all controllers that use it
+@interface StoriesCommentsBaseViewController : SimpleHNNightModeViewController <StoryCellDelegate, CommentCellDelegate, StoryCommentVotingTableViewCellDelegate, UITableViewDelegate, UITableViewDataSource>
 
-@class StoriesCommentsSearchResultsViewController;
-@protocol StoriesCommentsSearchResultsViewControllerDelegate;
-
-@interface StoriesCommentsBaseViewController : UITableViewController <StoryCellDelegate, CommentCellDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, StoriesCommentsSearchResultsViewControllerDelegate, StoryCommentVotingTableViewCellDelegate>
+@property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) UITableViewController * tableViewController;
 
 @property (nonatomic, assign) BOOL initialLoadDone;
 @property (nonatomic, strong) NSDateFormatter * refreshDateFormatter;
@@ -47,22 +45,10 @@
 @property (nonatomic, assign) BOOL loadMoreOnReleasePending;
 @property (nonatomic, strong) NSProgress * loadingProgress;
 
-@property (nonatomic, strong) UISearchController * searchController;
-@property (nonatomic, strong) StoriesCommentsSearchResultsViewController * searchResultsController;
-@property (nonatomic, strong) UITableView * recentQueriesTableView;
-
-@property (nonatomic, assign) BOOL pendingSearchOperation;
-@property (nonatomic, strong) NSString * pendingSearchQuery;
-@property (nonatomic, strong) NSString * activeQuery;
-
-//@property (nonatomic, strong) NSTimer * retryTimer;
-//@property (nonatomic, strong)
-
+//- (void)updateNightMode;
 - (id)itemForIndexPath:(NSIndexPath *)indexPath;
 
 - (void)loadContent:(id)sender;
 - (void)loadMoreItems;
-
-- (void)query:(NSString*)query;
 
 @end

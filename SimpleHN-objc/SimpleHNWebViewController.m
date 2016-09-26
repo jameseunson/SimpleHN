@@ -39,6 +39,9 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 
 @property (nonatomic, strong) UIBarButtonItem * commentsItem;
 
+@property (nonatomic, strong) UIBarButtonItem * dayToggleItem;
+@property (nonatomic, strong) UIBarButtonItem * nightToggleItem;
+
 @property (nonatomic, strong) UISegmentedControl * readerToggleSegmentedControl;
 @property (nonatomic, strong) UIBarButtonItem * readerToggleBarButtonItem;
 @property (nonatomic, strong) UIBarButtonItem * readerBeforeFixedSpaceItem;
@@ -127,6 +130,20 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.nightToggleItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"day-night-toggle-night"]
+                                                            style:UIBarButtonItemStylePlain target:self action:@selector(toggleNightMode:)];
+    
+    self.dayToggleItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"day-night-toggle-night-cancel"]
+                                                          style:UIBarButtonItemStylePlain target:self action:@selector(toggleNightMode:)];
+    
+    NSMutableArray * rightBarButtonItems = [@[  ] mutableCopy];
+    
+    if(![[AppConfig sharedConfig] nightModeEnabled]) {
+        [rightBarButtonItems addObject:_nightToggleItem];
+    } else {
+        [rightBarButtonItems addObject:_dayToggleItem];
+    }
+    
     if(_selectedStory) {
         
         [_webView loadRequest:[NSURLRequest requestWithURL:_selectedStory.url]];
@@ -134,7 +151,7 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
         _titleView.titleString = _selectedStory.title;
         _titleView.subtitleString = [_selectedStory.url absoluteString];
         
-        self.navigationItem.rightBarButtonItem = _commentsItem;
+        [rightBarButtonItems addObject:_commentsItem];
         
         if([[AppConfig sharedConfig] storyAutomaticallyShowReader]) {
             self.displayMode = SimpleHNWebViewControllerDisplayModeReader;
@@ -149,10 +166,11 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
         
         _titleView.titleString = kLoadingText;
         _titleView.subtitleString = [_selectedURL absoluteString];
-        self.navigationItem.rightBarButtonItem = nil;
     }
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
     
-    _titleView.frame = CGRectMake(0, 8, self.navigationController.navigationBar.frame.size.width - 88.0f, self.navigationController.navigationBar.frame.size.height - 16.0f);
+    _titleView.frame = CGRectMake(0, 8, self.navigationController.navigationBar.frame.size.width - 88.0f,
+                                  self.navigationController.navigationBar.frame.size.height - 16.0f);
     
     self.navigationItem.titleView = _titleView;
     
@@ -162,13 +180,6 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
                       options:NSKeyValueObservingOptionNew context:NULL];
     [self.webView addObserver:self forKeyPath:@"canGoForward"
                       options:NSKeyValueObservingOptionNew context:NULL];
-
-    
-//    if([[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
-//        
-//        
-//
-//    }
     
     if(self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact
        || [[AppConfig sharedConfig] browserHidesBarsOnScroll]) {
@@ -328,14 +339,6 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
 
 #pragma mark - WKNavigationDelegate Methods
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
-    NSLog(@"webView, didStartProvisionalNavigation: %@", navigation);
-    
-//    if(webView == _webView) {
-//        _normalViewLoadStarted = YES;
-//        
-//    } else if(webView == _readerWebView) {
-//        _readerViewLoadStarted = YES;
-//    }
     
     if(webView.hidden) {
         return;
@@ -352,20 +355,7 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
     [self.navigationController.visibleViewController setToolbarItems:items];
 }
 
-- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
-    NSLog(@"webView, didFailProvisionalNavigation: %@, %@", navigation, error);
-}
-
-- (void)webView:(WKWebView *)webView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
-    NSLog(@"webView, didFailNavigation: %@", error);
-}
-
-- (void)webView:(WKWebView *)webView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
-    NSLog(@"webView, didCommitNavigation: %@", navigation);
-}
-
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
-    NSLog(@"webView, didFinishNavigation: %@", navigation);
     
 //    if(webView == _readerWebView && !_readerContentLoadingView.hidden) {
 //        _readerContentLoadingView.hidden = YES;
@@ -501,6 +491,33 @@ typedef NS_ENUM(NSInteger, SimpleHNWebViewControllerDisplayMode) {
         self.displayMode = SimpleHNWebViewControllerDisplayModeNormal;
     }
 }
+
+- (void)toggleNightMode:(id)sender {
+    
+    [[AppConfig sharedConfig] setBool:![[AppConfig sharedConfig] nightModeEnabled]
+                               forKey:kNightModeEnabled];
+    
+    AppDelegate * delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [UIView animateWithDuration:0.3 animations:^{
+        [delegate updateNightMode];
+    }];
+    
+    NSMutableArray * rightBarButtonItems = [@[  ] mutableCopy];
+    
+    if(![[AppConfig sharedConfig] nightModeEnabled]) {
+        [rightBarButtonItems addObject:_nightToggleItem];
+    } else {
+        [rightBarButtonItems addObject:_dayToggleItem];
+    }
+    if(_selectedStory) {
+        [rightBarButtonItems addObject:_commentsItem];
+    }
+    [self.navigationItem setRightBarButtonItems:rightBarButtonItems
+                                       animated:YES];
+    
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
 
 - (void)nightModeEvent:(NSNotification*)notification {
     [self updateNightMode];

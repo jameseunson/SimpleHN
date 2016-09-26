@@ -28,6 +28,7 @@
     
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:@"V:|[_emptyView]|;H:|[_emptyView]|" options:
                                0 metrics:nil views:NSDictionaryOfVariableBindings(_emptyView)]];
+    [self updateNightMode];
 }
 
 - (void)viewDidLoad {
@@ -41,6 +42,13 @@
     NSLog(@"userEmptyView:didTapLoginButton:");
     
     [self performSegueWithIdentifier:@"showLogin" sender:nil];
+}
+
+#pragma mark - Private Methods
+- (void)updateNightMode {
+    [super updateNightMode];
+
+    [self.emptyView updateNightMode];
 }
 
 @end

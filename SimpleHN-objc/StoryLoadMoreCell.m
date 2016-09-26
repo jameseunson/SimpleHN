@@ -76,8 +76,6 @@
 - (void)setState:(StoryLoadMoreCellState)state {
     _state = state;
     
-    NSLog(@"StoryLoadMoreCell, setState: %lu", self.state);
-    
     if(self.state == StoryLoadMoreCellStateNormal) {
         self.loadMoreSubtitleLabel.text = @"Pull down or tap";
         

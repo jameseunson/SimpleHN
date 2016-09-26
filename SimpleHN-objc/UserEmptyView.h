@@ -13,6 +13,8 @@
 
 @property (nonatomic, assign) __unsafe_unretained id<UserEmptyViewDelegate> delegate;
 
+- (void)updateNightMode;
+
 @end
 
 @protocol UserEmptyViewDelegate <NSObject>

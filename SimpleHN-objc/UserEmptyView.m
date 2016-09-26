@@ -70,6 +70,24 @@
     return self;
 }
 
+- (void)updateNightMode {
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        self.backgroundColor = RGBCOLOR(0, 0, 0);
+        
+        self.titleLabel.textColor = [UIColor whiteColor];
+        self.subtitleLabel.textColor = [UIColor grayColor];
+        
+    } else {
+        
+        self.backgroundColor = RGBCOLOR(238, 238, 238);
+        
+        self.titleLabel.textColor = [UIColor blackColor];
+        self.subtitleLabel.textColor = [UIColor darkGrayColor];
+    }
+}
+
+
 #pragma mark - Private Methods
 - (void)didTapActionButton:(id)sender {
     NSLog(@"didTapActionButton:");
