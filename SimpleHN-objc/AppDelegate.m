@@ -21,27 +21,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    // Override point for customization after application launch.
-    id rootVC = self.window.rootViewController;
-    NSLog(@"rootVC: %@", NSStringFromClass([rootVC class]));
-    
-//    SimpleHNSplitViewController *splitViewController =
-//        (SimpleHNSplitViewController *)self.window.rootViewController;
-//    
-//    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-//    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
-//    splitViewController.delegate = self;
-//    
-//    splitViewController.tabBarController = [splitViewController.viewControllers firstObject];
-//    splitViewController.storyDetailViewController =
-//        (StoryDetailViewController*)navigationController.topViewController;
+    NSArray *documentsPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSLog(@"documents: %@", documentsPaths.firstObject);
     
     self.window.tintColor = [UIColor orangeColor];
-    
     self.masterProgress = [NSProgress progressWithTotalUnitCount:0];
     
     [self updateNightMode];
-    
     [Fabric with:@[[Crashlytics class]]];    
     
     return YES;

@@ -11,7 +11,6 @@
 @interface StoriesCommentsSearchResultsViewController ()
 
 @property (nonatomic, strong) NSMutableArray < NSNumber * > * storiesList;
-
 @property (nonatomic, strong) StoriesCommentsSearchResultsSectionHeaderView * sectionHeaderView;
 
 @end
@@ -107,6 +106,10 @@
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    if(_loading) { // A tap when loading is meaningless
+        return;
+    }
+    
     if(indexPath.row == self.currentVisibleItemMax && [self.storiesList count] > 0) {
         [self loadMoreItems];
         
@@ -194,12 +197,10 @@
     }
     
     StoriesTimePeriods filter = [[AppConfig sharedConfig] activeSearchFilter];
-    if(filter != StoriesTimePeriodsNoPeriod) {
-        NSString * filterName = kTimePeriodsLookup[@(filter)];
-        _sectionHeaderView.filterSubtitleLabel.text = [NSString stringWithFormat:@"Showing %@", filterName];
-    } else {
-        _sectionHeaderView.filterSubtitleLabel.text = @"Showing all results (no filter)";
-    }
+    
+    NSString * filterName = kTimePeriodsLookup[@(filter)];
+    _sectionHeaderView.filterSubtitleLabel.text = [NSString stringWithFormat:@"Showing %@", filterName];
+    
     [_sectionHeaderView setNeedsLayout];
 }
 

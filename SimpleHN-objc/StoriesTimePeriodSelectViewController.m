@@ -32,7 +32,6 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
-    
     if([[AppConfig sharedConfig] nightModeEnabled]) {
         self.navigationController.navigationBar.barTintColor = kNightDefaultColor;
         self.view.backgroundColor = kNightDefaultColor;

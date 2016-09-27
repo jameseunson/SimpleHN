@@ -53,9 +53,9 @@
     _storyType = StoryTypeDefault;
     
     self.storiesObjectsList = [[NSMutableArray alloc] init];
-    self.selectedTimePeriodStories = [[NSMutableArray alloc] init];
-    
-    self.selectedTimePeriod = [[kTimePeriods firstObject] intValue]; // Now
+//    self.selectedTimePeriodStories = [[NSMutableArray alloc] init];
+//    
+//    self.selectedTimePeriod = [[kTimePeriods firstObject] intValue]; // Now
     
     // Transient storage so the cellForRow method can pickup a pending
     // diff to associate with a story that has been updated by Firebase
@@ -164,58 +164,46 @@
 
 #pragma mark - UITableViewDataSource Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if(self.selectedTimePeriod == StoriesTimePeriodsNow) {
-        return [super tableView:tableView numberOfRowsInSection:section];
-        
-    } else {
-        
-        NSInteger itemsCount = [self.selectedTimePeriodStories count];
-        if(itemsCount > 0) {
-            itemsCount = itemsCount + 1;
-        }
-        return itemsCount;
-    }
+    
+//    NSInteger itemsCount = [self.selectedTimePeriodStories count];
+//    if(itemsCount > 0) {
+//        itemsCount = itemsCount + 1;
+//    }
+//    return itemsCount;
+    return [super tableView:tableView numberOfRowsInSection:section];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    if(self.selectedTimePeriod == StoriesTimePeriodsNow) {
-        return [super tableView:tableView cellForRowAtIndexPath:indexPath];
-        
-    } else {
-        
-        if(indexPath.row == [self.selectedTimePeriodStories count]) {
-            StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                                       kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
-            return cell;
-            
-        } else {
-            
-            StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
-                               kStoryCellReuseIdentifier forIndexPath:indexPath];
-            cell.story = self.selectedTimePeriodStories[indexPath.row];
-            
-            cell.storyCellDelegate = self;
-            cell.votingDelegate = self;
-            
-            return cell;
-        }
-    }
+    
+//    if(indexPath.row == [self.selectedTimePeriodStories count]) {
+//        StoryLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:
+//                                   kStoryLoadMoreCellReuseIdentifier forIndexPath:indexPath];
+//        return cell;
+//        
+//    } else {
+//        
+//        StoryCell *cell = [tableView dequeueReusableCellWithIdentifier:
+//                           kStoryCellReuseIdentifier forIndexPath:indexPath];
+//        cell.story = self.selectedTimePeriodStories[indexPath.row];
+//        
+//        cell.storyCellDelegate = self;
+//        cell.votingDelegate = self;
+//        
+//        return cell;
+//    }
+    return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if(self.selectedTimePeriod == StoriesTimePeriodsNow) {
-        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
-        
-    } else {
-        if(indexPath.row == [self.selectedTimePeriodStories count]) {
-            return 60.0f;
-            
-        } else {
-            return [StoryCell heightForStoryCellWithStory:self.selectedTimePeriodStories[indexPath.row]
-                                                    width:tableView.frame.size.width];
-        }
-    }
+//    if(indexPath.row == [self.selectedTimePeriodStories count]) {
+//        return 60.0f;
+//        
+//    } else {
+//        return [StoryCell heightForStoryCellWithStory:self.selectedTimePeriodStories[indexPath.row]
+//                                                width:tableView.frame.size.width];
+//    }
+    return [super tableView:tableView heightForRowAtIndexPath:indexPath];
 }
 
 #pragma mark - UITableViewDelegate Methods
@@ -227,22 +215,19 @@
     
     Story * selectedStory = nil;
     
-    if(self.selectedTimePeriod == StoriesTimePeriodsNow) {
-        if(indexPath.row == self.currentVisibleItemMax && [self.storiesList count] > 0) {
-            [self loadMoreItems];
-            return;
-            
-        } else {
-            selectedStory = (Story*)[self itemForIndexPath:indexPath];
-        }
+//    if(indexPath.row == [self.selectedTimePeriodStories count]) {
+//        [self loadMoreItems];
+//        return;
+//        
+//    } else {
+//        selectedStory = self.selectedTimePeriodStories[indexPath.row];
+//    }
+    if(indexPath.row == self.currentVisibleItemMax && [self.storiesList count] > 0) {
+        [self loadMoreItems];
+        return;
+        
     } else {
-        if(indexPath.row == [self.selectedTimePeriodStories count]) {
-            [self loadMoreItems];
-            return;
-            
-        } else {
-            selectedStory = self.selectedTimePeriodStories[indexPath.row];
-        }
+        selectedStory = (Story*)[self itemForIndexPath:indexPath];
     }
     
     if(self.storyType == StoryTypeAskHN || !selectedStory.url) { // Ask HN item, or Show HN item without a url
@@ -329,20 +314,20 @@
 }
 
 #pragma mark - StoriesTimePeriodSelectViewController Methods
-- (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
-                  didChangeSelectedTimePeriod:(NSNumber*)period {
-    NSLog(@"storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:");
-    
-    self.timePeriodItem.title = kTimePeriodsLookup[period];
-    
-    self.selectedTimePeriod = [period intValue];
-    [self.selectedTimePeriodStories removeAllObjects];
-    
-    self.initialLoadDone = NO;
-    [self.tableView reloadData];
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
+//- (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
+//                  didChangeSelectedTimePeriod:(NSNumber*)period {
+//    NSLog(@"storiesTimePeriodSelectViewController:didChangeSelectedTimePeriod:");
+//    
+//    self.timePeriodItem.title = kTimePeriodsLookup[period];
+//    
+//    self.selectedTimePeriod = [period intValue];
+//    [self.selectedTimePeriodStories removeAllObjects];
+//    
+//    self.initialLoadDone = NO;
+//    [self.tableView reloadData];
+//    
+//    [self dismissViewControllerAnimated:YES completion:nil];
+//}
 
 - (void)storiesTimePeriodSelectViewControllerDidCancelSelect:(StoriesTimePeriodSelectViewController*)controller {
     NSLog(@"storiesTimePeriodSelectViewControllerDidCancelSelect:");

@@ -22,8 +22,8 @@
 
 @property (nonatomic, assign) StoryType storyType;
 
-@property (nonatomic, assign) StoriesTimePeriods selectedTimePeriod;
-@property (nonatomic, strong) NSMutableArray * selectedTimePeriodStories;
+//@property (nonatomic, assign) StoriesTimePeriods selectedTimePeriod;
+//@property (nonatomic, strong) NSMutableArray * selectedTimePeriodStories;
 
 @property (strong, nonatomic) StoryDetailViewController *detailViewController;
 

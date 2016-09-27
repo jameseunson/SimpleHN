@@ -9,10 +9,16 @@
 #import "StoriesSearchViewController.h"
 #import "SimpleHNWebViewController.h"
 
+#define kTimePeriodCellReuseIdentifier @"timePeriodCellReuseIdentifier"
+#define kSearchHistoryCellReuseIdentifier @"timePeriodCellReuseIdentifier"
+
 @interface StoriesSearchViewController ()
 
 - (void)didTapCancelItem:(id)sender;
 - (void)processAlgoliaSearchResult:(NSDictionary*)result;
+
+@property (nonatomic, assign) NSInteger selectedPeriodIndex;
+@property (nonatomic, strong) NSIndexPath * lastPeriodSelected;
 
 @end
 
@@ -21,12 +27,20 @@
 - (void)loadView {
     [super loadView];
     
-    self.recentQueriesTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.definesPresentationContext = YES;
+    
+    self.recentQueriesTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _recentQueriesTableView.delegate = self;
     _recentQueriesTableView.dataSource = self;
     _recentQueriesTableView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [_recentQueriesTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+    [self.recentQueriesTableView registerClass:[UITableViewCell class]
+           forCellReuseIdentifier:kTimePeriodCellReuseIdentifier];
+    [self.recentQueriesTableView registerClass:[UITableViewCell class]
+                        forCellReuseIdentifier:kSearchHistoryCellReuseIdentifier];
+    
+    self.recentQueriesTableView.rowHeight = UITableViewAutomaticDimension;
+    self.recentQueriesTableView.estimatedRowHeight = 88.0f; // set to whatever your "average" cell height is
     
     [self.view addSubview:_recentQueriesTableView];
     
@@ -49,16 +63,27 @@
     NSDictionary * bindings = NSDictionaryOfVariableBindings(_recentQueriesTableView);
     [self.view addConstraints:[NSLayoutConstraint jb_constraintsWithVisualFormat:
                                @"H:|[_recentQueriesTableView]|;V:|[_recentQueriesTableView]|" options:0 metrics:nil views:bindings]];
+    
+    [self updateNightMode];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    _selectedPeriodIndex = 0;
+    _lastPeriodSelected = [NSIndexPath indexPathForRow:0 inSection:0];
+    
+    self.title = @"Search HN";
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:
                                              UIBarButtonSystemItemCancel target:self action:@selector(didTapCancelItem:)];
 }
 
 - (void)query:(NSString*)query {
+    
+    [[AppConfig sharedConfig] addRecentQuery:query];
+    [_recentQueriesTableView reloadData];
+    
     [[HNAlgoliaAPIManager sharedManager] query:query withTimePeriod:[[AppConfig sharedConfig] activeSearchFilter]
                                       withPage:0 withCompletion:^(NSDictionary *result) {
                                           [self processAlgoliaSearchResult:result];
@@ -101,19 +126,26 @@
     }
     
     if([[AppConfig sharedConfig] nightModeEnabled]) {
-        self.recentQueriesTableView.backgroundColor = kNightDefaultColor;
+        self.searchController.searchBar.barStyle = UIBarStyleBlack;
+        
+        self.recentQueriesTableView.backgroundColor = self.view.backgroundColor = kNightDefaultColor;
         self.recentQueriesTableView.separatorColor = UIColorFromRGB(0x555555);
         
         self.searchController.searchBar.barTintColor = UIColorFromRGB(0x222222);
         self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
         
     } else {
-        self.recentQueriesTableView.backgroundColor = UIColorFromRGB(0xffffff);
+        
+        self.searchController.searchBar.barStyle = UIBarStyleDefault;
+        
+        self.recentQueriesTableView.backgroundColor = self.view.backgroundColor = UIColorFromRGB(0xffffff);
         self.recentQueriesTableView.separatorColor = self.defaultSeparatorColor;
         
         self.searchController.searchBar.barTintColor = nil;
         self.searchController.searchBar.searchBarStyle = UISearchBarStyleDefault;
     }
+    
+    [self.recentQueriesTableView reloadData];
 }
 
 - (void)didTapCancelItem:(id)sender {
@@ -147,14 +179,149 @@
     _pendingSearchQuery = query;
 }
 
+#pragma mark - UITableViewDataSource Methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 3;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if(section == 0) {
+        return [kTimePeriods count];
+        
+    } else if(section == 1) {
+        
+        if([[[AppConfig sharedConfig] searchRecentQueries] count] == 0) {
+            return 1;
+            
+        } else {
+            return MIN([[[AppConfig sharedConfig] searchRecentQueries] count], 5);
+        }
+        
+    } else {
+        if([[[AppConfig sharedConfig] searchRecentQueries] count] == 0) {
+            return 0;
+        } else {
+            return 1; // Clear button
+        }
+    }
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewCell * cell = nil;
+    if(indexPath.section == 0) {
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:
+                                  kTimePeriodCellReuseIdentifier forIndexPath:indexPath];
+        cell.textLabel.text = kTimePeriodsLookup[kTimePeriods[indexPath.row]];
+        
+        if(_selectedPeriodIndex == [indexPath row]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+        
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:
+                kSearchHistoryCellReuseIdentifier forIndexPath:indexPath];
+        
+        if(indexPath.section == 1) {
+            if([[[AppConfig sharedConfig] searchRecentQueries] count] == 0) {
+                cell.textLabel.text = @"No recent searches";
+            } else {
+                cell.textLabel.text = [[AppConfig sharedConfig] searchRecentQueries][indexPath.row];
+            }
+        } else {
+            cell.textLabel.text = @"Clear Search History";
+        }
+    }
+    
+    if([[AppConfig sharedConfig] nightModeEnabled]) {
+        cell.nightBackgroundColor = kNightDefaultColor;
+        cell.textLabel.nightTextColor = UIColorFromRGB(0xffffff);
+        
+    } else {
+        cell.backgroundColor = UIColorFromRGB(0xffffff);
+        cell.textLabel.textColor = UIColorFromRGB(0x000000);
+    }
+    
+    if(indexPath.section == 1 && [[[AppConfig sharedConfig] searchRecentQueries] count] == 0) {
+        cell.textLabel.textColor = [UIColor grayColor];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+    } else if(indexPath.section == 2) {
+        cell.textLabel.textColor = [UIColor orangeColor];
+    }
+    
+    return cell;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if(section == 0) {
+        return @"Time Period";
+        
+    } else if(section == 1) {
+        return @"Recent Searches";
+        
+    } else {
+        return nil;
+    }
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section == 1 && [[[AppConfig sharedConfig] searchRecentQueries] count] > 0) {
+        return YES;
+    }
+    return NO;
+}
+
+#pragma mark - UITableViewDelegate Methods
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if(indexPath.section == 0) {
+     
+        _selectedPeriodIndex = [indexPath row];
+        [tableView cellForRowAtIndexPath:_lastPeriodSelected].accessoryType = UITableViewCellAccessoryNone;
+        [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+        
+        self.lastPeriodSelected = indexPath;
+        
+        NSNumber * period = kTimePeriods[[indexPath row]];
+        [[AppConfig sharedConfig] setInteger:[period integerValue] forKey:kActiveSearchFilter];
+        
+    } else if(indexPath.section == 1) {
+        
+        if([[[AppConfig sharedConfig] searchRecentQueries] count] > 0) {
+            NSString * query = [[AppConfig sharedConfig] searchRecentQueries][indexPath.row];
+            
+            self.searchController.searchBar.text = query;
+            self.activeQuery = query;
+            
+            [self query:query];
+            [self.searchController setActive:YES];
+        }
+        
+    } else {
+        
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:
+                                               @"Clear Search History?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Clear" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+            
+            [[AppConfig sharedConfig] setObject:@[] forKey:kSearchRecentQueries];
+            [_recentQueriesTableView reloadData];
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 #pragma mark - StoriesCommentsSearchResultsViewControllerDelegate
 - (void)storiesCommentsSearchResultsViewController:(StoriesCommentsSearchResultsViewController*)controller didSelectResult:(id)result {
-    
-    //    if(self.splitViewController.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-    //        [self.searchController setActive:NO];
-    //    }
-    
+
     Story * story = (Story*)result;
+    
     if(!story.url) { // Ask HN item, or Show HN item without a url
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         UINavigationController * nav = (UINavigationController *)
@@ -182,7 +349,8 @@ controller didTapCommentsForResult:(id)result {
     
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     UINavigationController * nav = (UINavigationController *)
-    [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
+        [sb instantiateViewControllerWithIdentifier:@"StoryDetailViewControllerNavController"];
+    
     StoryDetailViewController * vc = (StoryDetailViewController *)[nav topViewController];
     
     vc.detailItem = result;
@@ -207,24 +375,6 @@ controller didChangeTimePeriod:(NSNumber*)timePeriod {
                                       withPage:0 withCompletion:^(NSDictionary *result) {
                                           [self processAlgoliaSearchResult:result];
                                       }];
-}
-
-#pragma mark - UITableViewDataSource Methods
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
-}
-
-#pragma mark - UITableViewDelegate Methods
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

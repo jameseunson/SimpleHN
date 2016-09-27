@@ -26,7 +26,9 @@
 + (AppConfig *)sharedConfig;
 
 - (BOOL)storyAutomaticallyShowReader;
+
 - (NSArray*)searchRecentQueries;
+- (void)addRecentQuery:(NSString*)query;
 
 - (BOOL)nightModeEnabled;
 - (BOOL)browserHidesBarsOnScroll;

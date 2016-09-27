@@ -44,21 +44,21 @@
 }
 
 #pragma mark - StoriesTimePeriodSelectViewController Methods
-- (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
-                  didChangeSelectedTimePeriod:(NSNumber*)period {
-    
-    [super storiesTimePeriodSelectViewController:controller didChangeSelectedTimePeriod:period];
-    
-    [[HNAlgoliaAPIManager sharedManager] loadTopStoriesWithTimePeriod:[period intValue] page:0 type:StoriesPageTypeTop completion:^(NSDictionary *result) {
-        if(!result || ![[result allKeys] containsObject:kHNAlgoliaAPIManagerResults] || [result[kHNAlgoliaAPIManagerResults] count] == 0) {
-            [self createErrorAlertWithTitle:@"Error" message:@"Unable to load stories for specified time period. Please check your connection and try again later."];
-            return;
-        }
-        [self.selectedTimePeriodStories addObjectsFromArray:result[kHNAlgoliaAPIManagerResults]];
-        [self.tableView reloadData];
-        self.initialLoadDone = YES;
-    }];
-}
+//- (void)storiesTimePeriodSelectViewController:(StoriesTimePeriodSelectViewController*)controller
+//                  didChangeSelectedTimePeriod:(NSNumber*)period {
+//    
+//    [super storiesTimePeriodSelectViewController:controller didChangeSelectedTimePeriod:period];
+//    
+//    [[HNAlgoliaAPIManager sharedManager] loadTopStoriesWithTimePeriod:[period intValue] page:0 type:StoriesPageTypeTop completion:^(NSDictionary *result) {
+//        if(!result || ![[result allKeys] containsObject:kHNAlgoliaAPIManagerResults] || [result[kHNAlgoliaAPIManagerResults] count] == 0) {
+//            [self createErrorAlertWithTitle:@"Error" message:@"Unable to load stories for specified time period. Please check your connection and try again later."];
+//            return;
+//        }
+//        [self.selectedTimePeriodStories addObjectsFromArray:result[kHNAlgoliaAPIManagerResults]];
+//        [self.tableView reloadData];
+//        self.initialLoadDone = YES;
+//    }];
+//}
 
 - (void)didTapDebugItem:(id)sender {
     

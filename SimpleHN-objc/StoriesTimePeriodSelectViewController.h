@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, StoriesTimePeriods) {
-    StoriesTimePeriodsNoPeriod,
-    StoriesTimePeriodsNow,
     StoriesTimePeriodsLast24hrs,
     StoriesTimePeriodsPastWeek,
     StoriesTimePeriodsPastMonth,
@@ -18,11 +16,11 @@ typedef NS_ENUM(NSInteger, StoriesTimePeriods) {
     StoriesTimePeriodsAllTime
 };
 
-#define kTimePeriodsLookup @{ @(StoriesTimePeriodsNoPeriod): @"None", @(StoriesTimePeriodsNow): @"Now", @(StoriesTimePeriodsLast24hrs): @"Last 24hrs", @(StoriesTimePeriodsPastWeek): @"Past Week", @(StoriesTimePeriodsPastMonth): @"Past Month", @(StoriesTimePeriodsPastYear): @"Past Year", @(StoriesTimePeriodsAllTime): @"All Time" }
+#define kTimePeriodsLookup @{ @(StoriesTimePeriodsLast24hrs): @"Last 24hrs", @(StoriesTimePeriodsPastWeek): @"Past Week", @(StoriesTimePeriodsPastMonth): @"Past Month", @(StoriesTimePeriodsPastYear): @"Past Year", @(StoriesTimePeriodsAllTime): @"All Time" }
 
-#define kTimePeriods @[ @(StoriesTimePeriodsNow), @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
+#define kTimePeriods @[ @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
 
-#define kSearchTimePeriods @[ @(StoriesTimePeriodsNoPeriod), @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
+//#define kSearchTimePeriods @[ @(StoriesTimePeriodsLast24hrs), @(StoriesTimePeriodsPastWeek), @(StoriesTimePeriodsPastMonth), @(StoriesTimePeriodsPastYear), @(StoriesTimePeriodsAllTime) ]
 
 @protocol StoriesTimePeriodSelectViewController;
 @interface StoriesTimePeriodSelectViewController : UITableViewController

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SimpleHNNightModeViewController.h"
 #import "StoriesCommentsSearchResultsViewController.h"
+#import "StoriesTimePeriodSelectViewController.h"
 
 @interface StoriesSearchViewController : SimpleHNNightModeViewController <UISearchResultsUpdating,
     UISearchControllerDelegate, UISearchBarDelegate, StoriesCommentsSearchResultsViewControllerDelegate,

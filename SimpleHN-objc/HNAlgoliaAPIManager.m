@@ -36,11 +36,11 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
 }
 
 - (void)query:(NSString*)query withCompletion: (void (^)(NSDictionary * result))completion {
-    [self query:query withTimePeriod:StoriesTimePeriodsNoPeriod withPage:0 withCompletion:completion];
+    [self query:query withTimePeriod:StoriesTimePeriodsAllTime withPage:0 withCompletion:completion];
 }
 
 - (void)query:(NSString*)query withPage:(NSInteger)pageNumber withCompletion: (void (^)(NSDictionary * result))completion {
-    [self query:query withTimePeriod:StoriesTimePeriodsNoPeriod withPage:pageNumber withCompletion:completion];
+    [self query:query withTimePeriod:StoriesTimePeriodsAllTime withPage:pageNumber withCompletion:completion];
 }
 
 - (void)query:(NSString*)query withTimePeriod:(StoriesTimePeriods)period withPage:(NSInteger)pageNumber withCompletion: (void (^)(NSDictionary * result))completion {
@@ -52,11 +52,10 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
     if(pageNumber > 0) {
         searchURL = [NSString stringWithFormat:@"%@&page=%lu", searchURL, pageNumber];
     }
-    if(period != StoriesTimePeriodsNoPeriod) {
-        NSDate * startPeriodDate = [[self class] calculateStartPeriodDateForPeriod:period];
-        searchURL = [NSString stringWithFormat:@"%@&numericFilters=created_at_i>%@", searchURL,
-                     @((int)[startPeriodDate timeIntervalSince1970])];
-    }
+    NSDate * startPeriodDate = [[self class] calculateStartPeriodDateForPeriod:period];
+    searchURL = [NSString stringWithFormat:@"%@&numericFilters=created_at_i>%@", searchURL,
+                 @((int)[startPeriodDate timeIntervalSince1970])];
+    
     NSString* urlStringEncoded = [searchURL stringByAddingPercentEncodingWithAllowedCharacters:
                                   [NSCharacterSet URLQueryAllowedCharacterSet]];
     
@@ -173,7 +172,7 @@ static HNAlgoliaAPIManager * _sharedManager = nil;
         
     } else if(period == StoriesTimePeriodsAllTime) {
         // TODO: Probably not correct, but oh well
-        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-5 toDate:[NSDate date] options:NSCalendarWrapComponents];
+        startPeriodDate = [cal dateByAddingUnit:NSCalendarUnitYear value:-10 toDate:[NSDate date] options:NSCalendarWrapComponents];
     }
     
     return startPeriodDate;

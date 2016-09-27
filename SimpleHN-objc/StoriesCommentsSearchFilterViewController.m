@@ -23,8 +23,8 @@
     self = [super init];
     if(self) {
         
-        _selectedPeriodIndex = [kSearchTimePeriods indexOfObject:@([[AppConfig sharedConfig] activeSearchFilter])];
-        _lastPeriodSelected = [NSIndexPath indexPathForRow:[kSearchTimePeriods indexOfObject:
+        _selectedPeriodIndex = [kTimePeriods indexOfObject:@([[AppConfig sharedConfig] activeSearchFilter])];
+        _lastPeriodSelected = [NSIndexPath indexPathForRow:[kTimePeriods indexOfObject:
                                                             @([[AppConfig sharedConfig] activeSearchFilter])] inSection:0];
     }
     return self;
@@ -81,19 +81,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [kSearchTimePeriods count];
+    return [kTimePeriods count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:kTimePeriodCellReuseIdentifier forIndexPath:indexPath];
-    
-    NSMutableArray * modifiedTimePeriods = [kSearchTimePeriods mutableCopy];
-    
-    [modifiedTimePeriods removeObject:[modifiedTimePeriods firstObject]];
-    [modifiedTimePeriods insertObject:@(StoriesTimePeriodsNoPeriod) atIndex:0];
-    
-    cell.textLabel.text = kTimePeriodsLookup[modifiedTimePeriods[indexPath.row]];
+    cell.textLabel.text = kTimePeriods[indexPath.row];
     
     if(_selectedPeriodIndex == [indexPath row]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -140,7 +134,7 @@
     
     if([self.delegate respondsToSelector:@selector(storiesCommentsSearchFilterViewControllerDelegate:didSelectFilter:)]) {
         [self.delegate performSelector:@selector(storiesCommentsSearchFilterViewControllerDelegate:didSelectFilter:)
-                            withObject:self withObject:kSearchTimePeriods[_lastPeriodSelected.row]];
+                            withObject:self withObject:kTimePeriods[_lastPeriodSelected.row]];
     }
 }
 

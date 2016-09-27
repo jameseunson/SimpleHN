@@ -17,7 +17,7 @@
     kSearchFilterSortType : @(0), \
     kNightModeEnabled : @(NO), \
     kBrowserHidesBarsOnScroll : @(NO), \
-    kActiveSearchFilter : @(StoriesTimePeriodsNoPeriod), \
+    kActiveSearchFilter : @(StoriesTimePeriodsAllTime), \
 } \
 
 @implementation AppConfig
@@ -73,6 +73,24 @@
         [self setObject:kConfigDefaultsDict[kSearchRecentQueries] forKey:kSearchRecentQueries];
     }
     return self.configDict[kSearchRecentQueries];
+}
+
+- (void)addRecentQuery:(NSString *)query {
+    
+    // Ensure no duplicates or empty queries get added
+    if([[self searchRecentQueries] containsObject:query]) {
+        return;
+    }
+    if([query length] == 0) {
+        return;
+    }
+    
+    NSMutableArray * mutableSearchQueries = [[self searchRecentQueries] mutableCopy];
+    
+    [mutableSearchQueries insertObject:query atIndex:0];
+    
+    [[AppConfig sharedConfig] setObject:mutableSearchQueries
+                                 forKey:kSearchRecentQueries];
 }
 
 - (BOOL)nightModeEnabled {
